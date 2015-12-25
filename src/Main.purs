@@ -3,7 +3,12 @@ module Main where
 import Prelude
 import Control.Monad.Eff
 import Control.Monad.Eff.Console
+import PlayWithFire as F
+import Exceptional as E
 
-main :: forall e. Eff (console :: CONSOLE | e) Unit
+import Web.Firebase.Types as FB
+
+main :: forall e. Eff ( console :: CONSOLE, firebase :: FB.FirebaseEff | e) Unit
 main = do
-  log "Hello Willem!"
+  E.playWithExceptions
+  F.readWithFire
