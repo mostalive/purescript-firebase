@@ -3,7 +3,7 @@ module PlayWithFire where
 import Prelude
 import Control.Monad.Eff
 import Control.Monad.Eff.Console
-
+import Control.Monad.Aff (makeAff, Aff())
 import qualified Web.Firebase as FB
 import qualified Web.Firebase.Types as FB
 import Web.Firebase.DataSnapshot (val)
@@ -28,6 +28,10 @@ instance successIsForeign :: FC.IsForeign Success where
 
 instance successShow :: Show Success where
   show (Success s) = "Success { success: " ++ show s.success ++ " }"
+
+-- maybe use generics for this - http://www.purescript.org/learn/generic/
+instance successEq :: Eq Success where
+  eq (Success s1) (Success s2) = s1.success == s2.success
 
 foreignErrorToString :: ForeignError -> String
 foreignErrorToString f = show f
@@ -60,12 +64,24 @@ readWithFire = do
   FB.once FB.ChildAdded printSnapshot root
   log "Read passed." 
 
-{-
-  -- start without error handling. Might call it unsafe or withoutErrorChecking
-  FB.onceChildAdded root aSuccessHandler
-  -- Ds.val to disappear into handler. It should return a Foreign
-  frown <- DS.val ds :: Foreign
--}
-  -- Figure out how to exit application after FB.push. 
-  -- maybe purescript is waiting for some scripts to be wrapped up.
-  -- we probably need to turn this into an Async
+readSuccess :: forall e. Eff (console :: CONSOLE , firebase :: FB.FirebaseEff | e) Unit
+readSuccess = do
+  log "implementation for reading from firebase goes here"
+  let fbUri = fromRight $ runParseURI "https://purescript-spike.firebaseio.com/"
+  fb <- FB.newFirebase fbUri
+  root <- FB.child "entries" fb
+  FB.once FB.ChildAdded printSnapshot root
+  log "Read passed." 
+
+snapshot2success :: FB.DataSnapshot -> Either String Success
+snapshot2success snap = (FC.readWith foreignErrorToString (val snap)) :: Either String Success
+
+readSuccessAff :: forall eff. FB.Firebase -> Aff (firebase :: FB.FirebaseEff | eff) (Either String Success)
+readSuccessAff root = do
+  snap <- onceAff root
+  let suc = snapshot2success snap
+  pure suc
+
+
+onceAff :: forall e. FB.Firebase -> Aff (firebase :: FB.FirebaseEff | e) FB.DataSnapshot
+onceAff root = makeAff (\error success -> FB.once FB.ChildAdded success root)
