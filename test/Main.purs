@@ -11,7 +11,7 @@ import Data.Either.Unsafe  (fromRight)
 import Data.URI (runParseURI)
 import qualified Web.Firebase as FB
 import qualified Web.Firebase.Types as FBT
-import Test.Spec                  (describe, it)
+import Test.Spec                  (describe, pending, it)
 import Test.Spec.Runner           (Process(), run)
 import Test.Spec.Assertions       (shouldEqual)
 import Test.Spec.Reporter.Console (consoleReporter)
@@ -35,4 +35,9 @@ main = run [consoleReporter] do
       it "Child Added" do
         success <- getYes
         liftEff $ print success
-        success `shouldEqual` (Right (Success {success: "Yes!"}))
+        success `shouldEqual` (Right (Success {success: "yes!"}))
+      pending "Reading a non-existant item should fail"
+    describe "Writing" do
+      pending "can add an item to a list" -- see writeWithFire (or rather: addWithFire)
+      pending "can overwrite a (possibly) existing item"
+      pending "can add a server-side timestamp to new items"
