@@ -1,0 +1,9 @@
+Purescript-firebase to do
+
+* STARTED get one tweet with once()
+  CLOCK: [2016-01-05 Tue 10:39]
+** TODO write integration test with Node
+  which purescript test framework? or just a main...
+  Just a main
+* TODO get / print bunch of tweets with child-added
+** TODO ? add firebase timestamp with zapier?
