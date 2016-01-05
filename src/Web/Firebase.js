@@ -20,6 +20,12 @@ exports.onImpl = function (eventType, callback, cancelCallback, fb) {
     };
 };
 
+exports.onceImpl = function(eventType, callback, fb) {
+    return function () {
+	return fb.once(eventType, callback);
+    };
+};
+
 exports.setImpl = function (value, onComplete, fb) {
     return function () {
         fb.set(value, onComplete === null ? undefined : onComplete);

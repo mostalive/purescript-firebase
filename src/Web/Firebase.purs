@@ -3,6 +3,7 @@ module Web.Firebase
 , child
 , newFirebase
 , on
+, once
 , push
 , set
 )
@@ -10,7 +11,7 @@ where
 
 import Prelude
 import Control.Monad.Eff (Eff())
-import Data.Foreign (Foreign(), toForeign)
+import Data.Foreign (Foreign())
 import Data.Function (Fn1(), Fn2(), Fn3(), Fn4(), runFn1, runFn2, runFn3, runFn4)
 import Data.Maybe (Maybe())
 import Data.Nullable (toNullable, Nullable())
@@ -58,6 +59,22 @@ on :: forall eff.
       Firebase ->
       Eff (firebase :: FirebaseEff | eff) Unit
 on etype ds cb fb = runFn4 onImpl (showEventType etype) (unsafeEvalEff <<< ds) (toNullable cb) fb
+
+
+foreign import onceImpl :: forall eff. Fn3
+        String
+        (DataSnapshot -> Eff (firebase :: FirebaseEff | eff) Unit)
+        Firebase
+        (Eff (firebase :: FirebaseEff | eff) Unit)
+
+-- Only implement success callback for now, figure out how to use an either and Aff later
+-- we should be able to remove firebaseEff if we resolve the datasnapshot here already
+once :: forall eff.
+        EventType ->
+        (DataSnapshot -> Eff (firebase :: FirebaseEff | eff) Unit) ->
+        Firebase ->
+        Eff (firebase :: FirebaseEff | eff) Unit
+once etype ds fb = runFn3 onceImpl (showEventType etype) (unsafeEvalEff <<< ds) fb
 
 foreign import setImpl :: forall eff. Fn3
                    Foreign
