@@ -6,6 +6,7 @@ import Control.Monad.Aff
 import Control.Monad.Eff
 import Control.Monad.Eff.Console
 import Control.Monad.Eff.Class (liftEff)
+import Data.Maybe
 import Data.Either
 import Data.Either.Unsafe  (fromRight)
 import Data.URI (runParseURI)
@@ -33,6 +34,12 @@ rootSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnap
 rootSnapshot = do
   root <- getRoot
   onceValue root
+
+entriesSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
+entriesSnapshot = do
+  root <- getRoot
+  onceValue root
+
 
 getYes :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) (Either String Success)
 getYes = do
@@ -81,11 +88,13 @@ main = run [consoleReporter] do
 	let hasChildren = D.hasChildren rs
         hasChildren `shouldEqual` true
 
-      {- it "says the key of the database root is Nothing" do
+      it "says the key of the database root is Nothing" do
         -- have to understand how Nullable works?
-        let key = Nothing
+	-- use runNull to turn Key into a string or a value?
+  	rs <- rootSnapshot -- extract to describe block, remove from it's
+        let key = D.key rs :: Maybe String -- refactor to type Key, in FBT?
         key `shouldEqual` Nothing
-      -}
+
       pending "says they key of /entries is entries"
       pending "it can not tell us the location at the snapshot does not exist"
       pending "can it say the value of child \"entries\" is Nothing?"

@@ -11,15 +11,17 @@ exports.valImpl = function (ds) {
 };
 
 exports._hasChild = function(ds, named) {
-    var really = ds.hasChild(named);
-    console.log(really);
-    return really;
+    return ds.hasChild(named);
 };
 
 exports._hasChildren = function(ds) {
   return ds.hasChildren();
 };
 
+exports._key = function(ds) {
+  return ds.key();
+};
+
 exports._numChildren = function(ds) {
-  return ds.numChildren();
+ return ds.numChildren();
 };

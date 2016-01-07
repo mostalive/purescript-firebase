@@ -1,14 +1,17 @@
 module Web.Firebase.DataSnapshot
 (
-exists,	
-val, 
+exists,
+key,
 hasChild,
 hasChildren,
-numChildren)
+numChildren,
+val)
 where
 
 import Web.Firebase.Types (DataSnapshot())
-import Data.Foreign (Foreign())
+import Data.Foreign
+import Data.Nullable (toMaybe, Nullable())
+import Data.Maybe (Maybe())
 import Data.Function (Fn1(), runFn1, Fn2(), runFn2)
 
 -- | Returns true if this DataSnapshot contains any data.
@@ -17,14 +20,6 @@ foreign import _exists :: Fn1 DataSnapshot Boolean
 
 exists :: DataSnapshot -> Boolean
 exists = runFn1 _exists
-
--- | Gets the JavaScript object representation of the DataSnapshot.
--- val can be null if the snapshot is empty or does not exist
-foreign import valImpl :: Fn1 DataSnapshot Foreign
-
-val :: DataSnapshot -> Foreign
-val = runFn1 valImpl
-
 
 -- | Returns true if the specified child exists
 -- https://www.firebase.com/docs/web/api/datasnapshot/haschild.html
@@ -47,4 +42,18 @@ foreign import _numChildren :: Fn1 DataSnapshot Int
 
 numChildren :: DataSnapshot -> Int
 numChildren = runFn1 _numChildren
+
+-- | Gets the JavaScript object representation of the DataSnapshot.
+-- val can be null if the snapshot is empty or does not exist
+foreign import valImpl :: Fn1 DataSnapshot Foreign
+
+val :: DataSnapshot -> Foreign
+val = runFn1 valImpl
+
+-- | Gets the key of the location that generated the DataSnapshot
+foreign import _key :: Fn1 DataSnapshot (Nullable String)
+
+key :: DataSnapshot -> Maybe String
+key ds = toMaybe (runFn1 _key ds)
+
 
