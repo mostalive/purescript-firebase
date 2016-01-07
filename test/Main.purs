@@ -26,8 +26,7 @@ getRoot = do
 rootSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
 rootSnapshot = do
   root <- getRoot
-  s <- onceAff root
-  pure s
+  onceAff root
 
 getYes :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) (Either String Success)
 getYes = do
@@ -57,12 +56,23 @@ main = run [consoleReporter] do
 	rs <- rootSnapshot
 	let noChild = D.hasChild rs "doesnotexist"
 	noChild `shouldEqual` false
- {-
-      it "can tell us a child does not exist" do
-	childExists <- D.hasChild rootSnapshot "doesnotexist"
+      it "can tell us a child exists" do
+	rs <- rootSnapshot
+	let childExists = D.hasChild rs "entries"
 	childExists `shouldEqual` true
- -}
-    describe "Writing" do
+      it "can tell us the location at the snapshot exists" do
+	rs <- rootSnapshot
+        let rootExists = D.exists rs
+	rootExists `shouldEqual` true
+      it "can tell us the number of children" do
+        rs <- rootSnapshot
+	let numChildren = D.numChildren rs
+        numChildren `shouldEqual` 1
+      pending "it can not tell us the location at the snapshot does not exist" 
+        -- this relies on trying to read a firebase ref with once, and that 'works' by never being called back
+      pending "it can give us a snapshot of one of its children"
+    
+  describe "Writing" do
       pending "can add an item to a list" -- see writeWithFire (or rather: addWithFire)
       pending "can overwrite a (possibly) existing item"
       pending "can add a server-side timestamp to new items"
