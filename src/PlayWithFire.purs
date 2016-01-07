@@ -48,30 +48,11 @@ writeWithFire = do
   fb <- FB.newFirebase fbUri
   root <- FB.child "entries" fb
   FB.push (toForeign $ {success: "yes!"}) Nothing root
-  log "Write success!" 
 
 printSnapshot :: forall e. FBT.DataSnapshot -> Eff (console :: CONSOLE, firebase :: FBT.FirebaseEff | e) Unit
 printSnapshot snap = do
   let js =  (FC.readWith foreignErrorToString (val snap)) :: Either String Success
   print js
-
-readWithFire :: forall e. Eff (console :: CONSOLE , firebase :: FBT.FirebaseEff | e) Unit
-readWithFire = do
-  log "implementation for reading from firebase goes here"
-  let fbUri = fromRight $ runParseURI "https://purescript-spike.firebaseio.com/"
-  fb <- FB.newFirebase fbUri
-  root <- FB.child "entries" fb
-  FB.once FB.ChildAdded printSnapshot root
-  log "Read passed." 
-
-readSuccess :: forall e. Eff (console :: CONSOLE , firebase :: FBT.FirebaseEff | e) Unit
-readSuccess = do
-  log "implementation for reading from firebase goes here"
-  let fbUri = fromRight $ runParseURI "https://purescript-spike.firebaseio.com/"
-  fb <- FB.newFirebase fbUri
-  root <- FB.child "entries" fb
-  FB.once FB.ChildAdded printSnapshot root
-  log "Read passed." 
 
 snapshot2success :: FBT.DataSnapshot -> Either String Success
 snapshot2success snap = (FC.readWith foreignErrorToString (val snap)) :: Either String Success

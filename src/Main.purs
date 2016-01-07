@@ -12,4 +12,3 @@ main :: forall e. Eff ( console :: CONSOLE, firebase :: FB.FirebaseEff | e) Unit
 main = do
   F.writeWithFire
   E.playWithExceptions
-  F.readWithFire
