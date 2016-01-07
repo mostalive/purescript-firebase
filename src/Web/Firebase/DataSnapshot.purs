@@ -8,7 +8,7 @@ numChildren,
 val)
 where
 
-import Web.Firebase.Types (DataSnapshot())
+import Web.Firebase.Types (DataSnapshot(), Key())
 import Data.Foreign
 import Data.Nullable (toMaybe, Nullable())
 import Data.Maybe (Maybe())
@@ -51,9 +51,8 @@ val :: DataSnapshot -> Foreign
 val = runFn1 valImpl
 
 -- | Gets the key of the location that generated the DataSnapshot
-foreign import _key :: Fn1 DataSnapshot (Nullable String)
+foreign import _key :: Fn1 DataSnapshot (Nullable Key)
 
-key :: DataSnapshot -> Maybe String
+key :: DataSnapshot -> Maybe Key
 key ds = toMaybe (runFn1 _key ds)
-
 

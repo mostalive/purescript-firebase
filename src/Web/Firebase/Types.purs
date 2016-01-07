@@ -6,4 +6,4 @@ foreign import data Firebase :: *
 foreign import data FirebaseErr :: *
 foreign import data DataSnapshot :: *
 
-data Key = String
+type Key = String
