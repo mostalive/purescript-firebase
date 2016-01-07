@@ -68,6 +68,10 @@ main = run [consoleReporter] do
         rs <- rootSnapshot
 	let numChildren = D.numChildren rs
         numChildren `shouldEqual` 1
+      it "can tell us it has children" do
+        rs <- rootSnapshot
+	let hasChildren = D.hasChildren rs
+        hasChildren `shouldEqual` true 
       pending "it can not tell us the location at the snapshot does not exist" 
         -- this relies on trying to read a firebase ref with once, and that 'works' by never being called back
       pending "it can give us a snapshot of one of its children"

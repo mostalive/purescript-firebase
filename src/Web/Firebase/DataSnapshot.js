@@ -14,6 +14,10 @@ exports._hasChild = function(ds, named) {
     return ds.hasChild(named);
 };
 
+exports._hasChildren = function(ds) {
+  return ds.hasChildren();
+};
+
 exports._numChildren = function(ds) {
   return ds.numChildren();
 };

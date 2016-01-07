@@ -3,6 +3,7 @@ module Web.Firebase.DataSnapshot
 exists,	
 val, 
 hasChild,
+hasChildren,
 numChildren)
 where
 
@@ -18,6 +19,7 @@ exists :: DataSnapshot -> Boolean
 exists = runFn1 _exists
 
 -- | Gets the JavaScript object representation of the DataSnapshot.
+-- val can be null if the snapshot is empty or does not exist
 foreign import valImpl :: Fn1 DataSnapshot Foreign
 
 val :: DataSnapshot -> Foreign
@@ -31,6 +33,13 @@ foreign import _hasChild :: Fn2 DataSnapshot String Boolean
 
 hasChild :: DataSnapshot -> String -> Boolean
 hasChild = runFn2 _hasChild
+
+-- | Returns true if the DataSnapshot has children
+-- https://www.firebase.com/docs/web/api/datasnapshot/haschildren.html
+foreign import _hasChildren :: Fn1 DataSnapshot Boolean
+
+hasChildren :: DataSnapshot -> Boolean
+hasChildren = runFn1 _hasChildren
 
 -- | Returns the number of children
 -- https://www.firebase.com/docs/web/api/datasnapshot/numchildren.html
