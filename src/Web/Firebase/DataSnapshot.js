@@ -11,7 +11,9 @@ exports.valImpl = function (ds) {
 };
 
 exports._hasChild = function(ds, named) {
-    return ds.hasChild(named);
+    var really = ds.hasChild(named);
+    console.log(really);
+    return really;
 };
 
 exports._hasChildren = function(ds) {

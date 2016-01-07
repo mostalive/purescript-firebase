@@ -82,6 +82,5 @@ readSuccessAff root = do
   let suc = snapshot2success snap
   pure suc
 
-
 onceAff :: forall e. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) FBT.DataSnapshot
 onceAff root = makeAff (\error success -> FB.once FB.ChildAdded success root)
