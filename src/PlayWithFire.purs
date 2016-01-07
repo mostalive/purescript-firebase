@@ -5,7 +5,7 @@ import Control.Monad.Eff
 import Control.Monad.Eff.Console
 import Control.Monad.Aff (makeAff, Aff())
 import qualified Web.Firebase as FB
-import qualified Web.Firebase.Types as FB
+import qualified Web.Firebase.Types as FBT
 import Web.Firebase.DataSnapshot (val)
 import Data.Foreign
 import qualified Data.Foreign.Class as FC
@@ -41,7 +41,7 @@ aSuccessHandler frown = do
   let js = (FC.readWith foreignErrorToString frown) :: Either String Success
   print js
 
-writeWithFire :: forall e. Eff (console :: CONSOLE , firebase :: FB.FirebaseEff | e) Unit
+writeWithFire :: forall e. Eff (console :: CONSOLE , firebase :: FBT.FirebaseEff | e) Unit
 writeWithFire = do
   log "Hello Firebase!"
   let fbUri = fromRight $ runParseURI "https://purescript-spike.firebaseio.com/"
@@ -50,12 +50,12 @@ writeWithFire = do
   FB.push (toForeign $ {success: "yes!"}) Nothing root
   log "Write success!" 
 
-printSnapshot :: forall e. FB.DataSnapshot -> Eff (console :: CONSOLE, firebase :: FB.FirebaseEff | e) Unit
+printSnapshot :: forall e. FBT.DataSnapshot -> Eff (console :: CONSOLE, firebase :: FBT.FirebaseEff | e) Unit
 printSnapshot snap = do
   let js =  (FC.readWith foreignErrorToString (val snap)) :: Either String Success
   print js
 
-readWithFire :: forall e. Eff (console :: CONSOLE , firebase :: FB.FirebaseEff | e) Unit
+readWithFire :: forall e. Eff (console :: CONSOLE , firebase :: FBT.FirebaseEff | e) Unit
 readWithFire = do
   log "implementation for reading from firebase goes here"
   let fbUri = fromRight $ runParseURI "https://purescript-spike.firebaseio.com/"
@@ -64,7 +64,7 @@ readWithFire = do
   FB.once FB.ChildAdded printSnapshot root
   log "Read passed." 
 
-readSuccess :: forall e. Eff (console :: CONSOLE , firebase :: FB.FirebaseEff | e) Unit
+readSuccess :: forall e. Eff (console :: CONSOLE , firebase :: FBT.FirebaseEff | e) Unit
 readSuccess = do
   log "implementation for reading from firebase goes here"
   let fbUri = fromRight $ runParseURI "https://purescript-spike.firebaseio.com/"
@@ -73,15 +73,15 @@ readSuccess = do
   FB.once FB.ChildAdded printSnapshot root
   log "Read passed." 
 
-snapshot2success :: FB.DataSnapshot -> Either String Success
+snapshot2success :: FBT.DataSnapshot -> Either String Success
 snapshot2success snap = (FC.readWith foreignErrorToString (val snap)) :: Either String Success
 
-readSuccessAff :: forall eff. FB.Firebase -> Aff (firebase :: FB.FirebaseEff | eff) (Either String Success)
+readSuccessAff :: forall eff. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | eff) (Either String Success)
 readSuccessAff root = do
   snap <- onceAff root
   let suc = snapshot2success snap
   pure suc
 
 
-onceAff :: forall e. FB.Firebase -> Aff (firebase :: FB.FirebaseEff | e) FB.DataSnapshot
+onceAff :: forall e. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) FBT.DataSnapshot
 onceAff root = makeAff (\error success -> FB.once FB.ChildAdded success root)

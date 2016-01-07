@@ -26,6 +26,13 @@ foreign import newFirebaseImpl :: forall eff. Fn1 String (Eff (firebase :: Fireb
 newFirebase :: forall eff. URI -> Eff (firebase :: FirebaseEff | eff) Firebase
 newFirebase u = runFn1 newFirebaseImpl $ printURI u
 
+-- | Gets a Firebase reference for the location at the specified relative path.
+-- https://www.firebase.com/docs/web/api/firebase/child.html
+-- Firebase documentation does not specify what happens when the child does not exist
+-- Probably nothing happens when the path does not exist, since references don't involve IO, they are just data about paths in the DB that
+-- may or may not exist.
+-- Existence can be checked by getting the value, and DataSnapshot.exists - https://www.firebase.com/docs/web/api/datasnapshot/exists.html
+
 foreign import childImpl :: forall eff. Fn2 String Firebase (Eff (firebase :: FirebaseEff | eff) Firebase)
 
 child :: forall eff. String -> Firebase -> Eff (firebase :: FirebaseEff | eff) Firebase
