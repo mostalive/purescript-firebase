@@ -38,7 +38,8 @@ rootSnapshot = do
 entriesSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
 entriesSnapshot = do
   root <- getRoot
-  onceValue root
+  entries <- liftEff $ FB.child "entries" root
+  onceValue entries
 
 
 getYes :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) (Either String Success)
@@ -68,7 +69,7 @@ main = run [consoleReporter] do
       -- literal API
       -- the difference between snapshots and refs is somewhat confusing
       it "can tell us the number of children" do
-        rs <- rootSnapshot
+	rs <- rootSnapshot
 	let numChildren = D.numChildren rs
         numChildren `shouldEqual` 1
       it "can tell us a child does not exist" do
@@ -89,13 +90,15 @@ main = run [consoleReporter] do
         hasChildren `shouldEqual` true
 
       it "says the key of the database root is Nothing" do
-        -- have to understand how Nullable works?
-	-- use runNull to turn Key into a string or a value?
-  	rs <- rootSnapshot -- extract to describe block, remove from it's
-        let key = D.key rs :: Maybe String -- refactor to type Key, in FBT?
+  	rs <- rootSnapshot
+        let key = D.key rs
         key `shouldEqual` Nothing
 
-      pending "says they key of /entries is entries"
+      it "says they key of /entries is entries" do
+  	sn <- entriesSnapshot
+        let key = D.key sn
+        key `shouldEqual` (Just "entries")
+
       pending "it can not tell us the location at the snapshot does not exist"
       pending "can it say the value of child \"entries\" is Nothing?"
         -- this relies on trying to read a firebase ref with once, and that 'works' by never being called back
