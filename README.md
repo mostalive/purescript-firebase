@@ -1,5 +1,7 @@
 # Purescript-firebase
 
+![build status](https://travis-ci.org/mostalive/purescript-firebase.svg?branch=master)
+
 Purescript bindings for firebase.
 
 Status: not for public consumption just yet. It eventually should follow the [purescript style guide](https://github.com/purescript/purescript/wiki/Style-Guide).
