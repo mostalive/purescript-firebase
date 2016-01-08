@@ -3,9 +3,10 @@ module PlayWithFire where
 import Prelude
 import Control.Monad.Eff
 import Control.Monad.Eff.Console
-import Control.Monad.Aff (makeAff, Aff())
+import Control.Monad.Aff (Aff())
 import qualified Web.Firebase as FB
 import qualified Web.Firebase.Types as FBT
+import Web.Firebase.Monad.Aff (onceValue)
 import Web.Firebase.DataSnapshot (val)
 import Data.Foreign
 import qualified Data.Foreign.Class as FC
@@ -58,10 +59,8 @@ snapshot2success :: FBT.DataSnapshot -> Either String Success
 snapshot2success snap = (FC.readWith foreignErrorToString (val snap)) :: Either String Success
 
 readSuccessAff :: forall eff. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | eff) (Either String Success)
-readSuccessAff root = do
-  snap <- onceAff root
+readSuccessAff ref = do
+  snap <- onceValue ref
   let suc = snapshot2success snap
   pure suc
 
-onceAff :: forall e. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) FBT.DataSnapshot
-onceAff root = makeAff (\error success -> FB.once FB.ChildAdded success root)

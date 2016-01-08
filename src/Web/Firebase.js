@@ -20,9 +20,9 @@ exports.onImpl = function (eventType, callback, cancelCallback, fb) {
     };
 };
 
-exports.onceImpl = function(eventType, callback, fb) {
+exports.onceImpl = function(eventType, callback, errorCallback, fb) {
     return function () {
-	return fb.once(eventType, callback);
+	fb.once(eventType, callback, errorCallback);
     };
 };
 

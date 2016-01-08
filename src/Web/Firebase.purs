@@ -68,20 +68,20 @@ on :: forall eff.
 on etype ds cb fb = runFn4 onImpl (showEventType etype) (unsafeEvalEff <<< ds) (toNullable cb) fb
 
 
-foreign import onceImpl :: forall eff. Fn3
+foreign import onceImpl :: forall eff. Fn4
         String
         (DataSnapshot -> Eff (firebase :: FirebaseEff | eff) Unit)
+        (Nullable (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit))
         Firebase
         (Eff (firebase :: FirebaseEff | eff) Unit)
 
--- Only implement success callback for now, figure out how to use an either and Aff later
--- we should be able to remove firebaseEff if we resolve the datasnapshot here already
 once :: forall eff.
         EventType ->
         (DataSnapshot -> Eff (firebase :: FirebaseEff | eff) Unit) ->
+        Maybe (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit) ->
         Firebase ->
         Eff (firebase :: FirebaseEff | eff) Unit
-once etype ds fb = runFn3 onceImpl (showEventType etype) (unsafeEvalEff <<< ds) fb
+once etype ds cb fb = runFn4 onceImpl (showEventType etype) (unsafeEvalEff <<< ds) (toNullable cb) fb
 
 foreign import setImpl :: forall eff. Fn3
                    Foreign

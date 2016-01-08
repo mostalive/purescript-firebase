@@ -18,7 +18,7 @@ import Test.Spec.Runner           (Process(), run)
 import Test.Spec.Assertions       (shouldEqual)
 import Test.Spec.Reporter.Console (consoleReporter)
 import PlayWithFire (readSuccessAff, Success(Success))
-import Web.Firebase.Aff (onceValue)
+import Web.Firebase.Monad.Aff (onceValue)
 
 getRoot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 getRoot = do
@@ -45,7 +45,7 @@ entriesSnapshot = do
 getYes :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) (Either String Success)
 getYes = do
   root <- getRoot
-  entries <- liftEff $ FB.child "entries" root
+  entries <- liftEff $ FB.child "entries/-K7GbWeFHfJXlun7szRe" root
   readSuccessAff entries
 
 childAddedError :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) (Either String Success)
