@@ -106,6 +106,19 @@ main = run [consoleReporter] do
       -- implement forEach callback that returns true after first call, so it terminates
       -- put that callback into Aff, so we can wait for the result
       -- with Aff, and the Aff variable, we can retrieve a list.
+    describe "Authorization" do
+	 {- https://www.firebase.com/docs/web/guide/user-auth.html#section-handling-errors:
+  All errors are Error objects containing at least code and message attributes. In some cases, additional information will be provided via the details attribute. For example:
+  {
+	    code: "TRANSPORT_UNAVAILABLE",
+       message: "There are no login transports available for the requested method.",
+         details: "More details about the specific error here."
+ }
+	-}
+      pending "returns an error object subscribing to an unauthorized location"
+      -- this forces us to handle errors in Aff, and parse Error objects
+      -- as well as placing some authorization rules in Firebase
+      -- documentation on firebase Error was hard to find, having an actual one would allow us to write some marshalling code. code and message should be present, details wrapped in a Maybe. Given we don't own this interface, placing a console.log in the FFi javascript side is wise for now.
   describe "Writing" do
       pending "can add an item to a list" -- see writeWithFire (or rather: addWithFire)
       pending "can overwrite a (possibly) existing item"
