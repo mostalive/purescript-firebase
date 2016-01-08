@@ -3,7 +3,7 @@ sudo: false
 node_js:
         - 4.2.2
 install:
-          - npm install purescript pulp -g
-              - pulp dep update
+          - npm install purescript bower pulp -g
+          - bower install
 script:
           - pulp build && pulp test
