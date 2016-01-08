@@ -1,13 +1,11 @@
-My first foray in Purescript. Since FFI is supposed to be easy, that's
-where we start. Firebase.
+# Purescript-firebase
 
-1. 24 days of purescript had object-ffi. Make an object-ffi that can 
- - create a new Firebase
- - push a hardcoded value to our test database /purescript/{success:
-true}
+Purescript bindings for firebase.
 
-2. Run above from main
-3. Make that into a test (removing a value? we are not that interested
-   in removing, given event sourcing. for testing it might be handy. or:
-parameterize, and write success: false. Need reading. child_added /
-child_modified?
+Status: not for public consumption just yet. It eventually should follow the [purescript style guide](https://github.com/purescript/purescript/wiki/Style-Guide).
+
+The style guide recommends separating a literal translation of the API in a separate package / repository from a more purescript-ish interface. For now they are together, until we figure out what goes where. Web.Firebase.Monad.Aff has the start of a more idiomatic API. Eventually I'd like to produce signals for callbacks that can be fired more than once ( on()). That way it should be relatively easy to use firebase for uni-directional data flow with one of the many signal-based UI libraries for purescript.
+
+# Credits
+
+The only purescript code I could find that was using firebase was this https://github.com/passy/giflib . I extracted the firebase code and started working from there.
