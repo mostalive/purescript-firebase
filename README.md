@@ -8,4 +8,4 @@ The style guide recommends separating a literal translation of the API in a sepa
 
 # Credits
 
-The only purescript code I could find that was using firebase was this https://github.com/passy/giflib . I extracted the firebase code and started working from there.
+[Pascal Hartig](https://github.com/passy) - The only purescript code I could find that was using firebase was this https://github.com/passy/giflib . I extracted the firebase code and started working from there.
