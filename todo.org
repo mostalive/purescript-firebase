@@ -1,6 +1,10 @@
-cPurescript-firebase to do
+Purescript-firebase to do
 
-* STARTED get one tweet with once()
+* TODO exit node als on success in purescript-spec
+ pulp test times out because purescript-spec does not exit on success. Firebase keeps a connection open, even when using once()
+  - http://stackoverflow.com/questions/18046639/node-process-doesnt-exit-after-firebase-once
+ patch in local bower-components.
+* STARTED get one item with once()
   CLOCK: [2016-01-07 Thu 09:26]
   CLOCK: [2016-01-05 Tue 10:39]--[2016-01-05 Tue 16:19] =>  5:40
 ** DONE write integration test with Node
