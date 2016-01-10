@@ -1,0 +1,33 @@
+{
+  "name": "purescript-firebase",
+  "version": "1.0.0",
+  "description": "![build status](https://travis-ci.org/mostalive/purescript-firebase.svg?branch=master)",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "build": "pulp build",
+    "test": "pulp test",
+    "autotest": "pulp -w test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mostalive/purescript-firebase.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mostalive/purescript-firebase/issues"
+  },
+  "homepage": "https://github.com/mostalive/purescript-firebase#readme",
+  "dependencies": {
+    "firebase": "^2.3.2"
+  },
+  "devDependencies": {
+    "bower": "^1.7.2",
+    "pulp": "^7.0.0",
+    "purescript": "^0.7.6"
+  }
+}

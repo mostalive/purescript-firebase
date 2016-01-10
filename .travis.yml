@@ -1,9 +1,9 @@
 language: node_js
 sudo: false
 node_js:
-        - 4.2.2
+        - stable
 install:
-          - npm install purescript bower pulp -g
+          - npm install
           - bower install
 script:
-          - pulp build && pulp test
+          - npm run build && npm run test
