@@ -1,6 +1,6 @@
 # Purescript-firebase
 
-![build status](https://travis-ci.org/mostalive/purescript-firebase.svg?branch=master)
+[![Build Status](https://travis-ci.org/mostalive/purescript-firebase.svg?branch=master)](https://travis-ci.org/mostalive/purescript-firebase)
 
 Purescript bindings for firebase.
 
