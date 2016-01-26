@@ -8,8 +8,6 @@ import Control.Monad.Eff.Console
 import Control.Monad.Eff.Class (liftEff)
 import Data.Maybe
 import Data.Either
-import Data.Either.Unsafe  (fromRight)
-import Data.URI (runParseURI)
 import qualified Web.Firebase as FB
 import qualified Web.Firebase.DataSnapshot as D
 import qualified Web.Firebase.Types as FBT
@@ -19,40 +17,33 @@ import Test.Spec.Assertions       (shouldEqual)
 import Test.Spec.Reporter.Console (consoleReporter)
 import PlayWithFire (readSuccessAff, Success(Success))
 import Web.Firebase.Monad.Aff (onceValue)
+import Web.Firebase.UnsafeRef (refFor)
 
 getRoot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
-getRoot = do
-  let fbUri = fromRight $ runParseURI "https://purescript-spike.firebaseio.com/"
-  liftEff $ FB.newFirebase fbUri
+getRoot = refFor "https://purescript-spike.firebaseio.com/"
 
 entriesRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
-entriesRef = do
-  let fbUri = fromRight $ runParseURI "https://purescript-spike.firebaseio.com/entries"
-  liftEff $ FB.newFirebase fbUri
+entriesRef = refFor "https://purescript-spike.firebaseio.com/entries"
 
 rootSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
-rootSnapshot = do
-  root <- getRoot
-  onceValue root
+rootSnapshot = getRoot >>= onceValue
 
 entriesSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
-entriesSnapshot = do
-  root <- getRoot
-  entries <- liftEff $ FB.child "entries" root
-  onceValue entries
+entriesSnapshot = getRoot >>= \r -> (liftEff $ FB.child "entries" r) >>= onceValue
 
+readRootChild :: String -> forall eff. Aff (firebase :: FBT.FirebaseEff | eff) (Either String Success)
+readRootChild location = getRoot >>= childAt >>= readSuccessAff
+  where
+    childAt ref = liftEff $ FB.child location ref
 
 getYes :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) (Either String Success)
-getYes = do
-  root <- getRoot
-  entries <- liftEff $ FB.child "entries/-K7GbWeFHfJXlun7szRe" root
-  readSuccessAff entries
+getYes = readRootChild "entries/-K7GbWeFHfJXlun7szRe"
 
+-- Reading non-existant data will just wait forever
+-- because it might exist in the future?
+-- can only be tested with a timeout?
 childAddedError :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) (Either String Success)
-childAddedError = do
-  root <- getRoot
-  entries <- liftEff $ FB.child "doesnotexist" root
-  readSuccessAff entries
+childAddedError = readRootChild "doesnotexist"
 
 main ::  forall eff. Eff ( console :: CONSOLE, process :: Process, firebase :: FBT.FirebaseEff | eff) Unit
 main = run [consoleReporter] do

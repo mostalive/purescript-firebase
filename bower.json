@@ -17,10 +17,6 @@
     "purescript-nullable": "~0.2.1",
     "purescript-uri": "~0.2.0",
     "purescript-transformers": "~0.8.4",
-    "purescript-aff": "~0.13.1"
-  },
-  "resolutions": {
-    "purescript-transformers": "^0.8.4",
-    "purescript-aff": "~0.13.1"
+    "purescript-aff": "~0.14"
   }
 }
