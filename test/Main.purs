@@ -2,8 +2,8 @@ module Test.Main where
 
 import Prelude (Unit, bind, ($), (>>=))
 
-import Control.Monad.Aff (Aff)
-import Control.Monad.Eff (Eff)
+import Control.Monad.Aff (Aff())
+import Control.Monad.Eff (Eff())
 import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Eff.Class (liftEff)
 import Data.Maybe (Maybe(Just, Nothing))
