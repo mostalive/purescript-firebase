@@ -9,7 +9,7 @@ val)
 where
 
 import Web.Firebase.Types (DataSnapshot(), Key())
-import Data.Foreign
+import Data.Foreign (Foreign)
 import Data.Nullable (toMaybe, Nullable())
 import Data.Maybe (Maybe())
 import Data.Function (Fn1(), runFn1, Fn2(), runFn2)

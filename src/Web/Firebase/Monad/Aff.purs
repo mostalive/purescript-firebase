@@ -6,14 +6,14 @@ onceValue
 )
 where
 
-import Prelude
+import Prelude (Unit, ($))
 import Data.Maybe (Maybe(..))
 import Control.Monad.Eff (Eff())
 import Control.Monad.Aff (Aff(), makeAff)
 import Control.Monad.Eff.Exception (Error())
 
-import qualified Web.Firebase as FB
-import qualified Web.Firebase.Types as FBT
+import Web.Firebase as FB
+import Web.Firebase.Types as FBT
 
 foreign import fb2error :: FBT.FirebaseErr -> Error
 
