@@ -1,16 +1,16 @@
 module PlayWithFire where
 
-import Prelude (Eq, Show, Unit, pure, bind, ($), show, (==), (++), return)
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, print, log)
+import Prelude (Eq, Show, Unit(), pure, bind, ($), show, (==), (++), return)
+import Control.Monad.Eff (Eff())
+import Control.Monad.Eff.Console (CONSOLE(), print, log)
 import Control.Monad.Aff (Aff())
 import Web.Firebase as FB
 import Web.Firebase.Types as FBT
 import Web.Firebase.Monad.Aff (onceValue)
 import Web.Firebase.DataSnapshot (val)
-import Data.Foreign (Foreign, ForeignError, toForeign)
+import Data.Foreign (Foreign(), ForeignError(), toForeign)
 import Data.Foreign.Class as FC
-import Data.Either (Either)
+import Data.Either (Either())
 import Data.Either.Unsafe  (fromRight)
 import Data.Maybe (Maybe(..))
 import Data.URI (runParseURI)

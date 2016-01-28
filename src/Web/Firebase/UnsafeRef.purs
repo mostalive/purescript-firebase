@@ -2,7 +2,7 @@ module Web.Firebase.UnsafeRef
   ( refFor
   ) where
 
-import Control.Monad.Aff (Aff)
+import Control.Monad.Aff (Aff())
 import Control.Monad.Eff.Class (liftEff)
 import Data.Either.Unsafe  (fromRight)
 import Data.URI (runParseURI)

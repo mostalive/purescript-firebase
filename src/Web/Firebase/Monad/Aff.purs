@@ -6,7 +6,7 @@ onceValue
 )
 where
 
-import Prelude (Unit, ($))
+import Prelude (Unit(), ($))
 import Data.Maybe (Maybe(..))
 import Control.Monad.Eff (Eff())
 import Control.Monad.Aff (Aff(), makeAff)
