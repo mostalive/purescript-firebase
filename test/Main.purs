@@ -113,7 +113,6 @@ main = run [consoleReporter] do
       -- documentation on firebase Error was hard to find, having an actual one would allow us to write some marshalling code. code and message should be present, details wrapped in a Maybe. Given we don't own this interface, placing a console.log in the FFi javascript side is wise for now.
   describe "Writing" do
       it "can add an item to a list" do
-        -- see writeWithFire (or rather: addWithFire)
         location <- entriesRef
         newChildRef <- liftEff $ FB.push (F.toForeign $ {success: "random numbered string"}) Nothing location
         snap <- onceValue newChildRef
@@ -122,5 +121,15 @@ main = run [consoleReporter] do
         (snapshot2success snap) `shouldEqual` (Right (Success {success: "random numbered string"}))
         -- use key to read value
 
-      pending "can overwrite a (possibly) existing item"
+      it "can overwrite an existing item" do
+        let secondValue = {success: "second value"}
+        location <- entriesRef
+        newChildRef <- liftEff $ FB.push (F.toForeign $ {success: "initial value"}) Nothing location
+        _ <- liftEff $ FB.set (F.toForeign $ secondValue) Nothing newChildRef
+        snap <- onceValue newChildRef
+        (snapshot2success snap) `shouldEqual` (Right (Success secondValue))
+
+      pending "can overwrite an existing item in Aff"
       pending "can add a server-side timestamp to new items"
+      pending "push Aff when writing to non-existant location returns an error"
+      -- implement AFF with error callback (it is error object or nothing, so we can make it 'or Right "write successful", which we can reuse in a value writeSuccess so we can assert against that. Not sure how to combine that with the value of the key that is also returned from the js function'
