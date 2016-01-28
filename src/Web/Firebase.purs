@@ -9,7 +9,7 @@ module Web.Firebase
 )
 where
 
-import Prelude (Unit, (<$>), (<<<), ($))
+import Prelude (Unit(), (<$>), (<<<), ($))
 import Control.Monad.Eff (Eff())
 import Data.Foreign (Foreign())
 import Data.Function (Fn1(), Fn2(), Fn3(), Fn4(), runFn1, runFn2, runFn3, runFn4)
