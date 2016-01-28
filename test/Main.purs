@@ -1,23 +1,24 @@
 module Test.Main where
 
-import Prelude
+import Prelude (Unit, bind, ($), (>>=))
 
-import Control.Monad.Aff
-import Control.Monad.Eff
-import Control.Monad.Eff.Console
+import Control.Monad.Aff (Aff)
+import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Eff.Class (liftEff)
-import Data.Maybe
-import Data.Either
-import qualified Web.Firebase as FB
-import qualified Web.Firebase.DataSnapshot as D
-import qualified Web.Firebase.Types as FBT
+import Data.Maybe (Maybe(Just, Nothing))
+import Data.Either (Either(Right))
+import Web.Firebase as FB
+import Web.Firebase.DataSnapshot as D
+import Web.Firebase.Types as FBT
 import Test.Spec                  (describe, pending, it)
 import Test.Spec.Runner           (Process(), run)
-import Test.Spec.Assertions       (shouldEqual)
+import Test.Spec.Assertions       (shouldEqual, shouldNotEqual)
 import Test.Spec.Reporter.Console (consoleReporter)
-import PlayWithFire (readSuccessAff, Success(Success))
+import PlayWithFire (readSuccessAff, Success(Success), snapshot2success)
 import Web.Firebase.Monad.Aff (onceValue)
 import Web.Firebase.UnsafeRef (refFor)
+import Data.Foreign as F
 
 getRoot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 getRoot = refFor "https://purescript-spike.firebaseio.com/"
@@ -77,16 +78,16 @@ main = run [consoleReporter] do
 	rootExists `shouldEqual` true
       it "can tell us it has children" do
         rs <- rootSnapshot
-	let hasChildren = D.hasChildren rs
+        let hasChildren = D.hasChildren rs
         hasChildren `shouldEqual` true
 
       it "says the key of the database root is Nothing" do
-  	rs <- rootSnapshot
+        rs <- rootSnapshot
         let key = D.key rs
         key `shouldEqual` Nothing
 
-      it "says they key of /entries is entries" do
-  	sn <- entriesSnapshot
+      it "says the key of /entries is entries" do
+        sn <- entriesSnapshot
         let key = D.key sn
         key `shouldEqual` (Just "entries")
 
@@ -111,6 +112,15 @@ main = run [consoleReporter] do
       -- as well as placing some authorization rules in Firebase
       -- documentation on firebase Error was hard to find, having an actual one would allow us to write some marshalling code. code and message should be present, details wrapped in a Maybe. Given we don't own this interface, placing a console.log in the FFi javascript side is wise for now.
   describe "Writing" do
-      pending "can add an item to a list" -- see writeWithFire (or rather: addWithFire)
+      it "can add an item to a list" do
+        -- see writeWithFire (or rather: addWithFire)
+        location <- entriesRef
+        newChildRef <- liftEff $ FB.push (F.toForeign $ {success: "random numbered string"}) Nothing location
+        snap <- onceValue newChildRef
+        (D.key snap) `shouldNotEqual` Nothing
+        -- key is different on every write. Checking unique keys is work for QuickCheck
+        (snapshot2success snap) `shouldEqual` (Right (Success {success: "random numbered string"}))
+        -- use key to read value
+
       pending "can overwrite a (possibly) existing item"
       pending "can add a server-side timestamp to new items"

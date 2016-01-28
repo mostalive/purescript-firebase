@@ -42,7 +42,7 @@ aSuccessHandler frown = do
   let js = (FC.readWith foreignErrorToString frown) :: Either String Success
   print js
 
-writeWithFire :: forall e. Eff (console :: CONSOLE , firebase :: FBT.FirebaseEff | e) Unit
+writeWithFire :: forall e. Eff (console :: CONSOLE , firebase :: FBT.FirebaseEff | e) FBT.Firebase
 writeWithFire = do
   log "Hello Firebase!"
   let fbUri = fromRight $ runParseURI "https://purescript-spike.firebaseio.com/"

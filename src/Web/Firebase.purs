@@ -100,11 +100,11 @@ foreign import pushImpl :: forall eff. Fn3
                    Foreign
                    (Nullable (Nullable (FirebaseErr -> Eff eff Unit)))
                    Firebase
-                   (Eff (firebase :: FirebaseEff | eff) Unit)
+                   (Eff (firebase :: FirebaseEff | eff) Firebase)
 
 push :: forall eff.
         Foreign ->
         Maybe (Maybe (FirebaseErr -> Eff eff Unit)) ->
         Firebase ->
-        Eff (firebase :: FirebaseEff | eff) Unit
+        Eff (firebase :: FirebaseEff | eff) Firebase
 push value cb fb = runFn3 pushImpl value (toNullable (toNullable <$> cb)) fb
