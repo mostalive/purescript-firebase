@@ -10,7 +10,8 @@
   "scripts": {
     "build": "pulp build",
     "test": "pulp test",
-    "autotest": "pulp -w test"
+    "autotest": "pulp -w test",
+    "bolt" : "firebase-bolt < test/rules.bolt > test/rules.json"
   },
   "repository": {
     "type": "git",

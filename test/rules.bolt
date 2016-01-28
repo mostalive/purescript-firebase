@@ -1,0 +1,20 @@
+isUser(uid) { auth != null && auth.uid == uid}
+
+path / {
+  read() { true }
+  write() { false }
+}
+
+path /entries {
+  read() { true }
+  write() { false }
+}
+
+path /users/{userid} is User {
+  read() { true }
+  write() { isUser($userid) }
+}
+type User {
+  name: String,
+  age: Number | Null
+}

@@ -1,0 +1,11 @@
+{
+  "firebase": "<your-firebase-here>",
+  "public": "dist",
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**"
+  ],
+  "rules" : "test/rules.json"
+
+}
