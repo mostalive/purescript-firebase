@@ -1,6 +1,6 @@
 module PlayWithFire where
 
-import Prelude (class Eq, class Show, Unit, pure, bind, ($), show, (==), (++), return)
+import Prelude (Eq, Show, Unit, pure, bind, ($), show, (==), (++), return)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, print, log)
 import Control.Monad.Aff (Aff())

@@ -26,7 +26,7 @@
     "firebase": "^2.3.2"
   },
   "devDependencies": {
-    "bower": "^1.7.2",
+    "bower": "^1.7.7",
     "firebase-server": "^0.5.2",
     "pulp": "^7.0.0",
     "purescript": "^0.8.0-rc.1"
