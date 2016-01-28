@@ -1,13 +1,18 @@
 isUser(uid) { auth != null && auth.uid == uid}
 
 path / {
-  read() { true }
+  read() { false }
   write() { false }
 }
 
 path /entries {
   read() { true }
-  write() { false }
+  write() { true}
+}
+
+path /forbidden/* {
+  read() {false}
+  write() { false  }
 }
 
 path /users/{userid} is User {

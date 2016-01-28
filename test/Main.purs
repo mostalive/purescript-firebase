@@ -26,6 +26,9 @@ getRoot = refFor "https://purescript-spike.firebaseio.com/"
 entriesRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 entriesRef = refFor "https://purescript-spike.firebaseio.com/entries"
 
+forbiddenRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
+forbiddenRef = refFor "https://purescript-spike.firebaseio.com/forbidden"
+
 rootSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
 rootSnapshot = getRoot >>= onceValue
 
@@ -61,21 +64,25 @@ main = run [consoleReporter] do
       -- literal API
       -- the difference between snapshots and refs is somewhat confusing
       it "can tell us the number of children" do
-	rs <- rootSnapshot
-	let numChildren = D.numChildren rs
-        numChildren `shouldEqual` 1
+        rs <- rootSnapshot
+        let numChildren = D.numChildren rs
+        numChildren `shouldEqual` 2
+
       it "can tell us a child does not exist" do
-	rs <- rootSnapshot
-	let noChild = D.hasChild rs "doesnotexist"
-	noChild `shouldEqual` false
+       	rs <- rootSnapshot
+        let noChild = D.hasChild rs "doesnotexist"
+        noChild `shouldEqual` false
+
       it "can tell us a child exists" do
-	rs <- rootSnapshot
-	let childExists = D.hasChild rs "entries" -- type Key = String ?
-	childExists `shouldEqual` true
+        rs <- rootSnapshot
+        let childExists = D.hasChild rs "entries" -- type Key = String ?
+        childExists `shouldEqual` true
+
       it "can tell us the location at the snapshot exists" do
-	rs <- rootSnapshot
+        rs <- rootSnapshot
         let rootExists = D.exists rs
-	rootExists `shouldEqual` true
+        rootExists `shouldEqual` true
+
       it "can tell us it has children" do
         rs <- rootSnapshot
         let hasChildren = D.hasChildren rs
@@ -107,9 +114,13 @@ main = run [consoleReporter] do
          details: "More details about the specific error here."
  }
 	-}
-      pending "returns an error object subscribing to an unauthorized location"
+      it "returns an error object subscribing to an unauthorized location" do
+        snap <- forbiddenRef >>= onceValue
+        let childExists = D.hasChild snap "fruit" -- type Key = String ?
+        (D.key snap) `shouldNotEqual` (Just "fruit")
+        (D.key snap) `shouldEqual` Nothing
+        childExists `shouldEqual` false
       -- this forces us to handle errors in Aff, and parse Error objects
-      -- as well as placing some authorization rules in Firebase
       -- documentation on firebase Error was hard to find, having an actual one would allow us to write some marshalling code. code and message should be present, details wrapped in a Maybe. Given we don't own this interface, placing a console.log in the FFi javascript side is wise for now.
   describe "Writing" do
       it "can add an item to a list" do
