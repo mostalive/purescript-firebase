@@ -36,8 +36,8 @@ onErr :: forall eff. (Error -> Eff (firebase :: FBT.FirebaseEff | eff) Unit) ->
          Eff (firebase :: Web.Firebase.Types.FirebaseEff | eff) Unit
 onErr errorCallback firebaseError = errorCallback (fb2error firebaseError)
 
--- We also take the liberty to write more specific functions, e.g. once and on() in firebase have 4 event types. We get better error messages and code completion by making specific functions, e.g.
--- onValue and onChildAdded instead of on(Value) and on(ChildAdded)
+-- We also take the liberty to write more specific functions, e.g. once and on() in firebase have 4 event types. we get better error messages and code completion by making specific functions, e.g.
+-- onvalue and onchildadded instead of on(value) and on(childAdded)
 
 once :: forall e. FB.EventType -> FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) FBT.DataSnapshot
 once eventType root = makeAff (\errorCb successCb ->

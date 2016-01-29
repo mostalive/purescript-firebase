@@ -22,8 +22,7 @@ exports.onImpl = function (eventType, callback, cancelCallback, fb) {
 
 exports.onceImpl = function(eventType, callback, errorCallback, fb) {
     var logDecorator = function(error) {
-      console.log("the read failed" + error.code);
-      errorCallback(error);
+      errorCallback(error)();
     }
     return function () {
       fb.once(eventType, callback, logDecorator);

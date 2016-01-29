@@ -3,8 +3,10 @@ module Test.Main where
 import Prelude (Unit, bind, ($), (>>=))
 
 import Control.Monad.Aff (Aff())
+import Control.Monad.Aff.AVar (AVAR())
 import Control.Monad.Eff (Eff())
 import Control.Monad.Eff.Console (CONSOLE)
+import Control.Monad.Eff.Exception (EXCEPTION())
 import Control.Monad.Eff.Class (liftEff)
 import Data.Maybe (Maybe(Just, Nothing))
 import Data.Either (Either(Right))
@@ -23,7 +25,7 @@ import Data.Foreign as F
 import Test.Authorization (authorizationSpec)
 import Test.Misc (miscSpec)
 
-main ::  forall eff. Eff ( console :: CONSOLE, process :: Process, firebase :: FBT.FirebaseEff | eff) Unit
+main ::  forall eff. Eff ( console :: CONSOLE, err :: EXCEPTION, process :: Process, avar :: AVAR, firebase :: FBT.FirebaseEff | eff) Unit
 main = run [consoleReporter] do
   authorizationSpec
-  -- miscSpec
+  miscSpec
