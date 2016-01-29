@@ -9,6 +9,8 @@ import Control.Monad.Eff.Class (liftEff)
 import Data.Maybe (Maybe(Just, Nothing))
 import Data.Either (Either(Right))
 import Web.Firebase as FB
+import Web.Firebase.Monad.Aff (onceValue)
+import Web.Firebase.UnsafeRef (refFor)
 import Web.Firebase.DataSnapshot as D
 import Web.Firebase.Types as FBT
 import Test.Spec                  (describe, pending, it, Spec())
@@ -16,8 +18,6 @@ import Test.Spec.Runner           (Process(), run)
 import Test.Spec.Assertions       (shouldEqual, shouldNotEqual)
 import Test.Spec.Reporter.Console (consoleReporter)
 import PlayWithFire (readSuccessAff, Success(Success), snapshot2success)
-import Web.Firebase.Monad.Aff (onceValue)
-import Web.Firebase.UnsafeRef (refFor)
 import Data.Foreign as F
 
 import Test.Misc (miscSpec)
@@ -63,35 +63,36 @@ miscSpec = do
       -- literal API
       -- the difference between snapshots and refs is somewhat confusing
       it "can tell us the number of children" do
-        rs <- rootSnapshot
+        rs <- entriesSnapshot
         let numChildren = D.numChildren rs
-        numChildren `shouldEqual` 2
+        numChildren `shouldEqual` 1
 
       it "can tell us a child does not exist" do
-       	rs <- rootSnapshot
+       	rs <- entriesSnapshot
         let noChild = D.hasChild rs "doesnotexist"
         noChild `shouldEqual` false
 
       it "can tell us a child exists" do
-        rs <- rootSnapshot
-        let childExists = D.hasChild rs "entries" -- type Key = String ?
+        rs <- entriesSnapshot
+        let childExists = D.hasChild rs "-K7GbWeFHfJXlun7szRe" -- type Key = String ?
         childExists `shouldEqual` true
 
       it "can tell us the location at the snapshot exists" do
-        rs <- rootSnapshot
-        let rootExists = D.exists rs
-        rootExists `shouldEqual` true
+        sn <- entriesSnapshot
+        (D.exists sn) `shouldEqual` true
 
       it "can tell us it has children" do
-        rs <- rootSnapshot
-        let hasChildren = D.hasChildren rs
+        sn <- entriesSnapshot
+        let hasChildren = D.hasChildren sn
         hasChildren `shouldEqual` true
 
-      it "says the key of the database root is Nothing" do
+      pending "says the key of the database root is Nothing" {-
+        -- Root has become inacessible due to permission tests :-( not sure how to test Nothing for key now
+        do
         rs <- rootSnapshot
         let key = D.key rs
         key `shouldEqual` Nothing
-
+      -}
       it "says the key of /entries is entries" do
         sn <- entriesSnapshot
         let key = D.key sn

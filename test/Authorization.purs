@@ -2,13 +2,14 @@ module Test.Authorization where
 
 import Prelude (Unit, bind, (>>=), ($), (<<<), pure)
 
-import Control.Monad.Aff (Aff(),forkAff,later', runAff, launchAff)
+import Control.Monad.Aff (Aff(),forkAff,later', runAff, launchAff, attempt)
 import Control.Monad.Aff.Par (Par(..), runPar)
 import Control.Monad.Aff.AVar (AVAR(), makeVar, takeVar, putVar)
 import Control.Monad.Eff (Eff())
 import Control.Monad.Eff.Class (liftEff)
-import Control.Monad.Eff.Exception (EXCEPTION())
+import Control.Monad.Eff.Exception (EXCEPTION(), message)
 import Control.Monad.Eff.Console (CONSOLE(), print)
+import Control.Monad.Error.Class (throwError)
 import Control.Alt ((<|>))
 import Data.Maybe (Maybe(Just, Nothing))
 import Data.Either
@@ -54,32 +55,13 @@ authorizationSpec = do
           -- the above works. it feels like the types of once (Eff vesion) are wrong, makeAff suggests it keeps the input parameter of the success callback, and Takes an error and puts it into an effect
           -- that suggests there should be a 'throwError' or something when the effect callback is called. Also, the type of that callback is 'error'
 
-        it "with handcrafted Aff throws an error" do
-          snap <- forbiddenRef >>= onceValue -- catch error thrown and assert
-          "should not" `shouldEqual` "get here"
-
-        it "with Aff times out where it shold not" do
-          respVar <- makeVar
-          let  slow = (later' 400 $ putVar respVar "timed out")
-               fot = do snap <- forbiddenRef >>= onceValue
-                        let childexists = D.hasChild snap "fruit" -- type key = string ?
-                        if childexists then (putVar respVar "forbidden ref found") else (putVar respVar "child not forbidden")
-          handle <- forkAff fot
-          slowhandle <- forkAff slow
-          actual <- takeVar respVar
-          actual `shouldEqual` "child forbidden"
-      {-  it "with aff returns an error object" do
-          let snap = forbiddenref >>= oncevalue
-          snap `shouldequal` (Left "permission_denied")
-          would we not expect an either to come back? how does an Aff signal that it had an error? throw?. Our code is not doing that, and beforehand error was not even evaluated.
-      -}
+        it "with Aff throws an error" do
+           e <- attempt $ forbiddenRef >>= onceValue -- catch error thrown and assert
+           either (\err -> (message err) `shouldEqual` "permission_denied: Client doesn't have permission to access the desired data.\n | firebase code: | \n PERMISSION_DENIED") (\_ -> "expected an error to be thrown" `shouldEqual` "but was not") e
 
 
-      -- this forces us to handle errors in aff, and parse error objects
-      -- documentation on firebase error was hard to find, having an actual one would allow us to write some marshalling code. code and message should be present, details wrapped in a maybe. given we don't own this interface, placing a console.log in the ffi javascript side is wise for now.
-
-
-	 {- https://www.firebase.com/docs/web/guide/user-auth.html#section-handling-errors:
+	 {- see also Firebase.Types
+  https://www.firebase.com/docs/web/guide/user-auth.html#section-handling-errors:
   All errors are Error objects containing at least code and message attributes. In some cases, additional information will be provided via the details attribute. For example:
   {
 	    code: "TRANSPORT_UNAVAILABLE",
