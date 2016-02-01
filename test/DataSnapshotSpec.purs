@@ -1,6 +1,6 @@
 module Test.DataSnapshotSpec (dataSnapshotSpec) where
 
-import Prelude (Unit, bind, ($), (>>=), (>=))
+import Prelude (Unit, bind, ($), (>>=), (>=), pure)
 
 import Control.Monad.Aff (Aff())
 import Control.Monad.Eff.Class (liftEff)
@@ -15,8 +15,15 @@ import Test.Spec                  (describe, pending, it, Spec())
 import Test.Spec.Runner           (Process())
 import Test.Spec.Assertions       (fail, shouldEqual)
 
-entriesSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
-entriesSnapshot = getRoot >>= \r -> (liftEff $ FB.child "entries" r) >>= onceValue
+eSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
+eSnapshot = snapshotFor "entries"
+
+doesNotExist :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
+doesNotExist = snapshotFor "entries/doesnotexist"
+
+snapshotFor :: forall eff. String -> Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
+snapshotFor location  = getRoot >>= \r -> (liftEff $ FB.child location r) >>= onceValue
+
 
 getRoot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 getRoot = refFor "https://purescript-spike.firebaseio.com/"
@@ -24,34 +31,26 @@ getRoot = refFor "https://purescript-spike.firebaseio.com/"
 expect :: forall r. Boolean -> Aff r Unit
 expect condition = unless condition $ fail "false ≠ true"
 
-dataSnapshotSpec ::  forall eff. Spec ( process :: Process, firebase :: FBT.FirebaseEff | eff) Unit
-dataSnapshotSpec = do
+dataSnapshotSpec ::  forall eff. FBT.DataSnapshot -> Spec ( process :: Process, firebase :: FBT.FirebaseEff | eff) Unit
+dataSnapshotSpec snapshot =
     describe "DataSnapshot" do
       -- literal API
       -- the difference between snapshots and refs is somewhat confusing
       it "can tell us the number of children" do
-        rs <- entriesSnapshot
-        let numChildren = D.numChildren rs
+        let numChildren = D.numChildren snapshot
         expect (numChildren >= 1)
 
       it "can tell us a child does not exist" do
-       	rs <- entriesSnapshot
-        let noChild = D.hasChild rs "doesnotexist"
-        noChild `shouldEqual` false
+        (D.hasChild snapshot "doesnotexist")  `shouldEqual` false
 
       it "can tell us a child exists" do
-        rs <- entriesSnapshot
-        let childExists = D.hasChild rs "-K7GbWeFHfJXlun7szRe" -- type Key = String ?
-        childExists `shouldEqual` true
+        expect $ D.hasChild snapshot "-K7GbWeFHfJXlun7szRe" -- type Key = String ?
 
       it "can tell us the location at the snapshot exists" do
-        sn <- entriesSnapshot
-        (D.exists sn) `shouldEqual` true
+        expect $ (D.exists snapshot)
 
       it "can tell us it has children" do
-        sn <- entriesSnapshot
-        let hasChildren = D.hasChildren sn
-        hasChildren `shouldEqual` true
+        expect $ D.hasChildren snapshot
 
       pending "says the key of the database root is Nothing" {-
         -- Root has become inacessible due to permission tests :-( not sure how to test Nothing for key now
@@ -61,11 +60,13 @@ dataSnapshotSpec = do
         key `shouldEqual` Nothing
       -}
       it "says the key of /entries is entries" do
-        sn <- entriesSnapshot
-        let key = D.key sn
+        let key = D.key snapshot
         key `shouldEqual` (Just "entries")
 
-      pending "it can not tell us the location at the snapshot does not exist"
+      it "it can not tell us the location at the snapshot does not exist" do
+        sn <- doesNotExist
+        (D.exists sn) `shouldEqual` false
+        -- /entries/doesnotexist
         -- perhaps it can now, it might just have been an error callback with an additional () missing.
       pending "can it say the value of child \"entries\" is Nothing?"
         -- this relies on trying to read a firebase ref with once, and that 'works' by never being called back

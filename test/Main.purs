@@ -1,23 +1,45 @@
 module Test.Main where
 
-import Prelude (Unit, bind)
+import Prelude (Unit, ($), bind, (>>=))
 
+import Control.Monad.Aff (Aff())
 import Control.Monad.Aff.AVar (AVAR())
 import Control.Monad.Eff (Eff())
+import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Eff.Exception (EXCEPTION())
+import Control.Monad.Trans (lift)
 import Web.Firebase.Types (FirebaseEff())
+import Web.Firebase as FB
+import Web.Firebase.Monad.Aff (onceValue)
+import Web.Firebase.UnsafeRef (refFor)
+import Web.Firebase.Types as FBT
 import Test.Spec.Runner           (Process(), run)
 import Test.Spec.Reporter.Console (consoleReporter)
+import Test.Spec (Spec())
 
 import Test.Authorization (authorizationSpec)
 import Test.Misc (miscSpec)
 import Test.DataSnapshotSpec (dataSnapshotSpec)
 import Test.WritingSpec (writingSpec)
 
+eSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
+eSnapshot = snapshotFor "entries"
+
+snapshotFor :: forall eff. String -> Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
+snapshotFor location  = getRoot >>= \r -> (liftEff $ FB.child location r) >>= onceValue
+
+-- | Determines the name of the database to use for testing
+-- Change this when you want tests to run against another database
+getRoot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
+getRoot = refFor "https://purescript-spike.firebaseio.com/"
+
 main ::  forall eff. Eff ( console :: CONSOLE, err :: EXCEPTION, process :: Process, avar :: AVAR, firebase :: FirebaseEff | eff) Unit
-main = run [consoleReporter] do
+main = run [consoleReporter] allSpecs
+
+allSpecs :: forall eff. Spec (  console :: CONSOLE, err :: EXCEPTION, process :: Process, avar :: AVAR, firebase :: FirebaseEff | eff) Unit
+allSpecs = do
   authorizationSpec
-  dataSnapshotSpec
+  ((lift eSnapshot) >>= dataSnapshotSpec)
   writingSpec
   miscSpec
