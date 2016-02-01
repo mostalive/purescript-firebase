@@ -8,7 +8,6 @@ import Control.Monad.Aff.AVar (AVAR(), makeVar, takeVar, putVar)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Exception (EXCEPTION(), message)
 import Control.Alt ((<|>))
-import Data.Maybe (Maybe(Just))
 import Data.Either (either)
 import Web.Firebase.Types as FBT
 import Web.Firebase (EventType(..),once)
@@ -40,10 +39,9 @@ authorizationSpec forbiddenRef = do
       describe "once() on forbidden location" do
         it "with Eff calls an error callback" do
           respVar <- makeVar
-          handle  <- liftEff $ once ChildAdded (\snap -> launchAff $ putVar respVar "unexpected sucess") (Just (\_ -> launchAff $ putVar respVar "child forbidden")) forbiddenRef
+          handle  <- liftEff $ once ChildAdded (\snap -> launchAff $ putVar respVar "unexpected sucess") (\_ -> launchAff $ putVar respVar "child forbidden") forbiddenRef
           actual <- takeVar respVar
           actual `shouldEqual` "child forbidden"
-
         it "with Aff throws an error" do
            e <- attempt $ onceValue forbiddenRef  -- catch error thrown and assert
            either (\err -> (message err) `shouldEqual` "permission_denied: Client doesn't have permission to access the desired data.\n | firebase code: | \n PERMISSION_DENIED") (\_ -> "expected an error to be thrown" `shouldEqual` "but was not") e
@@ -56,3 +54,10 @@ authorizationSpec forbiddenRef = do
           expectError $ on ChildChanged forbiddenRef
         it "ChildMoved with Aff throws an error" do
           expectError $ on ChildMoved forbiddenRef
+
+{-   describe "Firebase API breaks its documentation" do
+       it "once() throws an exeption when no error callback provided and an error occurs" do
+          -- I prefer handling errors, but this is the firebase api...
+          handle <- liftEff $ once ChildAdded (\_ -> pure unit) Nothing forbiddenRef
+          "shoul get here" `shouldEqual` "should get here"
+-}

@@ -20,6 +20,13 @@ exports.onImpl = function (eventType, callback, cancelCallback, fb) {
     };
 };
 
+exports.onWithoutCancelCallbackImpl = function (eventType, callback, fb) {
+    console.log("without error callback, should be possible according to documentation");
+    return function () {
+        return fb.on(eventType, callback);
+    };
+};
+
 exports.onceImpl = function(eventType, callback, errorCallback, fb) {
     var logDecorator = function(error) {
       errorCallback(error)();

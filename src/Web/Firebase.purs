@@ -52,38 +52,53 @@ showEventType t = case t of
                        ChildRemoved -> "child_removed"
                        ChildMoved -> "child_moved"
 
+-- | Listens for data changes at a particular location
+-- https://www.firebase.com/docs/web/api/query/on.html
+-- Error callback in this FFI is not optional, see onWithoutCancelCallbackImpl why.
 foreign import onImpl :: forall eff. Fn4
                    String
                    (DataSnapshot -> Eff (firebase :: FirebaseEff | eff) Unit)
-                   (Nullable (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit))
+                   (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit)
                    Firebase
                    (Eff (firebase :: FirebaseEff | eff) Unit)
 
 on :: forall eff.
       EventType ->
       (DataSnapshot -> Eff (firebase :: FirebaseEff | eff) Unit) ->
-      Maybe (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit) ->
+      (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit) ->
       Firebase ->
       Eff (firebase :: FirebaseEff | eff) Unit
-on etype ds cb fb = runFn4 onImpl (showEventType etype) (unsafeEvalEff <<< ds) (toNullable (evalError cb)) fb
-  where evalError Nothing           = Nothing
-        evalError (Just realCallback) = Just (unsafeEvalEff <<< realCallback)
+on etype ds canceler fb = runFn4 onImpl (showEventType etype) (unsafeEvalEff <<< ds) (unsafeEvalEff <<< canceler) fb
 
+-- | this function is only present for documentation purposes
+-- so you can see why we error callbacks are not optional in this FFI.
+--- The documentation mentions the Cancel callback is optional.
+-- It does not mention that your program will halt with a Javascript error.
+-- When an error occurs while no callback is passed to on,  or when null is passed, it throws a javascript exception:
+--  FIREBASE WARNING: Exception was thrown by user callback. TypeError: errorCallback is not a function.
+foreign import onWithoutCancelCallbackImpl :: forall eff. Fn3
+                   String
+                   (DataSnapshot -> Eff (firebase :: FirebaseEff | eff) Unit)
+                   Firebase
+                   (Eff (firebase :: FirebaseEff | eff) Unit)
 
+-- | Listens for one change at a particular location
+-- Takes a success and an error callback.
+-- Error callback is not optional in this implementation, see onWithoutCancleCallbackImpl for why.
 foreign import onceImpl :: forall eff. Fn4
         String
         (DataSnapshot -> Eff (firebase :: FirebaseEff | eff) Unit)
-        (Nullable (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit))
+        (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit)
         Firebase
         (Eff (firebase :: FirebaseEff | eff) Unit)
 
 once :: forall eff.
         EventType ->
         (DataSnapshot -> Eff (firebase :: FirebaseEff | eff) Unit) ->
-        Maybe (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit) ->
+        (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit) ->
         Firebase ->
         Eff (firebase :: FirebaseEff | eff) Unit
-once etype ds cb fb = runFn4 onceImpl (showEventType etype) (unsafeEvalEff <<< ds) (toNullable cb) fb
+once etype ds cb fb = runFn4 onceImpl (showEventType etype) (unsafeEvalEff <<< ds) (cb) fb
 
 foreign import setImpl :: forall eff. Fn3
                    Foreign

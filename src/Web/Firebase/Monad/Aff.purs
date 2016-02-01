@@ -27,21 +27,21 @@ on :: forall eff.
       FB.EventType ->
       FBT.Firebase ->
       Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
-on etype fb = makeAff (\eb cb -> FB.on etype cb (Just $ onErr eb) fb)
+on etype fb = makeAff (\eb cb -> FB.on etype cb (convertError eb) fb)
 
 -- convert firebase error to purescript Error in javascript
 -- see .js file for firebase Error documentation
-onErr :: forall eff. (Error -> Eff (firebase :: FBT.FirebaseEff | eff) Unit) ->
+convertError :: forall eff. (Error -> Eff (firebase :: FBT.FirebaseEff | eff) Unit) ->
 	 FBT.FirebaseErr ->
          Eff (firebase :: Web.Firebase.Types.FirebaseEff | eff) Unit
-onErr errorCallback firebaseError = errorCallback (fb2error firebaseError)
+convertError errorCallback firebaseError = errorCallback (fb2error firebaseError)
 
 -- We also take the liberty to write more specific functions, e.g. once and on() in firebase have 4 event types. we get better error messages and code completion by making specific functions, e.g.
 -- onvalue and onchildadded instead of on(value) and on(childAdded)
 
 once :: forall e. FB.EventType -> FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) FBT.DataSnapshot
 once eventType root = makeAff (\errorCb successCb ->
-		                FB.once eventType successCb (Just $ onErr errorCb) root)
+		                FB.once eventType successCb (convertError errorCb) root)
 
 onceValue :: forall e. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) FBT.DataSnapshot
 onceValue root = once FB.Value root
