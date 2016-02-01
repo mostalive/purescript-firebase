@@ -18,10 +18,15 @@ exports._hasChildren = function(ds) {
   return ds.hasChildren();
 };
 
-exports._key = function(ds) {
-  return ds.key();
+exports._child = function(ds, named) {
+ return ds.child(named);
 };
 
 exports._numChildren = function(ds) {
  return ds.numChildren();
 };
+
+exports._key = function(ds) {
+  return ds.key();
+};
+

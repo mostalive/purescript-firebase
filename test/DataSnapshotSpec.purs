@@ -1,6 +1,6 @@
 module Test.DataSnapshotSpec (dataSnapshotSpec) where
 
-import Prelude (Unit, bind, ($), (>>=), (>=), pure)
+import Prelude (Unit, bind, ($), (>>=), (>=))
 
 import Control.Monad.Aff (Aff())
 import Control.Monad.Eff.Class (liftEff)
@@ -44,7 +44,11 @@ dataSnapshotSpec snapshot =
         (D.hasChild snapshot "doesnotexist")  `shouldEqual` false
 
       it "can tell us a child exists" do
-        expect $ D.hasChild snapshot "-K7GbWeFHfJXlun7szRe" -- type Key = String ?
+        expect $ D.hasChild snapshot "-K7GbWeFHfJXlun7szRe"
+
+      it "can give us a snapshot of one of its children" do
+        let c = D.child snapshot "-K7GbWeFHfJXlun7szRe"
+        expect $ D.exists c
 
       it "can tell us the location at the snapshot exists" do
         expect $ (D.exists snapshot)
@@ -64,13 +68,9 @@ dataSnapshotSpec snapshot =
         key `shouldEqual` (Just "entries")
 
       it "it can not tell us the location at the snapshot does not exist" do
-        sn <- doesNotExist
-        (D.exists sn) `shouldEqual` false
+        let noChild = (D.child snapshot "doesnotexist")
+        (D.exists noChild) `shouldEqual` false
         -- /entries/doesnotexist
         -- perhaps it can now, it might just have been an error callback with an additional () missing.
       pending "can it say the value of child \"entries\" is Nothing?"
         -- this relies on trying to read a firebase ref with once, and that 'works' by never being called back
-      pending "it can give us a snapshot of one of its children"
-      -- implement forEach callback that returns true after first call, so it terminates
-      -- put that callback into Aff, so we can wait for the result
-      -- with Aff, and the Aff variable, we can retrieve a list.
