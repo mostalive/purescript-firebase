@@ -34,12 +34,15 @@ snapshotFor location  = getRoot >>= \r -> (liftEff $ FB.child location r) >>= on
 getRoot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 getRoot = refFor "https://purescript-spike.firebaseio.com/"
 
+forbiddenRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
+forbiddenRef = refFor "https://purescript-spike.firebaseio.com/forbidden"
+
 main ::  forall eff. Eff ( console :: CONSOLE, err :: EXCEPTION, process :: Process, avar :: AVAR, firebase :: FirebaseEff | eff) Unit
 main = run [consoleReporter] allSpecs
 
 allSpecs :: forall eff. Spec (  console :: CONSOLE, err :: EXCEPTION, process :: Process, avar :: AVAR, firebase :: FirebaseEff | eff) Unit
 allSpecs = do
-  authorizationSpec
+  ((lift forbiddenRef) >>= authorizationSpec)
   ((lift eSnapshot) >>= dataSnapshotSpec)
   writingSpec
   miscSpec

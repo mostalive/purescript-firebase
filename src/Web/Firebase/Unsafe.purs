@@ -8,3 +8,9 @@ import Control.Monad.Eff (Eff())
 --   This can be helpful when passing callbacks to FFI functions,
 --   but comes with obvious big scary risks.
 foreign import unsafeEvalEff :: forall eff a. Eff eff a -> Eff eff a
+-- rename to evalCallbackEff ? it's not unsafe, it is expected.
+-- otherwise extra () on JS side - see Aff documentation
+
+-- unsafeEvalNullable :: forall eff a. Maybe (Eff eff a) -> Nullable (Eff eff a)
+-- case Nothing -> pure unit
+-- case Maybe eff -> unsafeEvalEff eff

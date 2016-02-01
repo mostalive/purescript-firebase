@@ -13,7 +13,7 @@ import Prelude (Unit(), (<$>), (<<<), ($))
 import Control.Monad.Eff (Eff())
 import Data.Foreign (Foreign())
 import Data.Function (Fn1(), Fn2(), Fn3(), Fn4(), runFn1, runFn2, runFn3, runFn4)
-import Data.Maybe (Maybe())
+import Data.Maybe (Maybe(..), maybe)
 import Data.Nullable (toNullable, Nullable())
 import Data.URI (printURI)
 import Data.URI.Types (URI())
@@ -65,7 +65,9 @@ on :: forall eff.
       Maybe (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit) ->
       Firebase ->
       Eff (firebase :: FirebaseEff | eff) Unit
-on etype ds cb fb = runFn4 onImpl (showEventType etype) (unsafeEvalEff <<< ds) (toNullable cb) fb
+on etype ds cb fb = runFn4 onImpl (showEventType etype) (unsafeEvalEff <<< ds) (toNullable (evalError cb)) fb
+  where evalError Nothing           = Nothing
+        evalError (Just realCallback) = Just (unsafeEvalEff <<< realCallback)
 
 
 foreign import onceImpl :: forall eff. Fn4
