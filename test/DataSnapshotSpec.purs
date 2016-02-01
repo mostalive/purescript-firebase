@@ -1,13 +1,11 @@
 module Test.DataSnapshotSpec (dataSnapshotSpec) where
 
-import Prelude (Unit, bind, ($), (>>=))
+import Prelude (Unit, bind, ($), (>>=), (>=))
 
 import Control.Monad.Aff (Aff())
-import Control.Monad.Eff (Eff())
-import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Eff.Class (liftEff)
-import Data.Maybe (Maybe(Just, Nothing))
-import Data.Either (Either(Right))
+import Control.Monad (unless)
+import Data.Maybe (Maybe(Just))
 import Web.Firebase as FB
 import Web.Firebase.Monad.Aff (onceValue)
 import Web.Firebase.UnsafeRef (refFor)
@@ -15,16 +13,16 @@ import Web.Firebase.DataSnapshot as D
 import Web.Firebase.Types as FBT
 import Test.Spec                  (describe, pending, it, Spec())
 import Test.Spec.Runner           (Process())
-import Test.Spec.Assertions       (shouldEqual, shouldNotEqual)
-import Test.Spec.Reporter.Console (consoleReporter)
-import PlayWithFire (readSuccessAff, Success(Success), snapshot2success)
-import Data.Foreign as F
+import Test.Spec.Assertions       (fail, shouldEqual)
 
 entriesSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
 entriesSnapshot = getRoot >>= \r -> (liftEff $ FB.child "entries" r) >>= onceValue
 
 getRoot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 getRoot = refFor "https://purescript-spike.firebaseio.com/"
+
+expect :: forall r. Boolean -> Aff r Unit
+expect condition = unless condition $ fail "false ≠ true"
 
 dataSnapshotSpec ::  forall eff. Spec ( process :: Process, firebase :: FBT.FirebaseEff | eff) Unit
 dataSnapshotSpec = do
@@ -34,7 +32,7 @@ dataSnapshotSpec = do
       it "can tell us the number of children" do
         rs <- entriesSnapshot
         let numChildren = D.numChildren rs
-        numChildren `shouldEqual` 1
+        expect (numChildren >= 1)
 
       it "can tell us a child does not exist" do
        	rs <- entriesSnapshot
