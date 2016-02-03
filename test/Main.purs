@@ -22,6 +22,7 @@ import Test.Authorization (authorizationSpec)
 import Test.Misc (miscSpec)
 import Test.DataSnapshotSpec (dataSnapshotSpec)
 import Test.WritingSpec (writingSpec)
+import Test.AuthDataSpec (authDataSpec)
 
 eSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
 eSnapshot = snapshotFor "entries"
@@ -45,4 +46,12 @@ allSpecs = do
   ((lift forbiddenRef) >>= authorizationSpec)
   ((lift eSnapshot) >>= dataSnapshotSpec)
   writingSpec
+  authDataSpec
   miscSpec
+  -- add link to twitterwall home screen 'login with twitter' styled as a twitter button.
+  -- save userid under /users,
+  -- only writeable to authenticated users
+  -- add roles under /roles, only writeable by conf1r3
+  -- add admin role to conf1r3
+  -- and then roles only writeable by those with admin role, readable by authenticated users
+
