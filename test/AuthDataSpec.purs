@@ -6,28 +6,21 @@ import Control.Monad.Error.Class (throwError)
 import Test.Spec (describe, it, pending, Spec())
 import Test.Spec.Assertions (shouldEqual)
 import Data.Foreign
+import Data.Foreign.Generic
 import Data.Foreign.Class
 import Data.Either
 import Data.Maybe
 import Data.Generic
 
-type TweetSpec = forall eff. Spec (eff) Unit
+
 -- convert authdata (from twitter to start with) to a purescript authdata record
 -- sample data at https://boiling-heat-7831.firebaseapp.com/authspike.html
 newtype UserCredentials = UserCredentials {
           provider :: String
           , uid :: String
           , token :: String
-          , auth :: {}
           , expires :: Int
           }
-
-record :: UserCredentials
-record = UserCredentials { provider: "twitter", uid: "twitter:16594263", token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ…", auth: {}, expires: 1454431083 }
-
--- twitter has: displayName: "Willem van den Ende, id: 165 etc, username: mostalive, profileImageUrl
--- and accessToken and accessTokenSecret. not sure if we need those.
--- auth has : {provider: "twitter", uid : "twitter:16etc"}
 
 -- ProviderUserProfile = TwitterProfile TwitterProfileRecord | GoogleProfile GoogleProfileRecord | etc
 
@@ -41,6 +34,12 @@ instance showUserCredentials :: Show UserCredentials where
 instance eqUserCredentials :: Eq UserCredentials where
   eq = gEq
 
+jsonOptions :: Options
+jsonOptions = defaultOptions { unwrapNewtypes = true }
+
+instance isForeignUserCredentials :: IsForeign UserCredentials where
+  read = readGeneric jsonOptions
+
 derive instance authenticationStatusIsGeneric :: Generic AuthenticationStatus
 
 instance authenticationShow :: Show AuthenticationStatus where
@@ -53,16 +52,12 @@ instance authenticationeq :: Eq AuthenticationStatus where
 instance authenticationStatusIsForeign :: IsForeign AuthenticationStatus where
   read value | isNull value  = return LoggedOut
   read value = do
-    provider <- readProp "provider" value
-    uid <- readProp "uid" value
-    token <- readProp "token" value
-    expires <- readProp "expires" value
-    let auth = {}
-    return $ LoggedIn (UserCredentials {provider, uid, token, auth, expires })
+    credentials <- read value
+    return $ LoggedIn credentials -- (UserCredentials {provider, uid, token, auth, expires })
 
 
 
-authDataSpec :: TweetSpec
+authDataSpec :: forall eff. Spec (eff) Unit
 authDataSpec = do
 
   describe "Authentication status" do
@@ -80,4 +75,13 @@ authDataSpec = do
 -- approximation. The empty objects have a lot of provider specific data in them
 -- e.g. the 'twitter' field has user profile picture etc. different for google etc.
 -- so watch out when building a parser for that part.
+twitterLoggedInJson :: String
 twitterLoggedInJson = """{ "provider": "twitter", "uid": "twitter:16594263", "twitter": {}, "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ…", "auth": {}, "expires": 1454431083 }"""
+
+record :: UserCredentials
+record = UserCredentials { provider: "twitter", uid: "twitter:16594263", token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ…", expires: 1454431083 }
+
+-- twitter has: displayName: "Willem van den Ende, id: 165 etc, username: mostalive, profileImageUrl
+-- and accessToken and accessTokenSecret. not sure if we need those.
+-- auth has : {provider: "twitter", uid : "twitter:16etc"}
+
