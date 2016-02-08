@@ -27,6 +27,12 @@ exports.onWithoutCancelCallbackImpl = function (eventType, callback, fb) {
     };
 };
 
+exports.onSimple = function (fb) {
+  return function() {
+    return fb.off();
+  };
+};
+
 exports.onceImpl = function(eventType, callback, errorCallback, fb) {
     var logDecorator = function(error) {
       errorCallback(error)();

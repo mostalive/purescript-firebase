@@ -82,6 +82,16 @@ foreign import onWithoutCancelCallbackImpl :: forall eff. Fn3
                    Firebase
                    (Eff (firebase :: FirebaseEff | eff) Unit)
 
+-- | unsubscribes from a location
+-- optionally for a specific callback or type. We don't need that in our application right now, so not going to bother with Maybes just now. just take the ref
+-- and add the other parameters later.
+-- https://www.firebase.com/docs/web/api/query/off.html
+foreign import offSimple :: forall eff. Fn1
+                Firebase
+                (Eff (firebase :: FirebaseEff | eff) Unit)
+
+-- implementation of off with more parameters goes here. we can then rewrite offSimple in terms of off.
+
 -- | Listens for one change at a particular location
 -- Takes a success and an error callback.
 -- Error callback is not optional in this implementation, see onWithoutCancleCallbackImpl for why.

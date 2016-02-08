@@ -43,4 +43,6 @@ writingSpec = do
       pending "can overwrite an existing item in Aff"
       pending "can add a server-side timestamp to new items"
       pending "push Aff when writing to non-existant location returns an error"
+      pending "Removal confirmed by subscription on()" -- baby steps
+      pending "Removal not notified after subscription turned off()" -- test with timeout? how?
       -- implement AFF with error callback (it is error object or nothing, so we can make it 'or Right "write successful", which we can reuse in a value writeSuccess so we can assert against that. Not sure how to combine that with the value of the key that is also returned from the js function'
