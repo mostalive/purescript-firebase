@@ -2,7 +2,9 @@ module Web.Firebase.Monad.Aff
 (
 on,
 once,
-onceValue
+onceValue,
+fb2error,
+firebaseErrToString
 )
 where
 

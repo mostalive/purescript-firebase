@@ -16,6 +16,13 @@ foreign import _onAuth :: forall eff. Fn2 Firebase (Foreign -> Eff ( firebase ::
 onAuth :: forall eff. Firebase -> (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) -> Eff (firebase :: FirebaseEff | eff) Unit
 onAuth = runFn2 _onAuth
 
+foreign import _offAuth :: forall eff. Fn2 Firebase (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) (Eff (firebase :: FirebaseEff | eff) Unit)
+
+offAuth :: forall eff. Firebase -> (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) -> Eff (firebase :: FirebaseEff | eff) Unit
+offAuth = runFn2 _offAuth
+
+-- we should also have a runFn1 for offSimple (or maybe offBasic, or offRef since we only care about tthe ref and nothing else)
+
 -- | oAuth identification, redirecting to a provider (e.g. "twitter").
 -- No idea what can be in the Error, and since it is a redirect, how is the callback going to happen?
 -- perhaps only when the provider is not configured correctly in firebase?
