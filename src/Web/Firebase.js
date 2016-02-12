@@ -59,7 +59,7 @@ exports.setImpl = function (value, onComplete, fb) {
  */
 
 exports.pushImpl = function (value, onComplete, fb) {
-    var = function runEffect(error) {
+    var runEffect  = function (error) {
       onComplete(error);
     }
     return function () {
