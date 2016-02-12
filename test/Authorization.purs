@@ -9,12 +9,14 @@ import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Exception (EXCEPTION(), message)
 import Control.Alt ((<|>))
 import Data.Either (either)
+import Data.Maybe (Maybe(Just))
+import Data.Foreign (toForeign)
 import Web.Firebase.Types as FBT
-import Web.Firebase (EventType(..),once)
+import Web.Firebase (EventType(..),once, pushE, push)
 import Test.Spec                  (describe, it, Spec())
 import Test.Spec.Assertions       (shouldEqual)
 import Test.Spec.Assertions.Aff (expectError)
-import Web.Firebase.Monad.Aff (onceValue, on)
+import Web.Firebase.Monad.Aff (onceValue, on, firebaseErrToString)
 
 authorizationSpec :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff, err :: EXCEPTION, avar :: AVAR | eff ) Unit
 authorizationSpec forbiddenRef = do
@@ -36,6 +38,17 @@ authorizationSpec forbiddenRef = do
         actual <- runPar (Par fast <|> Par slow)
         actual `shouldEqual` "fast"
     describe "Authorization" do
+      describe "Writing" do
+        it "pushE() on forbidden location calls error callback" do
+          respVar <- makeVar
+          handle  <- liftEff $ pushE (toForeign {some: "object"}) (\err -> launchAff $ putVar respVar (firebaseErrToString err)) forbiddenRef
+          actual <- takeVar respVar
+          actual `shouldEqual` "PERMISSION_DENIED: Permission denied\n | firebase code: | \n PERMISSION_DENIED"
+        it "push() on forbidden location calls error callback" do
+          respVar <- makeVar
+          handle  <- liftEff $ push (toForeign {some: "object"}) (Just (Just (\err -> launchAff $ putVar respVar (firebaseErrToString err)))) forbiddenRef
+          actual <- takeVar respVar
+          actual `shouldEqual` "PERMISSION_DENIED: Permission denied\n | firebase code: | \n PERMISSION_DENIED"
       describe "once() on forbidden location" do
         it "with Eff calls an error callback" do
           respVar <- makeVar
