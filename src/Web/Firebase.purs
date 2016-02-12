@@ -15,7 +15,7 @@ import Control.Monad.Eff (Eff())
 import Data.Foreign (Foreign())
 import Data.Function (Fn1(), Fn2(), Fn3(), Fn4(), runFn1, runFn2, runFn3, runFn4)
 import Data.Maybe (Maybe(..), maybe)
-import Data.Nullable (toNullable, Nullable())
+import Data.Nullable (toMaybe, toNullable, Nullable())
 import Data.URI (printURI)
 import Data.URI.Types (URI())
 import Web.Firebase.Types (Firebase(), FirebaseEff(), FirebaseErr(), DataSnapshot())
@@ -144,13 +144,18 @@ push value cb fb = runFn3 pushImpl value (toNullable (toNullable <$> cb)) fb
 -- explicit parameter is easier and communicates better than messing with Maybes and nullables.
 foreign import pushEImpl :: forall eff. Fn3
                    Foreign
-                   (FirebaseErr -> Eff eff Unit)
+                   ((Nullable FirebaseErr) -> Eff eff Unit)
                    Firebase
                    (Eff (firebase :: FirebaseEff | eff) Firebase)
 
 pushE :: forall eff.
         Foreign ->
-        (FirebaseErr -> Eff eff Unit) ->
+        ((Maybe FirebaseErr) -> Eff eff Unit) ->
         Firebase ->
         Eff (firebase :: FirebaseEff | eff) Firebase
-pushE value cb fb = runFn3 pushEImpl value cb fb
+pushE value cb fb = runFn3 pushEImpl value (callBackReceivesNull cb) fb
+
+-- Callback receives Maybe on the outside, Nullable on the inside
+callBackReceivesNull :: forall a b. (Maybe a -> b) -> (Nullable a -> b)
+callBackReceivesNull cb = nab
+  where nab nullValue = cb (toMaybe nullValue)

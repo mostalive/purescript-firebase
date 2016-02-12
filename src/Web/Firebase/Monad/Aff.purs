@@ -8,7 +8,7 @@ firebaseErrToString
 )
 where
 
-import Prelude (Unit(), ($))
+import Prelude (Unit(), ($), class Show)
 import Data.Maybe (Maybe(..))
 import Control.Monad.Eff (Eff())
 import Control.Monad.Aff (Aff(), makeAff)

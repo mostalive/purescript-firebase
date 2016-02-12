@@ -1,9 +1,11 @@
 module Test.WritingSpec (writingSpec) where
 
-import Prelude (Unit, bind, ($))
+import Prelude (Unit, bind, ($), class Show)
 
-import Control.Monad.Aff (Aff())
+import Control.Monad.Aff (Aff(), launchAff)
+import Control.Monad.Aff.AVar (AVAR(), AVar, makeVar, takeVar, putVar)
 import Control.Monad.Eff.Class (liftEff)
+import Control.Monad.Eff.Exception (EXCEPTION(), message)
 import Data.Maybe (Maybe(Nothing))
 import Data.Either (Either(Right))
 import Web.Firebase as FB
@@ -20,7 +22,7 @@ import Data.Foreign as F
 entriesRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 entriesRef = refFor "https://purescript-spike.firebaseio.com/entries"
 
-writingSpec ::  forall eff. Spec ( process :: Process, firebase :: FBT.FirebaseEff | eff) Unit
+writingSpec ::  forall eff. Spec ( avar :: AVAR, firebase :: FBT.FirebaseEff, err :: EXCEPTION | eff) Unit
 writingSpec = do
   describe "Writing" do
       it "can add an item to a list" do
@@ -39,6 +41,12 @@ writingSpec = do
         _ <- liftEff $ FB.set (F.toForeign $ secondValue) Nothing newChildRef
         snap <- onceValue newChildRef
         (snapshot2success snap) `shouldEqual` (Right (Success secondValue))
+      it "pushE calls back with Nothing when no error occurs" do
+          location <- entriesRef
+          respVar  <- makeVar
+          handle  <- liftEff $ FB.pushE (F.toForeign {some: "object"}) (\Nothing -> launchAff $ putVar respVar Nothing) location
+          actual :: Maybe FBT.FirebaseErr <- takeVar respVar
+          actual `shouldEqual` Nothing
 
       pending "can overwrite an existing item in Aff"
       pending "can add a server-side timestamp to new items"

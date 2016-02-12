@@ -41,7 +41,7 @@ authorizationSpec forbiddenRef = do
       describe "Writing" do
         it "pushE() on forbidden location calls error callback" do
           respVar <- makeVar
-          handle  <- liftEff $ pushE (toForeign {some: "object"}) (\err -> launchAff $ putVar respVar (firebaseErrToString err)) forbiddenRef
+          handle  <- liftEff $ pushE (toForeign {some: "object"}) (\(Just err) -> launchAff $ putVar respVar (firebaseErrToString err)) forbiddenRef
           actual <- takeVar respVar
           actual `shouldEqual` "PERMISSION_DENIED: Permission denied\n | firebase code: | \n PERMISSION_DENIED"
         it "push() on forbidden location calls error callback" do
