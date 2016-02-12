@@ -22,6 +22,11 @@ import Data.Foreign as F
 entriesRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 entriesRef = refFor "https://purescript-spike.firebaseio.com/entries"
 
+
+setRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
+setRef = refFor "https://purescript-spike.firebaseio.com/entries/wecanset/arbitrary/paths"
+
+
 writingSpec ::  forall eff. Spec ( avar :: AVAR, firebase :: FBT.FirebaseEff, err :: EXCEPTION | eff) Unit
 writingSpec = do
   describe "Writing" do
@@ -48,7 +53,7 @@ writingSpec = do
           actual :: Maybe FBT.FirebaseErr <- takeVar respVar
           actual `shouldEqual` Nothing
       it "setE calls back with Nothing when no error occurs" do
-          location <- entriesRef
+          location <- setRef
           respVar  <- makeVar
           handle  <- liftEff $ FB.setE (F.toForeign {some: "object"}) (\Nothing -> launchAff $ putVar respVar Nothing) location
           actual :: Maybe FBT.FirebaseErr <- takeVar respVar
