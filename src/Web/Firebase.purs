@@ -5,6 +5,7 @@ module Web.Firebase
 , on
 , once
 , push
+, pushE
 , set
 )
 where
@@ -123,6 +124,8 @@ set :: forall eff.
        Eff (firebase :: FirebaseEff | eff) Unit
 set value cb fb = runFn3 setImpl value (toNullable (toNullable <$> cb)) fb
 
+-- | this one is broken. hangs with Nothing passed for callback (so undefined actually might not work)
+-- also hangs when Just (Just callback) is passed, even when calling the effect.
 foreign import pushImpl :: forall eff. Fn3
                    Foreign
                    (Nullable (Nullable (FirebaseErr -> Eff eff Unit)))
@@ -135,3 +138,19 @@ push :: forall eff.
         Firebase ->
         Eff (firebase :: FirebaseEff | eff) Firebase
 push value cb fb = runFn3 pushImpl value (toNullable (toNullable <$> cb)) fb
+
+
+-- | push with FirebaseErr error callback
+-- explicit parameter is easier and communicates better than messing with Maybes and nullables.
+foreign import pushEImpl :: forall eff. Fn3
+                   Foreign
+                   (FirebaseErr -> Eff eff Unit)
+                   Firebase
+                   (Eff (firebase :: FirebaseEff | eff) Firebase)
+
+pushE :: forall eff.
+        Foreign ->
+        (FirebaseErr -> Eff eff Unit) ->
+        Firebase ->
+        Eff (firebase :: FirebaseEff | eff) Firebase
+pushE value cb fb = runFn3 pushEImpl value cb fb

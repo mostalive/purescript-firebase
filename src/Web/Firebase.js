@@ -58,11 +58,21 @@ exports.setImpl = function (value, onComplete, fb) {
  *
  */
 
-exports.pushImpl = function (value, onComplete, fb) {
+exports.pushImpl = function (value, onError, fb) {
     var runEffect  = function (error) {
-      onComplete(error);
+      onError(error)();
     }
     return function () {
-        return fb.push(value, onComplete === null ? undefined : runEffect);
+        return fb.push(value, onError === null ? undefined : runEffect);
+    };
+};
+
+// extra to firebase api, explicit error handling
+exports.pushEImpl = function (value, onError, fb) {
+    var runEffect  = function (error) {
+      onError(error)();
+    }
+    return function () {
+        return fb.push(value, runEffect);
     };
 };
