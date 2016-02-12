@@ -42,14 +42,17 @@ dataSnapshotSpec snapshot =
 
       it "can tell us a child does not exist" do
         (D.hasChild snapshot "doesnotexist")  `shouldEqual` false
-
+      pending "relying on a fixed existing child is too fragile"
+      pending "it can tell us a child exists"
+      pending "it can give us a snapshot of one of its children"
+{-
       it "can tell us a child exists" do
         expect $ D.hasChild snapshot "-K7GbWeFHfJXlun7szRe"
 
       it "can give us a snapshot of one of its children" do
         let c = D.child snapshot "-K7GbWeFHfJXlun7szRe"
         expect $ D.exists c
-
+-}
       it "can tell us the location at the snapshot exists" do
         expect $ (D.exists snapshot)
 

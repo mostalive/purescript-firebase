@@ -47,6 +47,12 @@ writingSpec = do
           handle  <- liftEff $ FB.pushE (F.toForeign {some: "object"}) (\Nothing -> launchAff $ putVar respVar Nothing) location
           actual :: Maybe FBT.FirebaseErr <- takeVar respVar
           actual `shouldEqual` Nothing
+      it "setE calls back with Nothing when no error occurs" do
+          location <- entriesRef
+          respVar  <- makeVar
+          handle  <- liftEff $ FB.setE (F.toForeign {some: "object"}) (\Nothing -> launchAff $ putVar respVar Nothing) location
+          actual :: Maybe FBT.FirebaseErr <- takeVar respVar
+          actual `shouldEqual` Nothing
 
       pending "can overwrite an existing item in Aff"
       pending "can add a server-side timestamp to new items"

@@ -48,6 +48,15 @@ exports.setImpl = function (value, onComplete, fb) {
     };
 };
 
+// onComplete passes null for error when success, and a FirebaseErr on error
+exports.setEImpl = function (value, onComplete, fb) {
+    var runEffect  = function (error) {
+      onComplete(error)();
+    }
+    return function () {
+        fb.set(value, runEffect);
+    };
+};
 /*
  * https://www.firebase.com/docs/web/api/firebase/push.html
  * Generate a new child location using a unique name and returns a Firebase reference to it. This is useful when the children of a database location represent a collection of items. See Saving Lists of Data.

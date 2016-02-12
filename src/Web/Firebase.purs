@@ -7,6 +7,7 @@ module Web.Firebase
 , push
 , pushE
 , set
+, setE
 )
 where
 
@@ -111,6 +112,11 @@ once :: forall eff.
         Eff (firebase :: FirebaseEff | eff) Unit
 once etype ds cb fb = runFn4 onceImpl (showEventType etype) (unsafeEvalEff <<< ds) (cb) fb
 
+-- | sets a value in the firebase https://www.firebase.com/docs/web/api/firebase/set.html
+-- this implementation is also broken, FirebaseErr can be null. if you implement a callback it will fail
+-- fixing setImplE first, purescript semantics make more sense: if you don't want to handle errors,
+-- you can allways pass a callback that ignores its input: noop _ = pure Unit
+-- Also, push hang when an error would occur and Nothing was passed. Not sure how that happens. This probably behaves similarly.
 foreign import setImpl :: forall eff. Fn3
                    Foreign
                    (Nullable (Nullable (FirebaseErr -> Eff eff Unit)))
@@ -123,6 +129,21 @@ set :: forall eff.
        Firebase ->
        Eff (firebase :: FirebaseEff | eff) Unit
 set value cb fb = runFn3 setImpl value (toNullable (toNullable <$> cb)) fb
+
+-- | an extra implementation of set() that forces you to provide an error callback, even if it is a noop (see set() above)
+-- FirebaseErr can be null, so we wrap it in a Maybe
+foreign import setEImpl :: forall eff. Fn3
+                   Foreign
+                   ((Nullable FirebaseErr) -> Eff eff Unit)
+                   Firebase
+                   (Eff (firebase :: FirebaseEff | eff) Unit)
+
+setE :: forall eff.
+       Foreign ->
+       ((Maybe FirebaseErr) -> Eff eff Unit) ->
+       Firebase ->
+       Eff (firebase :: FirebaseEff | eff) Unit
+setE value cb fb = runFn3 setEImpl value (callBackReceivesNull cb) fb
 
 -- | this one is broken. hangs with Nothing passed for callback (so undefined actually might not work)
 -- also hangs when Just (Just callback) is passed, even when calling the effect.

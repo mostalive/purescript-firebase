@@ -19,7 +19,6 @@ import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec (Spec())
 
 import Test.Authorization (authorizationSpec)
-import Test.Misc (miscSpec)
 import Test.DataSnapshotSpec (dataSnapshotSpec)
 import Test.WritingSpec (writingSpec)
 import Test.AuthDataSpec (authDataSpec)
@@ -47,7 +46,6 @@ allSpecs = do
   ((lift eSnapshot) >>= dataSnapshotSpec)
   writingSpec
   authDataSpec
-  miscSpec
   -- add link to twitterwall home screen 'login with twitter' styled as a twitter button.
   -- save userid under /users,
   -- only writeable to authenticated users
