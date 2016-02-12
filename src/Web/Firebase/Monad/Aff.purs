@@ -16,6 +16,7 @@ import Web.Firebase as FB
 import Web.Firebase.Types as FBT
 
 foreign import fb2error :: FBT.FirebaseErr -> Error
+foreign import firebaseErrToString :: FBT.FirebaseErr -> String
 
 -- | This is the start of a more 'purescript-ish' interface than can be found in Web.Firebase
 -- We use the Aff monad to eliminate callback hell
