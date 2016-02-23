@@ -12,5 +12,5 @@ exports._authWithOAuthRedirect(provider, errorCallback, ref) {
   var errorCbEffect = function() {
     return errorCallback()(); // ensure effect gets used
   }
-  ref.authWithOAuthRedirect("twitter", errorCbEffect);
+  ref.authWithOAuthRedirect(provider, errorCbEffect);
 }
