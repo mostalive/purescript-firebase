@@ -9,8 +9,8 @@ exports._onAuth = function (callback, firebase) {
 };
 
 exports._authWithOAuthRedirect(provider, errorCallback, ref) {
-  var errorCbEffect = function() {
-    return errorCallback()(); // ensure effect gets used
+  var errorCbEffect = function(error) {
+    return errorCallback(error)(); // ensure effect gets used
   }
   ref.authWithOAuthRedirect(provider, errorCbEffect);
 }
