@@ -17,6 +17,8 @@ instance showFirebaseErr :: Show FirebaseErr where
 instance eqFirebaseErr :: Eq FirebaseErr where
   eq e1 e2 = (firebaseErrToString e1) == (firebaseErrToString e2)
 
+
+
 {-
   https://www.firebase.com/docs/web/guide/user-auth.html#section-handling-errors:
   All errors are Error objects containing at least code and message attributes. In some cases, additional information will be provided via the details attribute. For example:

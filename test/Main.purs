@@ -21,6 +21,7 @@ import Test.Spec (Spec())
 import Test.Authorization (authorizationSpec)
 import Test.DataSnapshotSpec (dataSnapshotSpec)
 import Test.WritingSpec (writingSpec)
+import Test.WriteGenericSpec (writeGenericSpec)
 import Test.AuthDataSpec (authDataSpec)
 
 eSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
@@ -45,6 +46,7 @@ allSpecs = do
   ((lift forbiddenRef) >>= authorizationSpec)
   ((lift eSnapshot) >>= dataSnapshotSpec)
   writingSpec
+  writeGenericSpec
   authDataSpec
   -- add link to twitterwall home screen 'login with twitter' styled as a twitter button.
   -- save userid under /users,

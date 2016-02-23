@@ -130,7 +130,7 @@ set :: forall eff.
        Eff (firebase :: FirebaseEff | eff) Unit
 set value cb fb = runFn3 setImpl value (toNullable (toNullable <$> cb)) fb
 
--- | an extra implementation of set() that forces you to provide an error callback, even if it is a noop (see set() above)
+-- | an extra implementation of set() that forces you to provide an error callback, even if it is a noop (see set in the example above)
 -- FirebaseErr can be null, so we wrap it in a Maybe
 foreign import setEImpl :: forall eff. Fn3
                    Foreign

@@ -24,7 +24,6 @@ doesNotExist = snapshotFor "entries/doesnotexist"
 snapshotFor :: forall eff. String -> Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
 snapshotFor location  = getRoot >>= \r -> (liftEff $ FB.child location r) >>= onceValue
 
-
 getRoot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 getRoot = refFor "https://purescript-spike.firebaseio.com/"
 
@@ -39,6 +38,7 @@ dataSnapshotSpec snapshot =
       it "can tell us the number of children" do
         let numChildren = D.numChildren snapshot
         expect (numChildren >= 1)
+      pending "can list the keys of its children by using forEach"
 
       it "can tell us a child does not exist" do
         (D.hasChild snapshot "doesnotexist")  `shouldEqual` false
@@ -47,6 +47,7 @@ dataSnapshotSpec snapshot =
       pending "it can give us a snapshot of one of its children"
 {-
       it "can tell us a child exists" do
+        - use foreach instead. perhaps create list like interface in Web.Firebase.Extra.DataSnapshotList
         expect $ D.hasChild snapshot "-K7GbWeFHfJXlun7szRe"
 
       it "can give us a snapshot of one of its children" do

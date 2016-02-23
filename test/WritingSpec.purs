@@ -49,13 +49,13 @@ writingSpec = do
       it "pushE calls back with Nothing when no error occurs" do
           location <- entriesRef
           respVar  <- makeVar
-          handle  <- liftEff $ FB.pushE (F.toForeign {some: "object"}) (\Nothing -> launchAff $ putVar respVar Nothing) location
+          handle  <- liftEff $ FB.pushE (F.toForeign {some: "object"}) (\err -> launchAff $ putVar respVar err) location
           actual :: Maybe FBT.FirebaseErr <- takeVar respVar
           actual `shouldEqual` Nothing
       it "setE calls back with Nothing when no error occurs" do
           location <- setRef
           respVar  <- makeVar
-          handle  <- liftEff $ FB.setE (F.toForeign {some: "object"}) (\Nothing -> launchAff $ putVar respVar Nothing) location
+          liftEff $ FB.setE (F.toForeign {some: "object"}) (\err -> launchAff $ putVar respVar err) location
           actual :: Maybe FBT.FirebaseErr <- takeVar respVar
           actual `shouldEqual` Nothing
 
