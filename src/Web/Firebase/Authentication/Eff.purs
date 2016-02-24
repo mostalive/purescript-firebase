@@ -11,9 +11,9 @@ import Data.Foreign (Foreign())
 
 import Data.Function (Fn1(), Fn2(), Fn3(), Fn4(), runFn1, runFn2, runFn3, runFn4)
 
-foreign import _onAuth :: forall eff. Fn2 Firebase (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) (Eff (firebase :: FirebaseEff | eff) Unit)
+foreign import _onAuth :: forall eff. Fn2 (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) Firebase (Eff (firebase :: FirebaseEff | eff) Unit)
 
-onAuth :: forall eff. Firebase -> (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) -> Eff (firebase :: FirebaseEff | eff) Unit
+onAuth :: forall eff. (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) -> Firebase -> Eff (firebase :: FirebaseEff | eff) Unit
 onAuth = runFn2 _onAuth
 
 foreign import _offAuth :: forall eff. Fn2 Firebase (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) (Eff (firebase :: FirebaseEff | eff) Unit)
