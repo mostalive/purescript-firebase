@@ -18,11 +18,14 @@ authDataSpec = do
       case nullStatus of
         Left e -> throwError $ error $ show e
         Right s -> s `shouldEqual` LoggedOut
-   it "parses a record to LoggedIn" do
+   it "parses a twitter record to LoggedIn" do
       let nullStatus = readJSON twitterLoggedInJson :: Either ForeignError AuthenticationStatus
       case nullStatus of
         Left e -> throwError $ error $ show e
         Right s -> s `shouldEqual` (LoggedIn record)
+   it "parses a google record to LoggedIn" do
+      let status = readJSON googleLoggedInJson :: Either ForeignError AuthenticationStatus
+      status `shouldEqual` (Right (LoggedIn googleRecord))
 
 -- approximation. The empty objects have a lot of provider specific data in them
 -- e.g. the 'twitter' field has user profile picture etc. different for google etc.
@@ -30,10 +33,28 @@ authDataSpec = do
 twitterLoggedInJson :: String
 twitterLoggedInJson = """{ "provider": "twitter", "uid": "twitter:16594263", "twitter": {}, "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ…", "auth": {}, "expires": 1454431083 }"""
 
+googleLoggedInJson :: String
+googleLoggedInJson = """{
+"provider": "google",
+"uid": "google:114417593001395431343",
+"expires": 1487429338,
+"google": {
+  "displayName": "Willem van den Ende",
+  "id": "114417593001395431343",
+  "profileImageURL": "https://lh5.googleusercontent.com/-ejZtaRAyRp4/AAAAAAAAAAI/AAAAAAAAAA8/3QAxwh1JjAE/photo.jpg"},
+"provider": "google",
+"token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2IjowLCJkIjp7InVpZCI6Imdvb2dsZToxMTQ0MTc1OTMwMDEzOTU0MzEzNDMiLCJwcm92aWRlciI6Imdvb2dsZSJ9LCJpYXQiOjE0NTYzMjUzMzh9.LMXWskxCo91pBXmcOgqIpcaYFlAtcpPUi9SI9u31_j0",
+"uid": "google:114417593001395431343"} """
+
+
 record :: UserCredentials
 record = UserCredentials { provider: "twitter", uid: "twitter:16594263", token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ…", expires: 1454431083 }
 
--- twitter has: displayName: "Willem van den Ende, id: 165 etc, username: mostalive, profileImageUrl
--- and accessToken and accessTokenSecret. not sure if we need those.
--- auth has : {provider: "twitter", uid : "twitter:16etc"}
+
+googleRecord :: UserCredentials
+googleRecord = UserCredentials {
+  provider: "google",
+  uid: "google:114417593001395431343",
+  token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2IjowLCJkIjp7InVpZCI6Imdvb2dsZToxMTQ0MTc1OTMwMDEzOTU0MzEzNDMiLCJwcm92aWRlciI6Imdvb2dsZSJ9LCJpYXQiOjE0NTYzMjUzMzh9.LMXWskxCo91pBXmcOgqIpcaYFlAtcpPUi9SI9u31_j0",
+  expires: 1487429338}
 

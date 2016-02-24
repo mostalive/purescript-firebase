@@ -9,7 +9,7 @@ import Web.Firebase.Types (Firebase(), FirebaseEff())
 import Control.Monad.Eff (Eff())
 import Data.Foreign (Foreign())
 
-import Data.Function (Fn1(), Fn2(), Fn3(), Fn4(), runFn1, runFn2, runFn3, runFn4)
+import Data.Function (Fn3, Fn2, runFn3, runFn2)
 
 foreign import _onAuth :: forall eff. Fn2 (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) Firebase (Eff (firebase :: FirebaseEff | eff) Unit)
 
