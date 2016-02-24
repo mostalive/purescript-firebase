@@ -1,11 +1,11 @@
 module Test.WritingSpec (writingSpec) where
 
-import Prelude (Unit, bind, ($), class Show)
+import Prelude (Unit, bind, ($))
 
 import Control.Monad.Aff (Aff(), launchAff)
-import Control.Monad.Aff.AVar (AVAR(), AVar, makeVar, takeVar, putVar)
+import Control.Monad.Aff.AVar (AVAR(), makeVar, takeVar, putVar)
 import Control.Monad.Eff.Class (liftEff)
-import Control.Monad.Eff.Exception (EXCEPTION(), message)
+import Control.Monad.Eff.Exception (EXCEPTION)
 import Data.Maybe (Maybe(Nothing))
 import Data.Either (Either(Right))
 import Web.Firebase as FB

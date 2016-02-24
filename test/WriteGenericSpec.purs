@@ -3,9 +3,9 @@ module Test.WriteGenericSpec (writeGenericSpec) where
 import Prelude (Unit, bind, ($), class Show, class Eq)
 
 import Control.Monad.Aff (Aff(), launchAff)
-import Control.Monad.Aff.AVar (AVAR(), AVar, makeVar, takeVar, putVar)
+import Control.Monad.Aff.AVar (AVAR(), makeVar, takeVar, putVar)
 import Control.Monad.Eff.Class (liftEff)
-import Control.Monad.Eff.Exception (EXCEPTION(), message)
+import Control.Monad.Eff.Exception (EXCEPTION)
 import Data.Maybe (Maybe(Nothing))
 import Data.Either (Either(Right))
 import Web.Firebase as FB
@@ -14,10 +14,9 @@ import Web.Firebase.UnsafeRef (refFor)
 import Web.Firebase.DataSnapshot as D
 import Web.Firebase.Types as FBT
 import Test.Spec                  (describe, pending, it, Spec())
-import Test.Spec.Runner           (Process())
 import Test.Spec.Assertions       (shouldEqual, shouldNotEqual)
-import Data.Foreign.Generic -- (toForeignGeneric, readGeneric)
-import Data.Generic
+import Data.Foreign.Generic  (Options, defaultOptions, toForeignGeneric, readGeneric)
+import Data.Generic (class Generic, gShow, gEq)
 
 entriesRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 entriesRef = refFor "https://purescript-spike.firebaseio.com/entries/generic"
@@ -55,6 +54,7 @@ instance eqMyInvitation :: Eq MyInvitation where
 noShow :: MyInvitation
 noShow = MyInvitation {invitee: "someone", willAttend: No}
 
+dontKnow :: MyInvitation
 dontKnow = MyInvitation {invitee: "mr bean", willAttend: DontKnowYet }
 
 writeGenericSpec ::  forall eff. Spec ( avar :: AVAR, firebase :: FBT.FirebaseEff, err :: EXCEPTION | eff) Unit
