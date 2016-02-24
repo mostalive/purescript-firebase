@@ -14,7 +14,6 @@ import Web.Firebase.UnsafeRef (refFor)
 import Web.Firebase.DataSnapshot as D
 import Web.Firebase.Types as FBT
 import Test.Spec                  (describe, pending, it, Spec())
-import Test.Spec.Runner           (Process())
 import Test.Spec.Assertions       (shouldEqual, shouldNotEqual)
 import PlayWithFire (Success(Success), snapshot2success)
 import Data.Foreign as F
