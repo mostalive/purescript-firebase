@@ -57,7 +57,7 @@ authorizationSpec forbiddenRef = do
           actual `shouldEqual` "child forbidden"
         it "with Aff throws an error" do
            e <- attempt $ onceValue forbiddenRef  -- catch error thrown and assert
-           either (\err -> (message err) `shouldEqual` "permission_denied: Client doesn't have permission to access the desired data.\n | firebase code: | \n PERMISSION_DENIED") (\_ -> "expected an error to be thrown" `shouldEqual` "but was not") e
+           either (\err -> (message err) `shouldEqual` "permission_denied at /forbidden: Client doesn't have permission to access the desired data.\n | firebase code: | \n PERMISSION_DENIED") (\_ -> "expected an error to be thrown" `shouldEqual` "but was not") e
       describe "on() at forbidden location" do
         it "ChildAdded with Aff throws an error" do
           expectError $ on ChildAdded forbiddenRef
