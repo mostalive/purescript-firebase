@@ -8,14 +8,20 @@ import Data.Foreign (isNull)
 import Data.Foreign.Generic (readGeneric, Options(), defaultOptions)
 import Data.Foreign.Class (class IsForeign, read)
 import Data.Generic (class Generic, gEq, gShow)
+import Data.Maybe (Maybe)
+
+import Web.Firebase.Authentication.Google (GoogleProfile)
 
 -- convert authdata (from twitter to start with) to a purescript authdata record
 -- sample data at https://boiling-heat-7831.firebaseapp.com/authspike.html
+-- Maybe we should use an extensible record with an alternative parser, that parses UserCredentials + google/twitter etc
+-- because now users have to include all providers in their source, even when they use only one.
 newtype UserCredentials = UserCredentials {
     provider :: String
   , uid :: String
   , token :: String
   , expires :: Int
+  , google :: Maybe GoogleProfile
 }
 
 -- ProviderUserProfile = TwitterProfile TwitterProfileRecord | GoogleProfile GoogleProfileRecord | etc
