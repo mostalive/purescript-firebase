@@ -6,15 +6,15 @@ GoogleProfile(..)
 -- Record and foreign generic declarations
 
 import Prelude (class Eq, class Show)
+import Data.Maybe (Maybe)
 import Data.Foreign.Generic (readGeneric, Options(), defaultOptions)
 import Data.Foreign.Class (class IsForeign)
 import Data.Generic (class Generic, gEq, gShow)
 
--- convert authdata (from twitter to start with) to a purescript authdata record
--- sample data at https://boiling-heat-7831.firebaseapp.com/authspike.html
 newtype GoogleProfile = GoogleProfile {
     displayName :: String
   , id :: String
+  , email :: Maybe String -- email is optional depending on permissions and account type
   , profileImageURL :: String
 }
 

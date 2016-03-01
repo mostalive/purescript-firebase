@@ -62,6 +62,7 @@ googleRecord = UserCredentials {
   google: Just (GoogleProfile {
             displayName: "Willem van den Ende",
             id: "114417593001395431343",
+            email: Nothing, -- email is optional depending on permissions the user has granted
             profileImageURL: "https://lh5.googleusercontent.com/-ejZtaRAyRp4/AAAAAAAAAAI/AAAAAAAAAA8/3QAxwh1JjAE/photo.jpg"
           })
 
