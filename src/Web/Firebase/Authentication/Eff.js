@@ -5,7 +5,7 @@
 
 exports._onAuth = function (callback, firebase) {
   var cbEffect = function(data) {
-    return cbEffect(data)(); // ensure effect gets used
+    return callback(data)(); // ensure effect gets used
   };
   return function() {
     return firebase.onAuth(cbEffect);
