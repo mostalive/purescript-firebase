@@ -20,7 +20,6 @@ newtype UserCredentials = UserCredentials {
     provider :: String
   , uid :: String
   , token :: String
-  , expires :: Int
   , google :: Maybe GoogleProfile
 }
 

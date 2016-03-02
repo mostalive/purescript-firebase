@@ -51,14 +51,13 @@ googleLoggedInJson = """{
 
 
 record :: UserCredentials
-record = UserCredentials { provider: "twitter", uid: "twitter:16594263", token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ…", expires: 1454431083, google: Nothing }
+record = UserCredentials { provider: "twitter", uid: "twitter:16594263", token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ…", google: Nothing }
 
 googleRecord :: UserCredentials
 googleRecord = UserCredentials {
   provider: "google",
   uid: "google:114417593001395431343",
   token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2IjowLCJkIjp7InVpZCI6Imdvb2dsZToxMTQ0MTc1OTMwMDEzOTU0MzEzNDMiLCJwcm92aWRlciI6Imdvb2dsZSJ9LCJpYXQiOjE0NTYzMjUzMzh9.LMXWskxCo91pBXmcOgqIpcaYFlAtcpPUi9SI9u31_j0",
-  expires: 1487429338,
   google: Just (GoogleProfile {
             displayName: "Willem van den Ende",
             id: "114417593001395431343",
