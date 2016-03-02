@@ -1,6 +1,5 @@
 module Web.Firebase.Authentication.Status (
-UserCredentials(..),
-AuthenticationStatus(..)
+UserCredentials(..)
 ) where
 
 import Prelude (class Eq, class Show, return, ($), bind)
@@ -12,7 +11,7 @@ import Data.Maybe (Maybe)
 
 import Web.Firebase.Authentication.Google (GoogleProfile)
 
--- convert authdata (from twitter to start with) to a purescript authdata record
+-- | convert authdata (from twitter and google to start with) to a purescript authdata record
 -- sample data at https://boiling-heat-7831.firebaseapp.com/authspike.html
 -- Maybe we should use an extensible record with an alternative parser, that parses UserCredentials + google/twitter etc
 -- because now users have to include all providers in their source, even when they use only one.
@@ -20,12 +19,11 @@ newtype UserCredentials = UserCredentials {
     provider :: String
   , uid :: String
   , token :: String
- -- , google :: Maybe GoogleProfile
+  , google :: Maybe GoogleProfile
 }
 
--- ProviderUserProfile = TwitterProfile TwitterProfileRecord | GoogleProfile GoogleProfileRecord | etc
 
-data AuthenticationStatus = UnAuthenticated | Authenticated UserCredentials -- | LoggedIn UserCredentials ProviderUserProfile
+-- ProviderUserProfile = TwitterProfile TwitterProfileRecord | GoogleProfile GoogleProfileRecord | etc
 
 derive instance genericUserCredentials :: Generic UserCredentials
 
@@ -38,19 +36,7 @@ instance eqUserCredentials :: Eq UserCredentials where
 jsonOptions :: Options
 jsonOptions = defaultOptions { unwrapNewtypes = true }
 
+-- | keep in mind to check with isNull in the caller if there is an object or not
 instance isForeignUserCredentials :: IsForeign UserCredentials where
   read = readGeneric jsonOptions
 
-derive instance authenticationStatusIsGeneric :: Generic AuthenticationStatus
-
-instance authenticationShow :: Show AuthenticationStatus where
-  show = gShow
-
-instance authenticationeq :: Eq AuthenticationStatus where
-  eq = gEq
-
-instance authenticationStatusIsForeign :: IsForeign AuthenticationStatus where
-  read value | isNull value  = return UnAuthenticated
-  read value = do
-    credentials <- readGeneric jsonOptions value
-    return $ Authenticated credentials

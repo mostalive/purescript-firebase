@@ -7,7 +7,7 @@ import Control.Monad.Eff.Exception (error)
 import Control.Monad.Error.Class (throwError)
 import Test.Spec (describe, it, Spec())
 import Test.Spec.Assertions (shouldEqual)
-import Web.Firebase.Authentication.Status (AuthenticationStatus(..), UserCredentials(UserCredentials))
+import Web.Firebase.Authentication.Status (UserCredentials(UserCredentials))
 import Web.Firebase.Authentication.Google (GoogleProfile(GoogleProfile))
 import Data.Either (Either(..))
 import Data.Foreign (ForeignError())
@@ -15,20 +15,15 @@ import Data.Foreign.Class (readJSON)
 
 authDataSpec :: forall eff. Spec (eff) Unit
 authDataSpec = do
-  describe "Authentication status" do
-   it "parses null to UnAuthenticated" do
-      let nullStatus = readJSON "null" :: Either ForeignError AuthenticationStatus
+  describe "UserCredentials" do
+   it "parses a twitter record" do
+      let nullStatus = readJSON twitterLoggedInJson :: Either ForeignError UserCredentials
       case nullStatus of
         Left e -> throwError $ error $ show e
-        Right s -> s `shouldEqual` UnAuthenticated
-   it "parses a twitter record to Authenticated" do
-      let nullStatus = readJSON twitterLoggedInJson :: Either ForeignError AuthenticationStatus
-      case nullStatus of
-        Left e -> throwError $ error $ show e
-        Right s -> s `shouldEqual` (Authenticated record)
-   it "parses a google record to Authenticated, with google profile info" do
-      let status = readJSON googleLoggedInJson :: Either ForeignError AuthenticationStatus
-      status `shouldEqual` (Right (Authenticated googleRecord))
+        Right s -> s `shouldEqual` record
+   it "parses a google record" do
+      let status = readJSON googleLoggedInJson :: Either ForeignError UserCredentials
+      status `shouldEqual` (Right googleRecord)
 
 -- approximation. The empty objects have a lot of provider specific data in them
 -- e.g. the 'twitter' field has user profile picture etc. different for google etc.
@@ -55,20 +50,20 @@ record = UserCredentials {
          provider: "twitter"
          , uid: "twitter:16594263"
          , token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ…"
---         , google: Nothing
+         , google: Nothing
        }
 
 googleRecord :: UserCredentials
 googleRecord = UserCredentials {
-  provider: "google",
-  uid: "google:114417593001395431343",
-  token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2IjowLCJkIjp7InVpZCI6Imdvb2dsZToxMTQ0MTc1OTMwMDEzOTU0MzEzNDMiLCJwcm92aWRlciI6Imdvb2dsZSJ9LCJpYXQiOjE0NTYzMjUzMzh9.LMXWskxCo91pBXmcOgqIpcaYFlAtcpPUi9SI9u31_j0"
-{-  google: Just (GoogleProfile {
+  provider: "google"
+  , uid: "google:114417593001395431343"
+  , token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2IjowLCJkIjp7InVpZCI6Imdvb2dsZToxMTQ0MTc1OTMwMDEzOTU0MzEzNDMiLCJwcm92aWRlciI6Imdvb2dsZSJ9LCJpYXQiOjE0NTYzMjUzMzh9.LMXWskxCo91pBXmcOgqIpcaYFlAtcpPUi9SI9u31_j0"
+  , google: Just (GoogleProfile {
             displayName: "Willem van den Ende",
             id: "114417593001395431343",
             email: Nothing, -- email is optional depending on permissions the user has granted
             profileImageURL: "https://lh5.googleusercontent.com/-ejZtaRAyRp4/AAAAAAAAAAI/AAAAAAAAAA8/3QAxwh1JjAE/photo.jpg"
           })
-          -}
+
 }
 
