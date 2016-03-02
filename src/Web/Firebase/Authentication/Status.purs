@@ -20,7 +20,7 @@ newtype UserCredentials = UserCredentials {
     provider :: String
   , uid :: String
   , token :: String
-  , google :: Maybe GoogleProfile
+ -- , google :: Maybe GoogleProfile
 }
 
 -- ProviderUserProfile = TwitterProfile TwitterProfileRecord | GoogleProfile GoogleProfileRecord | etc

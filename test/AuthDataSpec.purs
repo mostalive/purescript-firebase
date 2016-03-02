@@ -51,19 +51,24 @@ googleLoggedInJson = """{
 
 
 record :: UserCredentials
-record = UserCredentials { provider: "twitter", uid: "twitter:16594263", token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ…", google: Nothing }
+record = UserCredentials {
+         provider: "twitter"
+         , uid: "twitter:16594263"
+         , token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ…"
+--         , google: Nothing
+       }
 
 googleRecord :: UserCredentials
 googleRecord = UserCredentials {
   provider: "google",
   uid: "google:114417593001395431343",
-  token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2IjowLCJkIjp7InVpZCI6Imdvb2dsZToxMTQ0MTc1OTMwMDEzOTU0MzEzNDMiLCJwcm92aWRlciI6Imdvb2dsZSJ9LCJpYXQiOjE0NTYzMjUzMzh9.LMXWskxCo91pBXmcOgqIpcaYFlAtcpPUi9SI9u31_j0",
-  google: Just (GoogleProfile {
+  token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2IjowLCJkIjp7InVpZCI6Imdvb2dsZToxMTQ0MTc1OTMwMDEzOTU0MzEzNDMiLCJwcm92aWRlciI6Imdvb2dsZSJ9LCJpYXQiOjE0NTYzMjUzMzh9.LMXWskxCo91pBXmcOgqIpcaYFlAtcpPUi9SI9u31_j0"
+{-  google: Just (GoogleProfile {
             displayName: "Willem van den Ende",
             id: "114417593001395431343",
             email: Nothing, -- email is optional depending on permissions the user has granted
             profileImageURL: "https://lh5.googleusercontent.com/-ejZtaRAyRp4/AAAAAAAAAAI/AAAAAAAAAA8/3QAxwh1JjAE/photo.jpg"
           })
-
+          -}
 }
 
