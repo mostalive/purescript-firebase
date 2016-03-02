@@ -25,7 +25,7 @@ newtype UserCredentials = UserCredentials {
 
 -- ProviderUserProfile = TwitterProfile TwitterProfileRecord | GoogleProfile GoogleProfileRecord | etc
 
-data AuthenticationStatus = LoggedOut | LoggedIn UserCredentials -- | LoggedIn UserCredentials ProviderUserProfile
+data AuthenticationStatus = UnAuthenticated | Authenticated UserCredentials -- | LoggedIn UserCredentials ProviderUserProfile
 
 derive instance genericUserCredentials :: Generic UserCredentials
 
@@ -50,7 +50,7 @@ instance authenticationeq :: Eq AuthenticationStatus where
   eq = gEq
 
 instance authenticationStatusIsForeign :: IsForeign AuthenticationStatus where
-  read value | isNull value  = return LoggedOut
+  read value | isNull value  = return UnAuthenticated
   read value = do
-    credentials <- read value
-    return $ LoggedIn credentials
+    credentials <- readGeneric jsonOptions value
+    return $ Authenticated credentials

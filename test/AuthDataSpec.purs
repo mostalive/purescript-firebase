@@ -7,7 +7,7 @@ import Control.Monad.Eff.Exception (error)
 import Control.Monad.Error.Class (throwError)
 import Test.Spec (describe, it, Spec())
 import Test.Spec.Assertions (shouldEqual)
-import Web.Firebase.Authentication.Status (AuthenticationStatus(LoggedIn, LoggedOut), UserCredentials(UserCredentials))
+import Web.Firebase.Authentication.Status (AuthenticationStatus(..), UserCredentials(UserCredentials))
 import Web.Firebase.Authentication.Google (GoogleProfile(GoogleProfile))
 import Data.Either (Either(..))
 import Data.Foreign (ForeignError())
@@ -16,19 +16,19 @@ import Data.Foreign.Class (readJSON)
 authDataSpec :: forall eff. Spec (eff) Unit
 authDataSpec = do
   describe "Authentication status" do
-   it "parses null to LoggedOut" do
+   it "parses null to UnAuthenticated" do
       let nullStatus = readJSON "null" :: Either ForeignError AuthenticationStatus
       case nullStatus of
         Left e -> throwError $ error $ show e
-        Right s -> s `shouldEqual` LoggedOut
-   it "parses a twitter record to LoggedIn" do
+        Right s -> s `shouldEqual` UnAuthenticated
+   it "parses a twitter record to Authenticated" do
       let nullStatus = readJSON twitterLoggedInJson :: Either ForeignError AuthenticationStatus
       case nullStatus of
         Left e -> throwError $ error $ show e
-        Right s -> s `shouldEqual` (LoggedIn record)
-   it "parses a google record to LoggedIn, with google profile info" do
+        Right s -> s `shouldEqual` (Authenticated record)
+   it "parses a google record to Authenticated, with google profile info" do
       let status = readJSON googleLoggedInJson :: Either ForeignError AuthenticationStatus
-      status `shouldEqual` (Right (LoggedIn googleRecord))
+      status `shouldEqual` (Right (Authenticated googleRecord))
 
 -- approximation. The empty objects have a lot of provider specific data in them
 -- e.g. the 'twitter' field has user profile picture etc. different for google etc.
