@@ -14,10 +14,17 @@ exports.childImpl = function (childPath, firebase) {
     };
 };
 
-exports.onImpl = function (eventType, callback, cancelCallback, fb) {
-    return function () {
-        return fb.on(eventType, callback, cancelCallback);
-    };
+exports.onImpl = function (eventType, onComplete, onCancel, fb) {
+  var successEffect  = function (snapshot) {
+    onComplete(snapshot)();
+  };
+  var errorEffect  = function (error) {
+    onCancel(error)();
+  };
+
+  return function () {
+        return fb.on(eventType, successEffect, errorEffect);
+  };
 };
 
 exports.onWithoutCancelCallbackImpl = function (eventType, callback, fb) {
