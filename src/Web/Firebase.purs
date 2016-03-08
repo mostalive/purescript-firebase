@@ -2,6 +2,7 @@ module Web.Firebase
 ( EventType(..)
 , child
 , newFirebase
+, offSimple
 , on
 , once
 , push

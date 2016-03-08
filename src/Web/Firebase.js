@@ -15,7 +15,7 @@ exports.childImpl = function (childPath, firebase) {
 };
 
 exports.onImpl = function (eventType, onComplete, onCancel, fb) {
-  var successEffect  = function (snapshot) {
+  var successEffect  = function (snapshot) { // extract to withEffect1(fn, value)
     onComplete(snapshot)();
   };
   var errorEffect  = function (error) {
@@ -34,7 +34,7 @@ exports.onWithoutCancelCallbackImpl = function (eventType, callback, fb) {
     };
 };
 
-exports.onSimple = function (fb) {
+exports.offSimple = function (fb) {
   return function() {
     return fb.off();
   };
