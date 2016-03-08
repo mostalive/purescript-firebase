@@ -71,7 +71,7 @@ on :: forall eff.
       (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit) ->
       Firebase ->
       Eff (firebase :: FirebaseEff | eff) Unit
-on etype ds canceler fb = runFn4 onImpl (showEventType etype) (unsafeEvalEff <<< ds) (unsafeEvalEff <<< canceler) fb
+on etype ds canceler fb = runFn4 onImpl (showEventType etype) ds canceler fb
 
 -- | this function is only present for documentation purposes
 -- so you can see why we error callbacks are not optional in this FFI.
