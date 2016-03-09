@@ -58,6 +58,8 @@ exports.setImpl = function (value, onComplete, fb) {
 // onComplete passes null for error when success, and a FirebaseErr on error
 exports.setEImpl = function (value, onComplete, fb) {
     var runEffect  = function (error) {
+      console.log("setEImpl");
+      console.log(error);
       onComplete(error)();
     }
     return function () {
