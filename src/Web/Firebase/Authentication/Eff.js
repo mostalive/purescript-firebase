@@ -19,10 +19,11 @@ exports._authWithOAuthRedirect = function (provider, errorCallback, ref) {
   ref.authWithOAuthRedirect(provider, errorCbEffect);
 };
 
+// also needs an authData parameter for success
 exports._authWithCustomToken = function (token, errorCallback, ref) {
   var errorCbEffect = function(error) {
     return errorCallback(error)(); // extra () to ensure effects get used
   };
-  ref.authWithCustomToken(provider, errorCbEffect);
+  ref.authWithCustomToken(token, errorCbEffect);
 };
 
