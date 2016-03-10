@@ -21,7 +21,9 @@ exports._authWithOAuthRedirect = function (provider, errorCallback, ref) {
 
 // also needs an authData parameter for success
 exports._authWithCustomToken = function (token, errorCallback, ref) {
-  var errorCbEffect = function(error) {
+  var errorCbEffect = function(error, authData) {
+    if (!error)
+      console.log("Successful login by a bot", authData);
     return errorCallback(error)(); // extra () to ensure effects get used
   };
   ref.authWithCustomToken(token, errorCbEffect);
