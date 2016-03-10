@@ -59,7 +59,7 @@ authWithOAuthRedirectSilent provider = authWithOAuthRedirect provider noOpCallBa
 -- https://www.firebase.com/docs/web/guide/login/custom.html
 foreign import _authWithCustomToken :: forall eff. Fn3
                         String
-                        ((Maybe FirebaseErr) -> Eff (firebase :: FirebaseEff) Unit)
+                        ((Maybe FirebaseErr) -> Eff (firebase :: FirebaseEff | eff ) Unit)
                         Firebase
                         (Eff (firebase :: FirebaseEff | eff) Unit)
 
@@ -67,7 +67,7 @@ type AuthToken = String
 
 authWithCustomToken :: forall eff.
                        AuthToken ->
-                       ((Maybe FirebaseErr) -> Eff (firebase :: FirebaseEff) Unit) ->
+                       ((Maybe FirebaseErr) -> Eff (firebase :: FirebaseEff | eff ) Unit) ->
                        Firebase ->
                        Eff (firebase :: FirebaseEff | eff) Unit
 authWithCustomToken = runFn3 _authWithCustomToken
