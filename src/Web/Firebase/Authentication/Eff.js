@@ -18,3 +18,11 @@ exports._authWithOAuthRedirect = function (provider, errorCallback, ref) {
   };
   ref.authWithOAuthRedirect(provider, errorCbEffect);
 };
+
+exports._authWithCustomToken = functio (token, errorCallback, ref) {
+  var errorCbEffect = function(error) {
+    return errorCallback(error)(); // extra () to ensure effects get used
+  };
+  ref.authWithCustomToken(provider, errorCbEffect);
+};
+

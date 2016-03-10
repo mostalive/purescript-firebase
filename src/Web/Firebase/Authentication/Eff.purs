@@ -1,12 +1,14 @@
 module Web.Firebase.Authentication.Eff (
-  authWithOAuthRedirect,
-  onAuth,
-  authWithOAuthRedirectSilent
+  authWithCustomToken
+  , authWithOAuthRedirect
+  , onAuth
+  , authWithOAuthRedirectSilent
 ) where
 
 import Prelude (Unit(), pure, unit)
-import Web.Firebase.Types (Firebase(), FirebaseEff())
+import Web.Firebase.Types (Firebase(), FirebaseEff(), FirebaseErr)
 import Control.Monad.Eff (Eff())
+import Data.Maybe (Maybe)
 import Data.Foreign (Foreign())
 
 import Data.Function (Fn3, Fn2, runFn3, runFn2)
@@ -34,8 +36,6 @@ foreign import _authWithOAuthRedirect :: forall eff. Fn3
 
 type AuthenticationProvider = String
 
-
-
 authWithOAuthRedirect :: forall eff.
                          String ->
                          (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) ->
@@ -55,3 +55,19 @@ authWithOAuthRedirectSilent :: forall eff.
                          (Eff (firebase :: FirebaseEff | eff) Unit)
 authWithOAuthRedirectSilent provider = authWithOAuthRedirect provider noOpCallBack
 
+-- | authenticate a 'client' (most often a server or test laptop) with a custom token (JWT)
+-- https://www.firebase.com/docs/web/guide/login/custom.html
+foreign import _authWithCustomToken :: forall eff. Fn3
+                        String
+                        ((Maybe FirebaseErr) -> Eff (firebase :: FirebaseEff) Unit)
+                        Firebase
+                        (Eff (firebase :: FirebaseEff | eff) Unit)
+
+type AuthToken = String
+
+authWithCustomToken :: forall eff.
+                       AuthToken ->
+                       ((Maybe FirebaseErr) -> Eff (firebase :: FirebaseEff) Unit) ->
+                       Firebase ->
+                       Eff (firebase :: FirebaseEff | eff) Unit
+authWithCustomToken = runFn3 _authWithCustomToken
