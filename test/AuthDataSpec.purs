@@ -34,15 +34,15 @@ twitterLoggedInJson = """{ "provider": "twitter", "uid": "twitter:16594263", "tw
 googleLoggedInJson :: String
 googleLoggedInJson = """{
 "provider": "google",
-"uid": "google:114417593001395431343",
+"uid": "google:123",
 "expires": 1487429338,
 "google": {
   "displayName": "Willem van den Ende",
-  "id": "114417593001395431343",
+  "id": "123",
   "profileImageURL": "https://lh5.googleusercontent.com/-ejZtaRAyRp4/AAAAAAAAAAI/AAAAAAAAAA8/3QAxwh1JjAE/photo.jpg"},
 "provider": "google",
-"token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2IjowLCJkIjp7InVpZCI6Imdvb2dsZToxMTQ0MTc1OTMwMDEzOTU0MzEzNDMiLCJwcm92aWRlciI6Imdvb2dsZSJ9LCJpYXQiOjE0NTYzMjUzMzh9.LMXWskxCo91pBXmcOgqIpcaYFlAtcpPUi9SI9u31_j0",
-"uid": "google:114417593001395431343"} """
+"token": "123token"
+} """
 
 
 record :: UserCredentials
@@ -56,11 +56,11 @@ record = UserCredentials {
 googleRecord :: UserCredentials
 googleRecord = UserCredentials {
   provider: "google"
-  , uid: "google:114417593001395431343"
-  , token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2IjowLCJkIjp7InVpZCI6Imdvb2dsZToxMTQ0MTc1OTMwMDEzOTU0MzEzNDMiLCJwcm92aWRlciI6Imdvb2dsZSJ9LCJpYXQiOjE0NTYzMjUzMzh9.LMXWskxCo91pBXmcOgqIpcaYFlAtcpPUi9SI9u31_j0"
+  , uid: "google:123"
+  , token: "123token"
   , google: Just (GoogleProfile {
             displayName: "Willem van den Ende",
-            id: "114417593001395431343",
+            id: "123",
             email: Nothing, -- email is optional depending on permissions the user has granted
             profileImageURL: "https://lh5.googleusercontent.com/-ejZtaRAyRp4/AAAAAAAAAAI/AAAAAAAAAA8/3QAxwh1JjAE/photo.jpg"
           })

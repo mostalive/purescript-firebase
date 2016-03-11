@@ -13,7 +13,7 @@ import Web.Firebase.Monad.Aff (onceValue)
 import Web.Firebase.UnsafeRef (refFor)
 import Web.Firebase.DataSnapshot as D
 import Web.Firebase.Types as FBT
-import Test.Spec                  (describe, pending, it, Spec())
+import Test.Spec                  (describe, it, Spec())
 import Test.Spec.Assertions       (shouldEqual, shouldNotEqual)
 import Data.Foreign.Generic  (Options, defaultOptions, toForeignGeneric, readGeneric)
 import Data.Generic (class Generic, gShow, gEq)
@@ -88,10 +88,3 @@ writeGenericSpec = do
           liftEff $ FB.setE (toForeignGeneric jsonOptions dontKnow) (\err -> launchAff $ putVar respVar err) location
           actual :: Maybe FBT.FirebaseErr <- takeVar respVar
           actual `shouldEqual` Nothing
-
-      pending "can overwrite an existing item in Aff"
-      pending "can add a server-side timestamp to new items"
-      pending "push Aff when writing to non-existant location returns an error"
-      pending "Removal confirmed by subscription on()" -- baby steps
-      pending "Removal not notified after subscription turned off()" -- test with timeout? how?
-      -- implement AFF with error callback (it is error object or nothing, so we can make it 'or Right "write successful", which we can reuse in a value writeSuccess so we can assert against that. Not sure how to combine that with the value of the key that is also returned from the js function'
