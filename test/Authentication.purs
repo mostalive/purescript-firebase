@@ -33,6 +33,7 @@ authenticationSpec forbiddenRef = do
           actual `shouldEqual` "INVALID_TOKEN: Could not parse auth token.\n | firebase code: | \n INVALID_TOKEN"
       it "unauthenticates when not authenticated" do
         liftEff $ unAuth forbiddenRef
+
       describe "with Aff" do
         it "on fake authentication throws an error" do
           expectError $ AuthAff.authWithCustomToken "faketoken" forbiddenRef

@@ -94,3 +94,21 @@ exports.pushEImpl = function (value, onError, fb) {
         return fb.push(value, runEffect);
     };
 };
+
+var withEffect1  = function (f, value) {
+    return  f(value)();
+}
+// extra to firebase api, easy Aff bridge, explicit callbacks
+exports._pushA = function (value, onSuccess, onError, fb) {
+    return function () {
+      var newRef = null;
+      var runEffect  = function (error) {
+        if(error)
+          onError(error)();
+        else
+          onSuccess(newRef)();
+      }
+      newRef = fb.push(value, runEffect);
+      return newRef
+    };
+};

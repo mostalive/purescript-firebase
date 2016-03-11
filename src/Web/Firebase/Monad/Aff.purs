@@ -1,21 +1,26 @@
 module Web.Firebase.Monad.Aff
 (
-convertError,
-on,
-once,
-onceValue,
-fb2error,
-firebaseErrToString
+  convertError
+, on
+, once
+, onceValue
+, push
+, fb2error
+, firebaseErrToString
+, valueAt
 )
 where
 
-import Prelude (Unit)
+import Prelude (Unit, ($), bind, pure)
 import Control.Monad.Eff (Eff())
 import Control.Monad.Aff (Aff(), makeAff)
 import Control.Monad.Eff.Exception (Error())
 
+import Data.Foreign (Foreign)
+
 import Web.Firebase as FB
 import Web.Firebase.Types as FBT
+import Web.Firebase.DataSnapshot (val)
 
 foreign import fb2error :: FBT.FirebaseErr -> Error
 foreign import firebaseErrToString :: FBT.FirebaseErr -> String
@@ -48,3 +53,11 @@ once eventType root = makeAff (\errorCb successCb ->
 
 onceValue :: forall e. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) FBT.DataSnapshot
 onceValue root = once FB.Value root
+
+push :: forall e. FBT.Firebase -> Foreign -> Aff (firebase :: FBT.FirebaseEff | e) FBT.Firebase
+push ref value = makeAff (\onError onSuccess -> FB.pushA value onSuccess (convertError onError) ref)
+
+valueAt :: forall eff. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | eff) Foreign
+valueAt ref = do
+       snap <- onceValue ref
+       pure $ (val snap)

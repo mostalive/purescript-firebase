@@ -6,6 +6,7 @@ module Web.Firebase
 , on
 , once
 , push
+, pushA
 , pushE
 , set
 , setE
@@ -180,6 +181,24 @@ pushE :: forall eff.
         Firebase ->
         Eff (firebase :: FirebaseEff | eff) Firebase
 pushE value cb fb = runFn3 pushEImpl value (callBackReceivesNull cb) fb
+
+
+-- | push with success and error callback, for easy Aff conversion with makeAff
+-- explicit parameter is easier and communicates better than messing with Maybes and nullables.
+foreign import _pushA :: forall eff eff1 eff2. Fn4
+                   Foreign
+                   (Firebase -> Eff eff1 Unit)
+                   (FirebaseErr -> Eff eff2 Unit)
+                   Firebase
+                   (Eff (firebase :: FirebaseEff | eff) Unit)
+
+pushA :: forall eff eff1 eff2.
+        Foreign ->
+        (Firebase -> Eff eff1 Unit) ->
+        (FirebaseErr -> Eff eff2 Unit) ->
+        Firebase ->
+        Eff (firebase :: FirebaseEff | eff) Unit
+pushA = runFn4 _pushA
 
 -- Callback receives Maybe on the outside, Nullable on the inside
 callBackReceivesNull :: forall a b. (Maybe a -> b) -> (Nullable a -> b)
