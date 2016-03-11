@@ -16,16 +16,25 @@ exports._authWithOAuthRedirect = function (provider, errorCallback, ref) {
   var errorCbEffect = function(error) {
     return errorCallback(error)(); // ensure effect gets used
   };
-  ref.authWithOAuthRedirect(provider, errorCbEffect);
+  return function() {
+    return ref.authWithOAuthRedirect(provider, errorCbEffect);
+  }
 };
 
-// also needs an authData parameter for success
-exports._authWithCustomToken = function (token, errorCallback, ref) {
+// shape is slightly different from firebase function,
+// we chose to have a success and error callback everywhere, so that writing Aff calls is straightforward
+// and the API is consistent. Firebase has some with success / error callbacks, and some, like this with null (for success) or an additional parameter
+exports._authWithCustomToken = function (token, successCallback, errorCallback, ref) {
   var errorCbEffect = function(error, authData) {
-    if (!error)
-      console.log("Successful login by a bot", authData);
-    return errorCallback(error)(); // extra () to ensure effects get used
+    if (error) {
+      return errorCallback(error)();
+    }
+    else {
+      return successCallback(authData)(); // extra () to ensure effects get used
+    }
   };
-  ref.authWithCustomToken(token, errorCbEffect);
+  return function() {
+    return ref.authWithCustomToken(token, errorCbEffect);
+  }
 };
 

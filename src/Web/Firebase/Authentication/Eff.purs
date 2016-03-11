@@ -11,7 +11,7 @@ import Control.Monad.Eff (Eff())
 import Data.Maybe (Maybe)
 import Data.Foreign (Foreign())
 
-import Data.Function (Fn3, Fn2, runFn3, runFn2)
+import Data.Function (Fn4, Fn3, Fn2, runFn4, runFn3, runFn2)
 
 foreign import _onAuth :: forall eff. Fn2 (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) Firebase (Eff (firebase :: FirebaseEff | eff) Unit)
 
@@ -57,17 +57,23 @@ authWithOAuthRedirectSilent provider = authWithOAuthRedirect provider noOpCallBa
 
 -- | authenticate a 'client' (most often a server or test laptop) with a custom token (JWT)
 -- https://www.firebase.com/docs/web/guide/login/custom.html
-foreign import _authWithCustomToken :: forall eff. Fn3
+-- Instead of an on error and on failure paramater that may or may not be null,
+-- we pass an error and success callback, so that making an Aff function is easier
+-- and we don't have to worry about null / maybe on the purescript side
+foreign import _authWithCustomToken :: forall eff. Fn4
                         String
-                        ((Maybe FirebaseErr) -> Eff (firebase :: FirebaseEff | eff ) Unit)
+                        (Foreign -> Eff (firebase :: FirebaseEff | eff ) Unit)
+                        (FirebaseErr -> Eff (firebase :: FirebaseEff | eff ) Unit)
                         Firebase
                         (Eff (firebase :: FirebaseEff | eff) Unit)
 
 type AuthToken = String
+type AuthData = Foreign -- we are not parsing this just yet, TBD
 
 authWithCustomToken :: forall eff.
                        AuthToken ->
-                       ((Maybe FirebaseErr) -> Eff (firebase :: FirebaseEff | eff ) Unit) ->
+                       (Foreign -> Eff (firebase :: FirebaseEff | eff ) Unit) ->
+                       (FirebaseErr -> Eff (firebase :: FirebaseEff | eff ) Unit) ->
                        Firebase ->
                        Eff (firebase :: FirebaseEff | eff) Unit
-authWithCustomToken = runFn3 _authWithCustomToken
+authWithCustomToken = runFn4 _authWithCustomToken

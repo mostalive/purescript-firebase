@@ -1,5 +1,6 @@
 module Web.Firebase.Monad.Aff
 (
+convertError,
 on,
 once,
 onceValue,

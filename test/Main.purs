@@ -19,6 +19,7 @@ import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec (Spec())
 
 import Test.Authorization (authorizationSpec)
+import Test.Authentication (authenticationSpec)
 import Test.DataSnapshotSpec (dataSnapshotSpec)
 import Test.WritingSpec (writingSpec)
 import Test.WriteGenericSpec (writeGenericSpec)
@@ -28,12 +29,12 @@ eSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapsho
 eSnapshot = snapshotFor "entries"
 
 snapshotFor :: forall eff. String -> Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
-snapshotFor location  = getRoot >>= \r -> (liftEff $ FB.child location r) >>= onceValue
+snapshotFor location  = rootRef >>= \r -> (liftEff $ FB.child location r) >>= onceValue
 
 -- | Determines the name of the database to use for testing
 -- Change this when you want tests to run against another database
-getRoot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
-getRoot = refFor "https://purescript-spike.firebaseio.com/"
+rootRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
+rootRef = refFor "https://purescript-spike.firebaseio.com/"
 
 forbiddenRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 forbiddenRef = refFor "https://purescript-spike.firebaseio.com/forbidden"
@@ -44,6 +45,7 @@ main = run [consoleReporter] allSpecs
 allSpecs :: forall eff. Spec (  console :: CONSOLE, err :: EXCEPTION, process :: Process, avar :: AVAR, firebase :: FirebaseEff | eff) Unit
 allSpecs = do
   ((lift forbiddenRef) >>= authorizationSpec)
+  ((lift rootRef) >>= authenticationSpec)
   ((lift eSnapshot) >>= dataSnapshotSpec)
   writingSpec
   writeGenericSpec
