@@ -70,7 +70,4 @@ writingSpec = do
         newChildRef <- FAff.push location (F.toForeign newValue)
         writtenValue <- FAff.valueAt newChildRef
         (readWith show writtenValue) `shouldEqual` (Right (Success newValue))
-      pending "push Aff when writing to non-existant location returns an error"
-
-
       pending "can overwrite an existing item in Aff"

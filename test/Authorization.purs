@@ -16,7 +16,7 @@ import Web.Firebase (EventType(..),once, pushE, push)
 import Test.Spec                  (describe, it, Spec())
 import Test.Spec.Assertions       (shouldEqual)
 import Test.Spec.Assertions.Aff (expectError)
-import Web.Firebase.Monad.Aff (onceValue, on, firebaseErrToString)
+import Web.Firebase.Monad.Aff as FAff
 
 authorizationSpec :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff, err :: EXCEPTION, avar :: AVAR | eff ) Unit
 authorizationSpec forbiddenRef = do
@@ -46,9 +46,12 @@ authorizationSpec forbiddenRef = do
           actual `shouldEqual` Just "PERMISSION_DENIED: Permission denied\n | firebase code: | \n PERMISSION_DENIED"
         it "push() on forbidden location calls error callback" do
           respVar <- makeVar
-          handle  <- liftEff $ push (toForeign {some: "object"}) (Just (Just (\err -> launchAff $ putVar respVar (firebaseErrToString err)))) forbiddenRef
+          handle  <- liftEff $ push (toForeign {some: "object"}) (Just (Just (\err -> launchAff $ putVar respVar (show err)))) forbiddenRef
           actual <- takeVar respVar
           actual `shouldEqual` "PERMISSION_DENIED: Permission denied\n | firebase code: | \n PERMISSION_DENIED"
+        it "with Aff push on forbidden location throws an error" do
+          let newValue = {success: "push Aff"}
+          expectError $ FAff.push forbiddenRef (toForeign newValue)
       describe "once() on forbidden location" do
         it "with Eff calls an error callback" do
           respVar <- makeVar
@@ -56,17 +59,17 @@ authorizationSpec forbiddenRef = do
           actual <- takeVar respVar
           actual `shouldEqual` "child forbidden"
         it "with Aff throws an error" do
-           e <- attempt $ onceValue forbiddenRef  -- catch error thrown and assert
+           e <- attempt $ FAff.onceValue forbiddenRef  -- catch error thrown and assert
            either (\err -> (message err) `shouldEqual` "permission_denied at /forbidden: Client doesn't have permission to access the desired data.\n | firebase code: | \n PERMISSION_DENIED") (\_ -> "expected an error to be thrown" `shouldEqual` "but was not") e
       describe "on() at forbidden location" do
         it "ChildAdded with Aff throws an error" do
-          expectError $ on ChildAdded forbiddenRef
+          expectError $ FAff.on ChildAdded forbiddenRef
         it "ChildRemoved with Aff throws an error" do
-          expectError $ on ChildRemoved forbiddenRef
+          expectError $ FAff.on ChildRemoved forbiddenRef
         it "ChildChanged with Aff throws an error" do
-          expectError $ on ChildChanged forbiddenRef
+          expectError $ FAff.on ChildChanged forbiddenRef
         it "ChildMoved with Aff throws an error" do
-          expectError $ on ChildMoved forbiddenRef
+          expectError $ FAff.on ChildMoved forbiddenRef
 
 {-   describe "Firebase API breaks its documentation" do
        it "once() throws an exeption when no error callback provided and an error occurs" do
