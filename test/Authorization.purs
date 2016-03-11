@@ -1,6 +1,6 @@
 module Test.Authorization where
 
-import Prelude (Unit, bind, ($), pure)
+import Prelude (Unit, bind, ($), map, show, pure)
 
 import Control.Monad.Aff (forkAff,later', launchAff, attempt)
 import Control.Monad.Aff.Par (Par(..), runPar)
@@ -41,9 +41,9 @@ authorizationSpec forbiddenRef = do
       describe "Writing" do
         it "pushE() on forbidden location calls error callback" do
           respVar <- makeVar
-          handle  <- liftEff $ pushE (toForeign {some: "object"}) (\(Just err) -> launchAff $ putVar respVar (firebaseErrToString err)) forbiddenRef
+          handle  <- liftEff $ pushE (toForeign {some: "object"}) (\err -> launchAff $ putVar respVar (map show err)) forbiddenRef
           actual <- takeVar respVar
-          actual `shouldEqual` "PERMISSION_DENIED: Permission denied\n | firebase code: | \n PERMISSION_DENIED"
+          actual `shouldEqual` Just "PERMISSION_DENIED: Permission denied\n | firebase code: | \n PERMISSION_DENIED"
         it "push() on forbidden location calls error callback" do
           respVar <- makeVar
           handle  <- liftEff $ push (toForeign {some: "object"}) (Just (Just (\err -> launchAff $ putVar respVar (firebaseErrToString err)))) forbiddenRef
