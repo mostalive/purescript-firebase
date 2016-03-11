@@ -1,8 +1,10 @@
 module Web.Firebase.Authentication.Eff (
-  authWithCustomToken
+    authWithCustomToken
   , authWithOAuthRedirect
-  , onAuth
   , authWithOAuthRedirectSilent
+  , onAuth
+  , offAuth
+  , unAuth
 ) where
 
 import Prelude (Unit(), pure, unit)
@@ -11,7 +13,7 @@ import Control.Monad.Eff (Eff())
 import Data.Maybe (Maybe)
 import Data.Foreign (Foreign())
 
-import Data.Function (Fn4, Fn3, Fn2, runFn4, runFn3, runFn2)
+import Data.Function (Fn4, Fn3, Fn2, Fn1, runFn4, runFn3, runFn2, runFn1)
 
 foreign import _onAuth :: forall eff. Fn2 (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) Firebase (Eff (firebase :: FirebaseEff | eff) Unit)
 
@@ -77,3 +79,9 @@ authWithCustomToken :: forall eff.
                        Firebase ->
                        Eff (firebase :: FirebaseEff | eff) Unit
 authWithCustomToken = runFn4 _authWithCustomToken
+
+
+foreign import _unAuth :: forall eff. Fn1 Firebase (Eff (firebase :: FirebaseEff | eff) Unit)
+
+unAuth :: forall eff. Firebase -> Eff (firebase :: FirebaseEff | eff ) Unit
+unAuth = runFn1 _unAuth

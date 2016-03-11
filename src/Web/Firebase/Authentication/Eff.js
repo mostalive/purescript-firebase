@@ -38,3 +38,10 @@ exports._authWithCustomToken = function (token, successCallback, errorCallback, 
   }
 };
 
+// inconsistency in firebase api: onAuth is camelcased, but unauth is not.
+// we ignore the inconsistency in our public API
+exports._unAuth = function (firebase) {
+  return function() {
+    return firebase.unauth();
+  };
+};
