@@ -1,6 +1,7 @@
 module Web.Firebase
 ( EventType(..)
 , child
+, key
 , newFirebase
 , offSimple
 , on
@@ -13,7 +14,7 @@ module Web.Firebase
 )
 where
 
-import Prelude (Unit(), (<$>), (<<<), ($))
+import Prelude (Unit(), (<$>), (<<<), ($), map)
 import Control.Monad.Eff (Eff())
 import Data.Foreign (Foreign())
 import Data.Function (Fn1(), Fn2(), Fn3(), Fn4(), runFn1, runFn2, runFn3, runFn4)
@@ -21,7 +22,7 @@ import Data.Maybe (Maybe)
 import Data.Nullable (toMaybe, toNullable, Nullable())
 import Data.URI (printURI)
 import Data.URI.Types (URI())
-import Web.Firebase.Types (Firebase(), FirebaseEff(), FirebaseErr(), DataSnapshot())
+import Web.Firebase.Types (Firebase(), FirebaseEff(), FirebaseErr(), DataSnapshot(), Key())
 import Web.Firebase.Unsafe (unsafeEvalEff)
 
 
@@ -41,6 +42,13 @@ foreign import childImpl :: forall eff. Fn2 String Firebase (Eff (firebase :: Fi
 
 child :: forall eff. String -> Firebase -> Eff (firebase :: FirebaseEff | eff) Firebase
 child = runFn2 childImpl
+
+-- | Gets the key of the reference - https://www.firebase.com/docs/web/api/firebase/key.html
+-- Nothing on the root ref (following the behaviour in the Firebase API)
+foreign import _key :: forall eff. Fn1 Firebase (Eff (firebase :: FirebaseEff | eff) (Nullable Key))
+
+key :: forall eff. Firebase -> Eff (firebase :: FirebaseEff | eff) (Maybe Key)
+key ds = map toMaybe (runFn1 _key ds)
 
 data EventType = Value
                | ChildAdded

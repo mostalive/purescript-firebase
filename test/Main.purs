@@ -20,6 +20,7 @@ import Test.Spec (Spec())
 
 import Test.Authorization (authorizationSpec)
 import Test.Authentication (authenticationSpec)
+import Test.RefSpec (refSpec)
 import Test.DataSnapshotSpec (dataSnapshotSpec)
 import Test.WritingSpec (writingSpec)
 import Test.WriteGenericSpec (writeGenericSpec)
@@ -46,6 +47,7 @@ allSpecs :: forall eff. Spec (  console :: CONSOLE, err :: EXCEPTION, process ::
 allSpecs = do
   ((lift forbiddenRef) >>= authorizationSpec)
   ((lift rootRef) >>= authenticationSpec)
+  ((lift rootRef) >>= refSpec)
   ((lift eSnapshot) >>= dataSnapshotSpec)
   writingSpec
   writeGenericSpec

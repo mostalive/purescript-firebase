@@ -14,6 +14,12 @@ exports.childImpl = function (childPath, firebase) {
     };
 };
 
+exports._key = function(firebaseRef) {
+  return function() {
+    return firebaseRef.key();
+  }
+};
+
 exports.onImpl = function (eventType, onComplete, onCancel, fb) {
   var successEffect  = function (snapshot) { // extract to withEffect1(fn, value)
     onComplete(snapshot)();

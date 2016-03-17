@@ -1,6 +1,8 @@
 module Web.Firebase.Monad.Aff
 (
-  convertError
+  child
+, convertError
+, key
 , on
 , once
 , onceValue
@@ -11,10 +13,14 @@ module Web.Firebase.Monad.Aff
 )
 where
 
-import Prelude (Unit, ($), bind, pure)
+import Prelude (Unit, ($), (<<<), bind, pure)
+
+import Data.Maybe (Maybe(Just,Nothing))
 import Control.Monad.Eff (Eff())
 import Control.Monad.Aff (Aff(), makeAff)
-import Control.Monad.Eff.Exception (Error())
+import Control.Monad.Eff.Class (liftEff)
+import Control.Monad.Eff.Exception (Error(), error)
+import Control.Monad.Error.Class (throwError)
 
 import Data.Foreign (Foreign)
 
@@ -22,8 +28,37 @@ import Web.Firebase as FB
 import Web.Firebase.Types as FBT
 import Web.Firebase.DataSnapshot (val)
 
+-- | Inspired by its Eff relative.
+-- Throw takes a message and throws a MonadError in Aff with that message
+throw :: forall eff a. String -> Aff eff a
+throw = throwError <<< error
+
 foreign import fb2error :: FBT.FirebaseErr -> Error
 foreign import firebaseErrToString :: FBT.FirebaseErr -> String
+
+
+-- | Gets a Firebase reference for the location at the specified relative path.
+-- https://www.firebase.com/docs/web/api/firebase/child.html
+
+child :: forall eff.
+       FBT.Key ->
+       FBT.Firebase ->
+       Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
+child key ref = liftEff $ FB.child key ref
+
+-- | Returns the key of the current firebase reference
+-- throws a MonadError if there was no key (i.e. when you ask for the key of the root reference, according to
+-- https://www.firebase.com/docs/web/api/firebase/key.html
+-- We made it an error, because asking a key of the root reference is a programming error, and should normally not happen.
+-- One could specialize this in a Firebase type that can't be the root, or return '/' as the key.
+key :: forall eff.
+       FBT.Firebase ->
+       Aff (firebase :: FBT.FirebaseEff | eff) FBT.Key
+key fb = do
+  mKey <- liftEff $ FB.key fb
+  case mKey of
+       Nothing -> throw "Key was null. Did you ask key of root reference?"
+       Just k -> pure k
 
 -- | This is the start of a more 'purescript-ish' interface than can be found in Web.Firebase
 -- We use the Aff monad to eliminate callback hell
