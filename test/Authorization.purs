@@ -70,6 +70,10 @@ authorizationSpec forbiddenRef = do
           expectError $ FAff.on ChildChanged forbiddenRef
         it "ChildMoved with Aff throws an error" do
           expectError $ FAff.on ChildMoved forbiddenRef
+      it "set() with Aff at forbidden location throws an error" do
+        let newValue = {success: "set Aff"}
+        e <- attempt $ FAff.set forbiddenRef (toForeign newValue)
+        either (\err -> (message err) `shouldEqual` "PERMISSION_DENIED: Permission denied\n | firebase code: | \n PERMISSION_DENIED") (\_ -> "expected an error to be thrown" `shouldEqual` "but was not") e
 
 {-   describe "Firebase API breaks its documentation" do
        it "once() throws an exeption when no error callback provided and an error occurs" do
