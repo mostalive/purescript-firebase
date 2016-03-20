@@ -11,6 +11,7 @@ module Web.Firebase
 , pushE
 , set
 , setE
+, setA
 )
 where
 
@@ -158,6 +159,23 @@ setE :: forall eff.
        Firebase ->
        Eff (firebase :: FirebaseEff | eff) Unit
 setE value cb fb = runFn3 setEImpl value (callBackReceivesNull cb) fb
+
+-- | set with success and error callback, for easy Aff conversion with makeAff
+-- explicit parameter is easier and communicates better than messing with Maybes and nullables.
+foreign import _setA :: forall eff eff1 eff2. Fn4
+                   Foreign
+                   (Unit -> Eff eff1 Unit)
+                   (FirebaseErr -> Eff eff2 Unit)
+                   Firebase
+                   (Eff (firebase :: FirebaseEff | eff) Unit)
+
+setA :: forall eff eff1 eff2.
+        Foreign ->
+        (Unit -> Eff eff1 Unit) ->
+        (FirebaseErr -> Eff eff2 Unit) ->
+        Firebase ->
+        Eff (firebase :: FirebaseEff | eff) Unit
+setA = runFn4 _setA
 
 -- | this one is broken. hangs with Nothing passed for callback (so undefined actually might not work)
 -- also hangs when Just (Just callback) is passed, even when calling the effect.

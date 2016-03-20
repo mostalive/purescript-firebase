@@ -72,6 +72,20 @@ exports.setEImpl = function (value, onComplete, fb) {
         fb.set(value, runEffect);
     };
 };
+// extra to firebase api, easy Aff bridge, explicit callbacks
+exports._setA = function (value, onSuccess, onError, fb) {
+    return function () {
+      var newRef = null;
+      var runEffect  = function (error) {
+        if(error)
+          onError(error)();
+        else
+          onSuccess()();
+      }
+      newRef = fb.set(value, runEffect);
+      return newRef
+    };
+};
 /*
  * https://www.firebase.com/docs/web/api/firebase/push.html
  * Generate a new child location using a unique name and returns a Firebase reference to it. This is useful when the children of a database location represent a collection of items. See Saving Lists of Data.

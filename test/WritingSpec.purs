@@ -70,4 +70,9 @@ writingSpec = do
         newChildRef <- FAff.push location (F.toForeign newValue)
         writtenValue <- FAff.valueAt newChildRef
         (readWith show writtenValue) `shouldEqual` (Right (Success newValue))
-      pending "can overwrite an existing item in Aff"
+      it "can overwrite an existing item in Aff" do
+        location <- setRef
+        let newValue = {success: "set Aff"}
+        FAff.set location (F.toForeign newValue)
+        writtenValue <- FAff.valueAt location
+        (readWith show writtenValue) `shouldEqual` (Right (Success newValue))

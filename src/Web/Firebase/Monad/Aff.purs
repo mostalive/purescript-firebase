@@ -7,6 +7,7 @@ module Web.Firebase.Monad.Aff
 , once
 , onceValue
 , push
+, set
 , fb2error
 , firebaseErrToString
 , valueAt
@@ -91,6 +92,9 @@ onceValue root = once FB.Value root
 
 push :: forall e. FBT.Firebase -> Foreign -> Aff (firebase :: FBT.FirebaseEff | e) FBT.Firebase
 push ref value = makeAff (\onError onSuccess -> FB.pushA value onSuccess (convertError onError) ref)
+
+set :: forall e. FBT.Firebase -> Foreign -> Aff (firebase :: FBT.FirebaseEff | e) Unit
+set ref value = makeAff (\onError onSuccess -> FB.setA value onSuccess (convertError onError) ref)
 
 valueAt :: forall eff. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | eff) Foreign
 valueAt ref = do
