@@ -10,6 +10,8 @@ module Web.Firebase.Monad.Aff
 , set
 , fb2error
 , firebaseErrToString
+-- conveniencde functions to be split out at some point
+, readRecord
 , valueAt
 )
 where
