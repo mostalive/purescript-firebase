@@ -14,7 +14,7 @@ module Web.Firebase.Monad.Aff
 )
 where
 
-import Prelude (Unit, ($), (<<<), bind, pure)
+import Prelude (Unit, ($), (<<<), bind, show, pure)
 
 import Data.Maybe (Maybe(Just,Nothing))
 import Control.Monad.Eff (Eff())
@@ -23,7 +23,10 @@ import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Exception (Error(), error)
 import Control.Monad.Error.Class (throwError)
 
+import Data.Either (Either(Left,Right))
+
 import Data.Foreign (Foreign)
+import Data.Foreign.Class (class IsForeign, readWith)
 
 import Web.Firebase as FB
 import Web.Firebase.Types as FBT
@@ -45,7 +48,7 @@ child :: forall eff.
        FBT.Key ->
        FBT.Firebase ->
        Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
-child key ref = liftEff $ FB.child key ref
+child aKey ref = liftEff $ FB.child aKey ref
 
 -- | Returns the key of the current firebase reference
 -- throws a MonadError if there was no key (i.e. when you ask for the key of the root reference, according to
@@ -87,16 +90,27 @@ once :: forall e. FB.EventType -> FBT.Firebase -> Aff (firebase :: FBT.FirebaseE
 once eventType root = makeAff (\errorCb successCb ->
 		                FB.once eventType successCb (convertError errorCb) root)
 
-onceValue :: forall e. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) FBT.DataSnapshot
-onceValue root = once FB.Value root
-
 push :: forall e. FBT.Firebase -> Foreign -> Aff (firebase :: FBT.FirebaseEff | e) FBT.Firebase
 push ref value = makeAff (\onError onSuccess -> FB.pushA value onSuccess (convertError onError) ref)
 
 set :: forall e. FBT.Firebase -> Foreign -> Aff (firebase :: FBT.FirebaseEff | e) Unit
 set ref value = makeAff (\onError onSuccess -> FB.setA value onSuccess (convertError onError) ref)
 
+-- | Extra functions not part of firebase api, grown out of our use
+onceValue :: forall e. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) FBT.DataSnapshot
+onceValue root = once FB.Value root
+
 valueAt :: forall eff. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | eff) Foreign
 valueAt ref = do
        snap <- onceValue ref
        pure $ (val snap)
+
+-- | read a record from a reference. Throws exception when any part fails
+-- possible failures include network, database and conversion from Foreign value to purescript.
+readRecord :: forall a eff. (IsForeign a) => FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | eff) a
+readRecord ref = do
+  value <- valueAt ref
+  case (readWith show value) of
+    Left msg    -> throw msg
+    Right value -> pure value
+
