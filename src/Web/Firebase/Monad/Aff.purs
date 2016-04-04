@@ -3,6 +3,7 @@ module Web.Firebase.Monad.Aff
   child
 , convertError
 , key
+, offLocation
 , on
 , once
 , onceValue
@@ -100,6 +101,9 @@ set :: forall e. FBT.Firebase -> Foreign -> Aff (firebase :: FBT.FirebaseEff | e
 set ref value = makeAff (\onError onSuccess -> FB.setA value onSuccess (convertError onError) ref)
 
 -- | Extra functions not part of firebase api, grown out of our use
+offLocation :: forall e. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) Unit
+offLocation = liftEff <<< FB.offSimple
+
 onceValue :: forall e. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) FBT.DataSnapshot
 onceValue root = once FB.Value root
 
