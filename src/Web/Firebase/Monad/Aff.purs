@@ -116,3 +116,11 @@ readRecord ref = do
     Left msg    -> throw msg
     Right value -> pure value
 
+-- | read a snapshot to a record. Throws exception when any part fails
+-- possible failures include network, database and conversion from Foreign value to purescript.
+readSnapshot :: forall a eff. (IsForeign a) => FBT.DataSnapshot -> Aff (firebase :: FBT.FirebaseEff | eff) a
+readSnapshot snapshot = do
+  let value = val snapshot
+  case (readWith show value) of
+    Left msg    -> throw msg
+    Right value -> pure value
