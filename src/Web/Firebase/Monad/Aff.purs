@@ -12,6 +12,7 @@ module Web.Firebase.Monad.Aff
 , firebaseErrToString
 -- conveniencde functions to be split out at some point
 , readRecord
+, readSnapshot
 , valueAt
 )
 where
