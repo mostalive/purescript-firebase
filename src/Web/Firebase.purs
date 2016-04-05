@@ -99,13 +99,13 @@ foreign import onWithoutCancelCallbackImpl :: forall eff. Fn3
 -- optionally for a specific callback or type. We don't need that in our application right now, so not going to bother with Maybes just now. just take the ref
 -- and add the other parameters later.
 -- https://www.firebase.com/docs/web/api/query/off.html
-foreign import offSimple_ :: forall eff. Fn1
+foreign import _offSimple :: forall eff. Fn1
                 Firebase
                 (Eff (firebase :: FirebaseEff | eff) Unit)
 
 
 offSimple :: forall eff. Firebase -> Eff (firebase :: FirebaseEff | eff) Unit
-offSimple ref = runFn1 offSimple_ ref
+offSimple ref = runFn1 _offSimple ref
 
 -- implementation of off with more parameters goes here. we can then rewrite offSimple in terms of off.
 

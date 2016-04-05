@@ -40,7 +40,7 @@ exports.onWithoutCancelCallbackImpl = function (eventType, callback, fb) {
     };
 };
 
-exports.offSimple = function (fb) {
+exports._offSimple = function (fb) {
   return function() {
     return fb.off();
   };

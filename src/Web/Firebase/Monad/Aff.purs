@@ -14,12 +14,15 @@ module Web.Firebase.Monad.Aff
 -- conveniencde functions to be split out at some point
 , readRecord
 , readSnapshot
+, remove
 , valueAt
 )
 where
 
 import Prelude (Unit, ($), (<<<), bind, show, pure)
 
+import Data.Foreign (toForeign)
+import Data.Nullable (toNullable)
 import Data.Maybe (Maybe(Just,Nothing))
 import Control.Monad.Eff (Eff())
 import Control.Monad.Aff (Aff(), makeAff)
@@ -34,7 +37,7 @@ import Data.Foreign.Class (class IsForeign, readWith)
 
 import Web.Firebase as FB
 import Web.Firebase.Types as FBT
-import Web.Firebase.DataSnapshot (val)
+import Web.Firebase.DataSnapshot (key, val)
 
 -- | Inspired by its Eff relative.
 -- Throw takes a message and throws a MonadError in Aff with that message
@@ -112,14 +115,15 @@ valueAt ref = do
        snap <- onceValue ref
        pure $ (val snap)
 
+
 -- | read a record from a reference. Throws exception when any part fails
 -- possible failures include network, database and conversion from Foreign value to purescript.
 readRecord :: forall a eff. (IsForeign a) => FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | eff) a
 readRecord ref = do
   value <- valueAt ref
   case (readWith show value) of
-    Left msg    -> throw msg
-    Right value -> pure value
+    Left msg  -> throw msg
+    Right v   -> pure v
 
 -- | read a snapshot to a record. Throws exception when any part fails
 -- possible failures include network, database and conversion from Foreign value to purescript.
@@ -127,5 +131,13 @@ readSnapshot :: forall a eff. (IsForeign a) => FBT.DataSnapshot -> Aff (firebase
 readSnapshot snapshot = do
   let value = val snapshot
   case (readWith show value) of
-    Left msg    -> throw msg
-    Right value -> pure value
+    Left msg  -> throw msg
+    Right v   -> pure v
+
+-- | remove data below ref
+-- (firebase will also remove the path to ref probably)
+-- not a separate function on the API, but 'set null' which is not pretty in purescript
+-- nor easy to understand
+remove :: forall e. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) Unit
+remove ref = set ref foreignNull
+             where foreignNull = toForeign $ toNullable $ Nothing
