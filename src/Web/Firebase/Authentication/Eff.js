@@ -12,6 +12,14 @@ exports._onAuth = function (callback, firebase) {
   };
 };
 
+// https://www.firebase.com/docs/web/api/firebase/offauth.html
+// unregister authentication notifcation
+exports._offAuth = function (callback, firebase) {
+  return function() {
+    return firebase.onAuth(cbEffect);
+  };
+};
+
 exports._authWithOAuthRedirect = function (provider, errorCallback, ref) {
   var errorCbEffect = function(error) {
     return errorCallback(error)(); // ensure effect gets used
