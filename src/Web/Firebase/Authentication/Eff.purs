@@ -20,6 +20,9 @@ foreign import _onAuth :: forall eff. Fn2 (Foreign -> Eff ( firebase :: Firebase
 onAuth :: forall eff. (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) -> Firebase -> Eff (firebase :: FirebaseEff | eff) Unit
 onAuth = runFn2 _onAuth
 
+-- | de-register an onAuth callback
+--https://www.firebase.com/docs/web/api/firebase/offauth.html
+-- for sign out functionality, see unAuth
 foreign import _offAuth :: forall eff. Fn2 Firebase (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) (Eff (firebase :: FirebaseEff | eff) Unit)
 
 offAuth :: forall eff. Firebase -> (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) -> Eff (firebase :: FirebaseEff | eff) Unit
@@ -80,7 +83,8 @@ authWithCustomToken :: forall eff.
                        Eff (firebase :: FirebaseEff | eff) Unit
 authWithCustomToken = runFn4 _authWithCustomToken
 
-
+-- | sign out of the application
+--
 foreign import _unAuth :: forall eff. Fn1 Firebase (Eff (firebase :: FirebaseEff | eff) Unit)
 
 unAuth :: forall eff. Firebase -> Eff (firebase :: FirebaseEff | eff ) Unit

@@ -15,7 +15,7 @@ module Web.Firebase
 )
 where
 
-import Prelude (Unit(), (<$>), (<<<), ($), map)
+import Prelude (class Show, class Eq, class Ord, Unit, (<$>), (<<<), compare, map, ($))
 import Control.Monad.Eff (Eff())
 import Data.Foreign (Foreign())
 import Data.Function (Fn1(), Fn2(), Fn3(), Fn4(), runFn1, runFn2, runFn3, runFn4)
@@ -57,6 +57,30 @@ data EventType = Value
                | ChildRemoved
                | ChildMoved
 
+-- | Boilerplate, but we have data instead of newtype
+-- so generics don't work here
+instance eqEventType :: Eq EventType where
+  eq Value        Value = true
+  eq ChildAdded   ChildAdded = true
+  eq ChildChanged ChildChanged = true
+  eq ChildRemoved ChildRemoved = true
+  eq ChildMoved   ChildMoved = true
+  eq _            _     = false
+
+-- | Boilerplate, but we have data instead of newtype
+-- so generics don't work here
+-- provided so we can make a set of EventTypes
+instance ordEventType :: Ord EventType where
+  compare ev1 ev2 = compare (numValue ev1) (numValue ev2)
+		where
+			numValue Value = 0
+			numValue ChildAdded = 1
+			numValue ChildChanged = 2
+			numValue ChildRemoved = 3
+			numValue ChildMoved = 4
+
+
+
 showEventType :: EventType -> String
 showEventType t = case t of
                        Value -> "value"
@@ -64,6 +88,9 @@ showEventType t = case t of
                        ChildChanged -> "child_changed"
                        ChildRemoved -> "child_removed"
                        ChildMoved -> "child_moved"
+
+instance show4EventType :: Show EventType where
+  show = showEventType
 
 -- | Listens for data changes at a particular location
 -- https://www.firebase.com/docs/web/api/query/on.html
