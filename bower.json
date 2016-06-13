@@ -12,12 +12,12 @@
   ],
   "dependencies": {
     "purescript-console": "^0.1.0",
-    "purescript-spec": "owickstrom/purescript-spec#05d5a7cb68476fb564acdb1d23e198e2410ca8f6",
-    "purescript-foreign": "~0.7.2",
-    "purescript-nullable": "~0.2.1",
-    "purescript-uri": "~0.2.0",
-    "purescript-transformers": "~0.8.4",
-    "purescript-aff": ">=0.14",
+    "purescript-spec": "*",
+    "purescript-foreign": "^0.7.2",
+    "purescript-nullable": "^0.2.1",
+    "purescript-uri": "^0.2.0",
+    "purescript-transformers": "^0.8.4",
+    "purescript-aff": "^0.14",
     "purescript-foreign-generic": "^0.3.0"
   }
 }
