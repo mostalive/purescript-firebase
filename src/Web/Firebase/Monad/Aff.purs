@@ -21,7 +21,7 @@ where
 
 import Prelude (Unit, ($), (<<<), bind, show, pure)
 
-import Data.Foreign (toForeign)
+import Data.Foreign (Foreign, toForeign)
 import Data.Nullable (toNullable)
 import Data.Maybe (Maybe(Just,Nothing))
 import Control.Monad.Eff (Eff())
@@ -32,12 +32,11 @@ import Control.Monad.Error.Class (throwError)
 
 import Data.Either (Either(Left,Right))
 
-import Data.Foreign (Foreign)
 import Data.Foreign.Class (class IsForeign, readWith)
 
 import Web.Firebase as FB
 import Web.Firebase.Types as FBT
-import Web.Firebase.DataSnapshot (key, val)
+import Web.Firebase.DataSnapshot (val)
 
 -- | Inspired by its Eff relative.
 -- Throw takes a message and throws a MonadError in Aff with that message
