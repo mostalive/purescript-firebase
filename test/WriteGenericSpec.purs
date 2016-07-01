@@ -63,7 +63,7 @@ dontKnow = MyInvitation {invitee: "mr bean", willAttend: DontKnowYet }
 -- Once you get to maps, you are on your own - manual marshalling - maps don't have a Generic instance.
 writeGenericSpec ::  forall eff. Spec ( firebase :: FBT.FirebaseEff, err :: EXCEPTION | eff) Unit
 writeGenericSpec = do
-  describe "Writing objects with toForeignGeneric" do
+  describe "Writing with Generics" do
       it "can add an ADT to a list" do
         location <- entriesRef
         newChildRef <- push (toForeignGeneric jsonOptions Yes) location
@@ -75,7 +75,7 @@ writeGenericSpec = do
         let secondValue = {success: "second value"}
         location <- entriesRef
         newChildRef <- push (toForeignGeneric jsonOptions Yes) location
-        set (toForeignGeneric jsonOptions No) location
+        set (toForeignGeneric jsonOptions No) newChildRef
         snap <- onceValue newChildRef
         (readGeneric jsonOptions (D.val snap)) `shouldEqual` (Right No)
       it "can read what push writes in new location" do
