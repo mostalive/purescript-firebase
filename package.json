@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/mostalive/purescript-firebase#readme",
   "dependencies": {
-    "firebase": "^3.0.5"
+    "firebase": "^2.4.1"
   },
   "devDependencies": {
     "bower": "^1.7.7",
