@@ -86,7 +86,7 @@ on etype fb = makeAff (\eb cb -> FB.on etype cb (convertError eb) fb)
 -- see .js file for firebase Error documentation
 convertError :: forall eff. (Error -> Eff (firebase :: FBT.FirebaseEff | eff) Unit) ->
 	 FBT.FirebaseErr ->
-         Eff (firebase :: Web.Firebase.Types.FirebaseEff | eff) Unit
+         Eff (firebase :: FBT.FirebaseEff | eff) Unit
 convertError errorCallback firebaseError = errorCallback (fb2error firebaseError)
 
 -- We also take the liberty to write more specific functions, e.g. once and on() in firebase have 4 event types. we get better error messages and code completion by making specific functions, e.g.
@@ -96,11 +96,13 @@ once :: forall e. FB.EventType -> FBT.Firebase -> Aff (firebase :: FBT.FirebaseE
 once eventType root = makeAff (\errorCb successCb ->
 		                FB.once eventType successCb (convertError errorCb) root)
 
-push :: forall e. FBT.Firebase -> Foreign -> Aff (firebase :: FBT.FirebaseEff | e) FBT.Firebase
-push ref value = makeAff (\onError onSuccess -> FB.pushA value onSuccess (convertError onError) ref)
+-- | write a value under a new generated key to the database
+-- returns the firebase reference generated
+push :: forall e. Foreign -> FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) FBT.Firebase
+push value ref = makeAff (\onError onSuccess -> FB.pushA value onSuccess (convertError onError) ref)
 
-set :: forall e. FBT.Firebase -> Foreign -> Aff (firebase :: FBT.FirebaseEff | e) Unit
-set ref value = makeAff (\onError onSuccess -> FB.setA value onSuccess (convertError onError) ref)
+set :: forall e. Foreign -> FBT.Firebase ->  Aff (firebase :: FBT.FirebaseEff | e) Unit
+set value ref = makeAff (\onError onSuccess -> FB.setA value onSuccess (convertError onError) ref)
 
 -- | Extra functions not part of firebase api, grown out of our use
 offLocation :: forall e. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) Unit
@@ -113,7 +115,6 @@ valueAt :: forall eff. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | eff) F
 valueAt ref = do
        snap <- onceValue ref
        pure $ (val snap)
-
 
 -- | read a record from a reference. Throws exception when any part fails
 -- possible failures include network, database and conversion from Foreign value to purescript.
@@ -138,5 +139,5 @@ readSnapshot snapshot = do
 -- not a separate function on the API, but 'set null' which is not pretty in purescript
 -- nor easy to understand
 remove :: forall e. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) Unit
-remove ref = set ref foreignNull
+remove ref = set foreignNull ref
              where foreignNull = toForeign $ toNullable $ Nothing

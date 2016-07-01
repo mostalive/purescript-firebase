@@ -2,14 +2,14 @@ module Test.WriteGenericSpec (writeGenericSpec) where
 
 import Prelude (Unit, bind, ($), class Show, class Eq)
 
-import Control.Monad.Aff (Aff(), launchAff)
+import Control.Monad.Aff (Aff(), launchAff, liftEff' )
 import Control.Monad.Aff.AVar (AVAR(), makeVar, takeVar, putVar)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Exception (EXCEPTION)
+import Control.Monad.Error.Class (throwError)
 import Data.Maybe (Maybe(Nothing))
-import Data.Either (Either(Right))
-import Web.Firebase as FB
-import Web.Firebase.Monad.Aff (onceValue)
+import Data.Either (Either(Left, Right))
+import Web.Firebase.Monad.Aff (fb2error, onceValue, push, set)
 import Web.Firebase.UnsafeRef (refFor)
 import Web.Firebase.DataSnapshot as D
 import Web.Firebase.Types as FBT
@@ -20,7 +20,6 @@ import Data.Generic (class Generic, gShow, gEq)
 
 entriesRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 entriesRef = refFor "https://purescript-spike.firebaseio.com/entries/generic"
-
 
 setRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 setRef = refFor "https://purescript-spike.firebaseio.com/entries/wecanset/generic/paths"
@@ -57,34 +56,35 @@ noShow = MyInvitation {invitee: "someone", willAttend: No}
 dontKnow :: MyInvitation
 dontKnow = MyInvitation {invitee: "mr bean", willAttend: DontKnowYet }
 
-writeGenericSpec ::  forall eff. Spec ( avar :: AVAR, firebase :: FBT.FirebaseEff, err :: EXCEPTION | eff) Unit
+-- | We chose to test Eff functions indirectly through Aff -
+-- Eff tests were as least as complicated as the implementation
+-- see Authorization tests for errors when writing
+-- tests are with generic - default toForeign only works for very simple objects (e.g. strings and ints as values, Abstract Data Types for instance.
+-- Once you get to maps, you are on your own - manual marshalling - maps don't have a Generic instance.
+writeGenericSpec ::  forall eff. Spec ( firebase :: FBT.FirebaseEff, err :: EXCEPTION | eff) Unit
 writeGenericSpec = do
   describe "Writing objects with toForeignGeneric" do
       it "can add an ADT to a list" do
         location <- entriesRef
-        newChildRef <- liftEff $ FB.push (toForeignGeneric jsonOptions Yes) Nothing location
+        newChildRef <- push (toForeignGeneric jsonOptions Yes) location
         snap <- onceValue newChildRef
         (D.key snap) `shouldNotEqual` Nothing
-        -- key is different on every write. Checking unique keys is work for QuickCheck
         (readGeneric jsonOptions (D.val snap)) `shouldEqual` (Right Yes)
-        -- use key to read value
 
       it "can overwrite an existing ADT" do
         let secondValue = {success: "second value"}
         location <- entriesRef
-        newChildRef <- liftEff $ FB.push (toForeignGeneric jsonOptions Yes) Nothing location
-        _ <- liftEff $ FB.set (toForeignGeneric jsonOptions No) Nothing newChildRef
+        newChildRef <- push (toForeignGeneric jsonOptions Yes) location
+        set (toForeignGeneric jsonOptions No) location
         snap <- onceValue newChildRef
         (readGeneric jsonOptions (D.val snap)) `shouldEqual` (Right No)
-      it "pushE calls back with Nothing when no error occurs" do
+      it "can read what push writes in new location" do
           location <- entriesRef
-          respVar  <- makeVar
-          handle  <- liftEff $ FB.pushE (toForeignGeneric jsonOptions noShow) (\err -> launchAff $ putVar respVar err) location
-          actual :: Maybe FBT.FirebaseErr <- takeVar respVar
-          actual `shouldEqual` Nothing
-      it "setE calls back with Nothing when no error occurs" do
+          newLocation <- push (toForeignGeneric jsonOptions noShow) location
+          snap <- onceValue newLocation
+          (readGeneric jsonOptions (D.val snap)) `shouldEqual` (Right noShow)
+      it "can read what set writes in new location " do
           location <- setRef
-          respVar  <- makeVar
-          liftEff $ FB.setE (toForeignGeneric jsonOptions dontKnow) (\err -> launchAff $ putVar respVar err) location
-          actual :: Maybe FBT.FirebaseErr <- takeVar respVar
-          actual `shouldEqual` Nothing
+          set (toForeignGeneric jsonOptions dontKnow) location
+          snap <- onceValue location
+          (readGeneric jsonOptions (D.val snap)) `shouldEqual` (Right dontKnow)

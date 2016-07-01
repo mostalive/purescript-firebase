@@ -18,19 +18,23 @@ where
 import Prelude (class Show, class Eq, class Ord, Unit, (<$>), (<<<), compare, map, ($))
 import Control.Monad.Eff (Eff())
 import Data.Foreign (Foreign())
-import Data.Function (Fn1(), Fn2(), Fn3(), Fn4(), runFn1, runFn2, runFn3, runFn4)
+import Data.Function.Uncurried (Fn1(), Fn2(), Fn3(), Fn4(), runFn1, runFn2, runFn3, runFn4)
 import Data.Maybe (Maybe)
 import Data.Nullable (toMaybe, toNullable, Nullable())
-import Data.URI (printURI)
-import Data.URI.Types (URI())
 import Web.Firebase.Types (Firebase(), FirebaseEff(), FirebaseErr(), DataSnapshot(), Key())
 import Web.Firebase.Unsafe (unsafeEvalEff)
 
 
 foreign import newFirebaseImpl :: forall eff. Fn1 String (Eff (firebase :: FirebaseEff | eff) Firebase)
 
-newFirebase :: forall eff. URI -> Eff (firebase :: FirebaseEff | eff) Firebase
-newFirebase u = runFn1 newFirebaseImpl $ printURI u
+-- Data.URI would introduce too many dependencies for this single use
+-- if you want URI's checked, import Data.URI in your projects, and use printURI to convert
+-- We assume an application sets up a newFirebase just once,
+-- and if the URI is wrong, that it is a programming error
+type FirebaseURI = String
+
+newFirebase :: forall eff. FirebaseURI -> Eff (firebase :: FirebaseEff | eff) Firebase
+newFirebase u = runFn1 newFirebaseImpl u
 
 -- | Gets a Firebase reference for the location at the specified relative path.
 -- https://www.firebase.com/docs/web/api/firebase/child.html

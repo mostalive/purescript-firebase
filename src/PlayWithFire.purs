@@ -1,19 +1,18 @@
 module PlayWithFire where
 
-import Prelude (class Eq, class Show, Unit(), pure, bind, ($), show, (==), (++), return)
+import Prelude (class Eq, class Show, Unit(), pure, bind, ($), show, (==), (<>))
 import Control.Monad.Eff (Eff())
-import Control.Monad.Eff.Console (CONSOLE(), print, log)
+import Control.Monad.Eff.Console (CONSOLE(), log)
 import Control.Monad.Aff (Aff())
 import Web.Firebase as FB
 import Web.Firebase.Types as FBT
 import Web.Firebase.Monad.Aff (onceValue)
 import Web.Firebase.DataSnapshot (val)
+import Web.Firebase.UnsafeRef (unsafeRef)
 import Data.Foreign (Foreign(), ForeignError(), toForeign)
 import Data.Foreign.Class as FC
 import Data.Either (Either())
-import Data.Either.Unsafe  (fromRight)
 import Data.Maybe (Maybe(..))
-import Data.URI (runParseURI)
 
 newtype Success = Success { success :: String}
 
@@ -26,10 +25,10 @@ newtype Success = Success { success :: String}
 instance successIsForeign :: FC.IsForeign Success where
  read value = do
    success <- FC.readProp "success" value
-   return $ Success { success : success }
+   pure $ Success { success : success }
 
 instance successShow :: Show Success where
-  show (Success s) = "Success { success: " ++ show s.success ++ " }"
+  show (Success s) = "Success { success: " <> show s.success <> " }"
 
 -- maybe use generics for this - http://www.purescript.org/learn/generic/
 instance successEq :: Eq Success where
@@ -37,24 +36,6 @@ instance successEq :: Eq Success where
 
 foreignErrorToString :: ForeignError -> String
 foreignErrorToString f = show f
-
-aSuccessHandler :: Foreign -> Eff (console :: CONSOLE) Unit
-aSuccessHandler frown = do
-  let js = (FC.readWith foreignErrorToString frown) :: Either String Success
-  print js
-
-writeWithFire :: forall e. Eff (console :: CONSOLE , firebase :: FBT.FirebaseEff | e) FBT.Firebase
-writeWithFire = do
-  log "Hello Firebase!"
-  let fbUri = fromRight $ runParseURI "https://purescript-spike.firebaseio.com/"
-  fb <- FB.newFirebase fbUri
-  root <- FB.child "entries" fb
-  FB.push (toForeign $ {success: "yes!"}) Nothing root
-
-printSnapshot :: forall e. FBT.DataSnapshot -> Eff (console :: CONSOLE, firebase :: FBT.FirebaseEff | e) Unit
-printSnapshot snap = do
-  let js =  (FC.readWith foreignErrorToString (val snap)) :: Either String Success
-  print js
 
 snapshot2success :: FBT.DataSnapshot -> Either String Success
 snapshot2success snap = (FC.readWith foreignErrorToString (val snap)) :: Either String Success

@@ -9,12 +9,13 @@ import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Eff.Exception (EXCEPTION())
 import Control.Monad.Trans (lift)
+import Node.Process (PROCESS)
 import Web.Firebase.Types (FirebaseEff())
 import Web.Firebase as FB
 import Web.Firebase.Monad.Aff (onceValue)
 import Web.Firebase.UnsafeRef (refFor)
 import Web.Firebase.Types as FBT
-import Test.Spec.Runner           (Process(), run)
+import Test.Spec.Runner (run)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec (Spec())
 
@@ -22,7 +23,6 @@ import Test.Authorization (authorizationSpec)
 import Test.Authentication (authenticationSpec)
 import Test.RefSpec (refSpec)
 import Test.DataSnapshotSpec (dataSnapshotSpec)
-import Test.WritingSpec (writingSpec)
 import Test.WriteGenericSpec (writeGenericSpec)
 import Test.AuthDataSpec (authDataSpec)
 
@@ -40,16 +40,15 @@ rootRef = refFor "https://purescript-spike.firebaseio.com/"
 forbiddenRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 forbiddenRef = refFor "https://purescript-spike.firebaseio.com/forbidden"
 
-main ::  forall eff. Eff ( console :: CONSOLE, err :: EXCEPTION, process :: Process, avar :: AVAR, firebase :: FirebaseEff | eff) Unit
+main ::  forall eff. Eff ( console :: CONSOLE, err :: EXCEPTION, process :: PROCESS, avar :: AVAR, firebase :: FirebaseEff | eff) Unit
 main = run [consoleReporter] allSpecs
 
-allSpecs :: forall eff. Spec (  console :: CONSOLE, err :: EXCEPTION, process :: Process, avar :: AVAR, firebase :: FirebaseEff | eff) Unit
+allSpecs :: forall eff. Spec (  console :: CONSOLE, err :: EXCEPTION, process :: PROCESS, avar :: AVAR, firebase :: FirebaseEff | eff) Unit
 allSpecs = do
   ((lift forbiddenRef) >>= authorizationSpec)
   ((lift rootRef) >>= authenticationSpec)
   ((lift rootRef) >>= refSpec)
   ((lift eSnapshot) >>= dataSnapshotSpec)
-  writingSpec
   writeGenericSpec
   authDataSpec
   -- add link to twitterwall home screen 'login with twitter' styled as a twitter button.

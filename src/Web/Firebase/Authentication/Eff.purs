@@ -10,10 +10,9 @@ module Web.Firebase.Authentication.Eff (
 import Prelude (Unit(), pure, unit)
 import Web.Firebase.Types (Firebase(), FirebaseEff(), FirebaseErr)
 import Control.Monad.Eff (Eff())
-import Data.Maybe (Maybe)
 import Data.Foreign (Foreign())
 
-import Data.Function (Fn4, Fn3, Fn2, Fn1, runFn4, runFn3, runFn2, runFn1)
+import Data.Function.Uncurried (Fn4, Fn3, Fn2, Fn1, runFn4, runFn3, runFn2, runFn1)
 
 foreign import _onAuth :: forall eff. Fn2 (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) Firebase (Eff (firebase :: FirebaseEff | eff) Unit)
 

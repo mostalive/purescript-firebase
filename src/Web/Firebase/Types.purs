@@ -1,4 +1,10 @@
-module Web.Firebase.Types where
+module Web.Firebase.Types (
+     DataSnapshot
+   , Firebase
+   , FirebaseEff
+   , FirebaseErr
+   , Key)
+where
 
 -- in process of moving the to string conversion function here, as it belongs with the typeclass
 import Prelude (class Show, class Eq, (==))

@@ -2,10 +2,9 @@ module Web.Firebase.Authentication.Status (
 UserCredentials(..)
 ) where
 
-import Prelude (class Eq, class Show, return, ($), bind)
-import Data.Foreign (isNull)
+import Prelude (class Eq, class Show)
 import Data.Foreign.Generic (readGeneric, Options(), defaultOptions)
-import Data.Foreign.Class (class IsForeign, read)
+import Data.Foreign.Class (class IsForeign)
 import Data.Generic (class Generic, gEq, gShow)
 import Data.Maybe (Maybe)
 
@@ -21,7 +20,6 @@ newtype UserCredentials = UserCredentials {
   , token :: String
   , google :: Maybe GoogleProfile
 }
-
 
 -- ProviderUserProfile = TwitterProfile TwitterProfileRecord | GoogleProfile GoogleProfileRecord | etc
 

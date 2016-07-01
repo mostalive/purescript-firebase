@@ -2,6 +2,7 @@ module Test.DataSnapshotSpec (dataSnapshotSpec) where
 
 import Prelude (Unit, bind, ($), (>>=), (>=))
 
+import Node.Process (PROCESS)
 import Control.Monad.Aff (Aff())
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad (unless)
@@ -12,7 +13,6 @@ import Web.Firebase.UnsafeRef (refFor)
 import Web.Firebase.DataSnapshot as D
 import Web.Firebase.Types as FBT
 import Test.Spec                  (describe, pending, it, Spec())
-import Test.Spec.Runner           (Process())
 import Test.Spec.Assertions       (fail, shouldEqual)
 
 eSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
@@ -30,7 +30,7 @@ getRoot = refFor "https://purescript-spike.firebaseio.com/"
 expect :: forall r. Boolean -> Aff r Unit
 expect condition = unless condition $ fail "false ≠ true"
 
-dataSnapshotSpec ::  forall eff. FBT.DataSnapshot -> Spec ( process :: Process, firebase :: FBT.FirebaseEff | eff) Unit
+dataSnapshotSpec ::  forall eff. FBT.DataSnapshot -> Spec ( process :: PROCESS, firebase :: FBT.FirebaseEff | eff) Unit
 dataSnapshotSpec snapshot =
     describe "DataSnapshot" do
       -- literal API

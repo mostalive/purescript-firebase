@@ -6,8 +6,6 @@ import Prelude (($))
 import Control.Monad.Aff (Aff())
 import Control.Monad.Eff (Eff())
 import Control.Monad.Eff.Class (liftEff)
-import Data.Either.Unsafe  (fromRight)
-import Data.URI (runParseURI)
 import Web.Firebase as FB
 import Web.Firebase.Types as FBT
 
@@ -19,4 +17,4 @@ refFor s = liftEff (unsafeRef s)
 -- may throw javascript exceptions, intended to keep test code terse, not meant for production usage
 -- This will fail silently if you pass something that is not a url.
 unsafeRef :: String -> forall eff. Eff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
-unsafeRef s = FB.newFirebase $ fromRight (runParseURI s)
+unsafeRef s = FB.newFirebase $ s
