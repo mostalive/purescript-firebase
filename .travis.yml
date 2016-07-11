@@ -12,8 +12,6 @@ install:
   - npm install
   - bower install
 script:
-  - travis_wait pulp build
-  - travis_wait make run-example
   - travis_wait pulp test
 
 cache:
