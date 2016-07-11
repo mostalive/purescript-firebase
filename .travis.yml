@@ -1,9 +1,21 @@
 language: node_js
 sudo: false
 node_js:
-        - stable
+        - "5.5"
+env:
+  - PATH=$HOME/purescript:$PATH
 install:
-          - npm install
-          - bower install
+  - wget -O $HOME/purescript.tar.gz https://github.com/purescript/purescript/releases/download/v0.9.1/linux64.tar.gz
+  - tar -xvf $HOME/purescript.tar.gz -C $HOME/
+  - chmod a+x $HOME/purescript
+  - npm install -g bower pulp
+  - npm install
+  - bower install
 script:
-          - npm run build && npm run test
+  - travis_wait pulp build
+  - travis_wait make run-example
+  - travis_wait pulp test
+
+cache:
+  directories:
+    - output
