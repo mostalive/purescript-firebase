@@ -1,5 +1,6 @@
 # Purescript-firebase
 
+[![Latest release](http://img.shields.io/bower/v/purescript-firebase.svg)](https://github.com/mostalive/purescript-firebase/releases)
 [![Build Status](https://travis-ci.org/mostalive/purescript-firebase.svg?branch=master)](https://travis-ci.org/mostalive/purescript-firebase)
 
 Purescript bindings for firebase.
