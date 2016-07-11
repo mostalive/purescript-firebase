@@ -2,14 +2,11 @@ module Test.WriteGenericSpec (writeGenericSpec) where
 
 import Prelude (Unit, bind, ($), class Show, class Eq)
 
-import Control.Monad.Aff (Aff(), launchAff, liftEff' )
-import Control.Monad.Aff.AVar (AVAR(), makeVar, takeVar, putVar)
-import Control.Monad.Eff.Class (liftEff)
+import Control.Monad.Aff (Aff)
 import Control.Monad.Eff.Exception (EXCEPTION)
-import Control.Monad.Error.Class (throwError)
 import Data.Maybe (Maybe(Nothing))
-import Data.Either (Either(Left, Right))
-import Web.Firebase.Monad.Aff (fb2error, onceValue, push, set)
+import Data.Either (Either(Right))
+import Web.Firebase.Monad.Aff (onceValue, push, set)
 import Web.Firebase.UnsafeRef (refFor)
 import Web.Firebase.DataSnapshot as D
 import Web.Firebase.Types as FBT
