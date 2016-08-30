@@ -14,7 +14,8 @@ import Web.Firebase (EventType(ChildMoved, ChildChanged, ChildRemoved, ChildAdde
 import Test.Spec                  (describe, it, Spec())
 import Test.Spec.Assertions       (shouldEqual)
 import Test.Spec.Assertions.Aff (expectError)
-import Web.Firebase.Monad.Aff (child, onceValue, readOnceWithDefault, readSnapshotWithDefault)
+import Web.Firebase.Monad.Aff (child, onceValue)
+import Web.Firebase.Aff.Read (readOnceWithDefault, readSnapshotWithDefault)
 
 -- | Reading from references and snapshots, sometimes with defaults
 -- reading, as in also converting from foreign with some form of `read`
