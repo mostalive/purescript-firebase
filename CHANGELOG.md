@@ -1,6 +1,6 @@
 # Change Log
 
-## [v 1.2.0] = 2016-08-30
+## [v 2.0.0] = 2016-08-30
 
 * move Web.Firebase.Monad.Aff to Web.Firebase.Aff
 * move some functions to read values that are not part of the Firebase API, but pertain to purescript to Web.Firebase.Aff.Read
