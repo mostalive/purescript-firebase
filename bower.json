@@ -13,11 +13,11 @@
   "dependencies": {
     "purescript-console": "^1.0.0",
     "purescript-spec": "*",
-    "purescript-foreign": "^1.0.0",
+    "purescript-foreign": "^1.1.0",
     "purescript-nullable": "^1.0.1",
     "purescript-transformers": "^1.0.0",
-    "purescript-aff": "^1.0",
-    "purescript-foreign-generic": "^1.0.0"
+    "purescript-aff": "^1.1",
+    "purescript-foreign-generic": "^1.0.1"
   },
   "resolutions": {
     "purescript-console": "^1.0.0",
