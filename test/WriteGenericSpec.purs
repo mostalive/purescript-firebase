@@ -6,7 +6,7 @@ import Control.Monad.Aff (Aff)
 import Control.Monad.Eff.Exception (EXCEPTION)
 import Data.Maybe (Maybe(Nothing))
 import Data.Either (Either(Right))
-import Web.Firebase.Monad.Aff (onceValue, push, set)
+import Web.Firebase.Aff (onceValue, push, set)
 import Web.Firebase.UnsafeRef (refFor)
 import Web.Firebase.DataSnapshot as D
 import Web.Firebase.Types as FBT

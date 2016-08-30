@@ -5,7 +5,7 @@ import Control.Monad.Aff (Aff(), makeAff)
 import Data.Foreign (Foreign)
 
 import Web.Firebase.Types as FBT
-import Web.Firebase.Monad.Aff (convertError)
+import Web.Firebase.Aff (convertError)
 import Web.Firebase.Authentication.Eff as AE
 
 authWithCustomToken :: forall eff.

@@ -1,12 +1,12 @@
 module Web.Firebase.Aff.Read
 (
--- conveniencde functions to be split out at some point
-  readRecord
+  onceValue
+, readRecord
 , readOnceWithDefault
 , readSnapshot
 , readSnapshotWithDefault
 , valueAt
-  ) where
+) where
 import Prelude (pure, show, bind, ($), (<<<))
 
 import Data.Foreign (Foreign)
@@ -21,7 +21,7 @@ import Data.Foreign.Class (class IsForeign, readWith)
 import Web.Firebase as FB
 import Web.Firebase.Types as FBT
 import Web.Firebase.DataSnapshot (exists, val)
-import Web.Firebase.Monad.Aff (once)
+import Web.Firebase.Aff (once)
 
 -- | Inspired by its Eff relative.
 -- | Throw takes a message and throws a MonadError in Aff with that message

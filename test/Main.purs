@@ -12,7 +12,7 @@ import Control.Monad.Trans (lift)
 import Node.Process (PROCESS)
 import Web.Firebase.Types (FirebaseEff())
 import Web.Firebase as FB
-import Web.Firebase.Monad.Aff (onceValue)
+import Web.Firebase.Aff.Read (onceValue)
 import Web.Firebase.UnsafeRef (refFor)
 import Web.Firebase.Types as FBT
 import Test.Spec.Runner (run)

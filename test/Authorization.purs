@@ -13,7 +13,7 @@ import Web.Firebase (EventType(ChildMoved, ChildChanged, ChildRemoved, ChildAdde
 import Test.Spec                  (describe, it, Spec())
 import Test.Spec.Assertions       (shouldEqual)
 import Test.Spec.Assertions.Aff (expectError)
-import Web.Firebase.Monad.Aff as FAff
+import Web.Firebase.Aff as FAff
 
 authorizationSpec :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff, err :: EXCEPTION | eff ) Unit
 authorizationSpec forbiddenRef = do

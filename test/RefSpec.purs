@@ -8,7 +8,7 @@ import Control.Monad.Eff.Exception (EXCEPTION())
 import Data.Maybe (Maybe(Just, Nothing))
 import Web.Firebase.Types as FBT
 import Web.Firebase (child, key)
-import Web.Firebase.Monad.Aff as FAff
+import Web.Firebase.Aff as FAff
 import Test.Spec                  (describe, it, Spec())
 import Test.Spec.Assertions       (shouldEqual)
 import Test.Spec.Assertions.Aff (expectError)

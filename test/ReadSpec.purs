@@ -3,26 +3,41 @@ module Test.ReadSpec where
 import Prelude (Unit, bind, ($), (>>=))
 
 import Control.Apply ((*>))
-import Control.Monad.Aff (attempt)
-import Control.Monad.Eff.Exception (EXCEPTION(), message)
 import Control.Monad.Trans (lift)
 import Control.Alt ((<|>))
-import Data.Either (either)
 import Data.Foreign (toForeign)
+
 import Web.Firebase.Types as FBT
-import Web.Firebase (EventType(ChildMoved, ChildChanged, ChildRemoved, ChildAdded))
 import Test.Spec                  (describe, it, Spec())
 import Test.Spec.Assertions       (shouldEqual)
-import Test.Spec.Assertions.Aff (expectError)
-import Web.Firebase.Monad.Aff (child, onceValue)
+import Web.Firebase.Aff (child, onceValue, set)
 import Web.Firebase.Aff.Read (readOnceWithDefault, readSnapshotWithDefault)
 
 -- | Reading from references and snapshots, sometimes with defaults
 -- reading, as in also converting from foreign with some form of `read`
-readSpec :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff, err :: EXCEPTION | eff ) Unit
-readSpec entries = (lift (child "/nodata" entries)) >>= readSpecNoData
+readSpec :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff | eff ) Unit
+readSpec entries = do
+  (lift (child "/nodata" entries)) >>= readSpecNoData
+  do
+    location <- (lift (child "/somedata" entries))
+    lift (set (toForeign "some data") location)
+    readSpecSomeData location
 
-readSpecNoData :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff, err :: EXCEPTION | eff ) Unit
+readSpecSomeData :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff | eff ) Unit
+readSpecSomeData somedataLocation = do
+    describe "Reading records and newtypes once" do
+        describe "with a default value" do
+          it "returns default value on some-existant and allowed location" do
+            somedata <- readOnceWithDefault "no data" somedataLocation
+            somedata `shouldEqual` "some data"
+    describe "Reading a snapshot" do
+        describe "with a default value" do
+          it "returns default value on some-existant and allowed location" do
+            somedataSnapshot <- onceValue somedataLocation
+            somedata <- readSnapshotWithDefault "no data" somedataSnapshot
+            somedata `shouldEqual` "some data"
+
+readSpecNoData :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff | eff ) Unit
 readSpecNoData nodataLocation = do
     describe "Reading records and newtypes once" do
         describe "with a default value" do

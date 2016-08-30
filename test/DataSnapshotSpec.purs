@@ -8,7 +8,7 @@ import Control.Monad.Eff.Class (liftEff)
 import Control.Monad (unless)
 import Data.Maybe (Maybe(Just))
 import Web.Firebase as FB
-import Web.Firebase.Monad.Aff (onceValue)
+import Web.Firebase.Aff (onceValue)
 import Web.Firebase.UnsafeRef (refFor)
 import Web.Firebase.DataSnapshot as D
 import Web.Firebase.Types as FBT
