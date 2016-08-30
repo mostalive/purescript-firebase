@@ -58,10 +58,12 @@ Pull requests welcome. The tests will tell you what's been done so far, and what
 * Commit, push, wait for CI to build clean
 * Update CHANGELOG.md
 * Bump [semantic version](http://semver.org/) with [bower version](https://bower.io/docs/api/) and push tags:
-  ```
-  bower version major
-  willem@gypsyfire:~/dev/spikes/purescript/purescript-firebase$ git push origin master && git push --tags
-  ```
+
+
+```
+> bower version major
+> git push origin master && git push --tags
+```
 
 
 
