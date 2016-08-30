@@ -15,6 +15,7 @@ module Web.Firebase.Monad.Aff
 , readRecord
 , readOnceWithDefault
 , readSnapshot
+, readSnapshotWithDefault
 , remove
 , valueAt
 )
@@ -143,7 +144,12 @@ readSnapshot snapshot = do
     Left msg  -> throw msg
     Right v   -> pure v
 
--- add ReadSnapshotWithDefault
+-- | read a snapshot to a record. Throws exception when any part fails
+-- possible failures include network, database and conversion from Foreign value to purescript.
+readSnapshotWithDefault :: forall a eff. (IsForeign a) => a -> FBT.DataSnapshot -> Aff (firebase :: FBT.FirebaseEff | eff) a
+readSnapshotWithDefault default snapshot = do
+  if (exists snapshot) then (readSnapshot snapshot) else (pure default)
+
 -- | remove data below ref
 -- (firebase will also remove the path to ref probably)
 -- not a separate function on the API, but 'set null' which is not pretty in purescript
