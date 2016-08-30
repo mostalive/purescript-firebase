@@ -21,6 +21,7 @@ import Test.Spec (Spec())
 
 import Test.Authorization (authorizationSpec)
 import Test.Authentication (authenticationSpec)
+import Test.ReadSpec (readSpec)
 import Test.RefSpec (refSpec)
 import Test.DataSnapshotSpec (dataSnapshotSpec)
 import Test.WriteGenericSpec (writeGenericSpec)
@@ -37,6 +38,13 @@ snapshotFor location  = rootRef >>= \r -> (liftEff $ FB.child location r) >>= on
 rootRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 rootRef = refFor "https://purescript-spike.firebaseio.com/"
 
+-- | Reference to /entries that can be written to and read from
+-- It is clearest if each test suite uses its own child path
+-- so that after a test run data written can be easily inspected
+-- if necessary
+entriesRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
+entriesRef = refFor "https://purescript-spike.firebaseio.com/entries"
+
 forbiddenRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 forbiddenRef = refFor "https://purescript-spike.firebaseio.com/forbidden"
 
@@ -48,6 +56,7 @@ allSpecs = do
   ((lift forbiddenRef) >>= authorizationSpec)
   ((lift rootRef) >>= authenticationSpec)
   ((lift rootRef) >>= refSpec)
+  ((lift entriesRef) >>= readSpec)
   ((lift eSnapshot) >>= dataSnapshotSpec)
   writeGenericSpec
   authDataSpec

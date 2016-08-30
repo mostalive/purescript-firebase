@@ -13,15 +13,24 @@ import Web.Firebase (EventType(ChildMoved, ChildChanged, ChildRemoved, ChildAdde
 import Test.Spec                  (describe, it, Spec())
 import Test.Spec.Assertions       (shouldEqual)
 import Test.Spec.Assertions.Aff (expectError)
-import Web.Firebase.Monad.Aff (child, readOnceWithDefault)
+import Web.Firebase.Monad.Aff (child, onceValue, readOnceWithDefault)
 
 -- | Reading from references and snapshots, sometimes with defaults
 -- reading, as in also converting from foreign with some form of `read`
 readSpec :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff, err :: EXCEPTION | eff ) Unit
 readSpec entries = do
-    describe "Reading records and newtypes" do
+    describe "Reading records and newtypes once" do
         describe "with a default value" do
           it "returns default value on non-existant, but allowed location" do
             nodataLocation <- child "/nodata" entries
             nodata <- readOnceWithDefault "no data" nodataLocation
             nodata `shouldEqual` "no data"
+{-    describe "Reading a snapshot" do
+        describe "with a default value" do
+          it "returns default value on non-existant, but allowed location" do
+            nodataLocation <- child "/nodata" entries
+            nodataSnapshot <- onceValue nodataLocation
+            nodata <- readSnapshotWithDefault "no snapshot data" nodataLocation
+            nodata `shouldEqual` "no snapshot data"
+
+            -}

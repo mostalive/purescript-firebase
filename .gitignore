@@ -1,3 +1,6 @@
+*.tix
+tags
+\#todo.org\#
 /bower_components/
 /node_modules/
 /.pulp-cache/
@@ -7,3 +10,4 @@
 *.swp
 /test/rules.json
 firebase.json
+docs
