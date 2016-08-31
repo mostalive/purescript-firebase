@@ -15,7 +15,7 @@ import Test.Spec.Assertions.Aff (expectError)
 
 refSpec :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff, err :: EXCEPTION, console :: CONSOLE | eff ) Unit
 refSpec rootRef = do
-    describe "database reference" do
+    describe "a Database reference" do
       describe "key with Eff" do
        it "on root returns Nothing" do
          actual <- liftEff $ key rootRef
@@ -30,10 +30,18 @@ refSpec rootRef = do
        it "on child of root returns root url + child" do
          actual <- liftEff $ (child "achild" rootRef) >>= toString
          actual `shouldEqual` "https://purescript-spike.firebaseio.com/achild"
-      describe "key with Aff" do
-       it "on root throws an error" do
-         expectError $ FAff.key rootRef
-       it "on child of root returns child" do
-         actual <- (FAff.child "affchild" rootRef) >>= FAff.key
-         actual `shouldEqual` "affchild"
+      describe "with Aff" do
+        describe "Getting a key" do
+         it "on root throws an error" do
+           expectError $ FAff.key rootRef
+         it "on child of root returns child" do
+           actual <- (FAff.child "affchild" rootRef) >>= FAff.key
+           actual `shouldEqual` "affchild"
+        describe "getting the url" do
+          it "on root returns url" do
+            actual <- FAff.toString rootRef
+            actual `shouldEqual` "https://purescript-spike.firebaseio.com/"
+          it "on child of root returns root url + child" do
+            actual <- (FAff.child "achild" rootRef) >>= FAff.toString
+            actual `shouldEqual` "https://purescript-spike.firebaseio.com/achild"
 

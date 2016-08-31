@@ -15,6 +15,7 @@ module Web.Firebase.Aff
 , set
 , fb2error
 , firebaseErrToString
+, toString
 , remove
 )
 where
@@ -105,6 +106,11 @@ offLocation = liftEff <<< FB.offSimple
 
 onceValue :: forall e. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) FBT.DataSnapshot
 onceValue root = once FB.Value root
+
+-- | Get the absolute URL for this location -  https://firebase.google.com/docs/reference/js/firebase.database.Reference#toString
+
+toString :: forall eff. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | eff) String
+toString = liftEff <<< FB.toString
 
 -- | remove data below ref
 -- (firebase will also remove the path to ref probably)
