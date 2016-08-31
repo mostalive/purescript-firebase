@@ -7,7 +7,7 @@ import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Exception (EXCEPTION())
 import Data.Maybe (Maybe(Just, Nothing))
 import Web.Firebase.Types as FBT
-import Web.Firebase (child, key)
+import Web.Firebase (child, key, toString)
 import Web.Firebase.Aff as FAff
 import Test.Spec                  (describe, it, Spec())
 import Test.Spec.Assertions       (shouldEqual)
@@ -15,7 +15,7 @@ import Test.Spec.Assertions.Aff (expectError)
 
 refSpec :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff, err :: EXCEPTION, console :: CONSOLE | eff ) Unit
 refSpec rootRef = do
-    describe "Ref" do
+    describe "database reference" do
       describe "key with Eff" do
        it "on root returns Nothing" do
          actual <- liftEff $ key rootRef
@@ -23,6 +23,13 @@ refSpec rootRef = do
        it "on child of root returns child" do
          actual <- liftEff $ (child "achild" rootRef) >>= key
          actual `shouldEqual` (Just "achild")
+      describe "getting url with Eff" do
+       it "on root returns url" do
+         actual <- liftEff $ toString rootRef
+         actual `shouldEqual` "https://purescript-spike.firebaseio.com/"
+       it "on child of root returns root url + child" do
+         actual <- liftEff $ (child "achild" rootRef) >>= toString
+         actual `shouldEqual` "https://purescript-spike.firebaseio.com/achild"
       describe "key with Aff" do
        it "on root throws an error" do
          expectError $ FAff.key rootRef

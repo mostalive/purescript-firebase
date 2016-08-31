@@ -17,7 +17,7 @@ exports.childImpl = function (childPath, firebase) {
 exports._key = function(firebaseRef) {
   return function() {
     return firebaseRef.key();
-  }
+  };
 };
 
 exports.onImpl = function (eventType, onComplete, onCancel, fb) {
@@ -49,7 +49,7 @@ exports._offSimple = function (fb) {
 exports.onceImpl = function(eventType, callback, errorCallback, fb) {
     var logDecorator = function(error) {
       errorCallback(error)();
-    }
+    };
     return function () {
       fb.once(eventType, callback, logDecorator);
     };
@@ -67,7 +67,7 @@ exports.setEImpl = function (value, onComplete, fb) {
       console.log("setEImpl");
       console.log(error);
       onComplete(error)();
-    }
+    };
     return function () {
         fb.set(value, runEffect);
     };
@@ -81,9 +81,9 @@ exports._setA = function (value, onSuccess, onError, fb) {
           onError(error)();
         else
           onSuccess()();
-      }
+      };
       newRef = fb.set(value, runEffect);
-      return newRef
+      return newRef;
     };
 };
 /*
@@ -99,7 +99,7 @@ exports._setA = function (value, onSuccess, onError, fb) {
 exports.pushImpl = function (value, onError, fb) {
     var runEffect  = function (error) {
       onError(error)();
-    }
+    };
     return function () {
         return fb.push(value, onError === null ? undefined : runEffect);
     };
@@ -109,7 +109,7 @@ exports.pushImpl = function (value, onError, fb) {
 exports.pushEImpl = function (value, onError, fb) {
     var runEffect  = function (error) {
       onError(error)();
-    }
+    };
     return function () {
         return fb.push(value, runEffect);
     };
@@ -117,7 +117,7 @@ exports.pushEImpl = function (value, onError, fb) {
 
 var withEffect1  = function (f, value) {
     return  f(value)();
-}
+};
 // extra to firebase api, easy Aff bridge, explicit callbacks
 exports._pushA = function (value, onSuccess, onError, fb) {
     return function () {
@@ -127,8 +127,14 @@ exports._pushA = function (value, onSuccess, onError, fb) {
           onError(error)();
         else
           onSuccess(newRef)();
-      }
+      };
       newRef = fb.push(value, runEffect);
-      return newRef
+      return newRef;
     };
+};
+
+exports._toString = function(firebaseRef) {
+  return function() {
+    return firebaseRef.toString();
+  };
 };

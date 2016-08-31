@@ -1,5 +1,9 @@
 # Change Log
 
+## [v 2.0.1] = 2016-08-31
+
+* retrieve URL of a database reference
+
 ## [v 2.0.0] = 2016-08-30
 
 * move Web.Firebase.Monad.Aff to Web.Firebase.Aff

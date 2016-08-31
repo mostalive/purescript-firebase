@@ -12,6 +12,7 @@ module Web.Firebase
 , set
 , setE
 , setA
+, toString
 )
 where
 
@@ -261,3 +262,9 @@ pushA = runFn4 _pushA
 callBackReceivesNull :: forall a b. (Maybe a -> b) -> (Nullable a -> b)
 callBackReceivesNull cb = nab
   where nab nullValue = cb (toMaybe nullValue)
+
+-- | Get the absolute URL for this location -  https://firebase.google.com/docs/reference/js/firebase.database.Reference#toString
+foreign import _toString :: forall eff. Fn1 Firebase (Eff (firebase :: FirebaseEff | eff) String)
+
+toString :: forall eff. Firebase -> Eff (firebase :: FirebaseEff | eff) String
+toString ds = runFn1 _toString ds
