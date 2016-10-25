@@ -24,12 +24,12 @@
   },
   "homepage": "https://github.com/mostalive/purescript-firebase#readme",
   "dependencies": {
-    "firebase": "^2.4.1"
+    "firebase": "2.4.1"
   },
   "devDependencies": {
-    "bower": "^1.7.9",
-    "firebase-server": "^0.7.0",
-    "pulp": "^9.0.1",
-    "purescript": "^0.9.3"
+    "bower": "1.7.9",
+    "firebase-server": "0.7.0",
+    "pulp": "9.0.1",
+    "purescript": "0.9.3"
   }
 }
