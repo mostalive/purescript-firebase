@@ -11,3 +11,4 @@ tags
 /test/rules.json
 firebase.json
 docs
+.psc-package
