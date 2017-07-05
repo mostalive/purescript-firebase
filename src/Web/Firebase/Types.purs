@@ -7,13 +7,13 @@ module Web.Firebase.Types (
 where
 
 -- in process of moving the to string conversion function here, as it belongs with the typeclass
+import Control.Monad.Eff (kind Effect)
 import Prelude (class Show, class Eq, (==))
 
+foreign import data FirebaseEff :: Effect 
 
-foreign import data FirebaseEff :: !
-
-foreign import data Firebase :: *
-foreign import data FirebaseErr :: *
+foreign import data Firebase :: Type
+foreign import data FirebaseErr :: Type
 
 foreign import firebaseErrToString :: FirebaseErr -> String
 
@@ -36,6 +36,6 @@ instance eqFirebaseErr :: Eq FirebaseErr where
 -}
 
 --https://www.firebase.com/docs/web/api/datasnapshot/
-foreign import data DataSnapshot :: *
+foreign import data DataSnapshot :: Type
 
 type Key = String
