@@ -7,8 +7,6 @@ GoogleProfile(..)
 
 import Prelude (class Eq, class Show)
 import Data.Maybe (Maybe)
-import Data.Foreign.Generic (readGeneric, Options(), defaultOptions)
-import Data.Foreign.Class (class IsForeign)
 import Data.Generic (class Generic, gEq, gShow)
 
 newtype GoogleProfile = GoogleProfile {
@@ -30,8 +28,3 @@ instance showGoogleProfile :: Show GoogleProfile where
 instance eqGoogleProfile :: Eq GoogleProfile where
   eq = gEq
 
-jsonOptions :: Options
-jsonOptions = defaultOptions { unwrapNewtypes = true }
-
-instance isForeignGoogleProfile :: IsForeign GoogleProfile where
-  read = readGeneric jsonOptions

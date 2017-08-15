@@ -3,8 +3,6 @@ UserCredentials(..)
 ) where
 
 import Prelude (class Eq, class Show)
-import Data.Foreign.Generic (readGeneric, Options(), defaultOptions)
-import Data.Foreign.Class (class IsForeign)
 import Data.Generic (class Generic, gEq, gShow)
 import Data.Maybe (Maybe)
 
@@ -30,11 +28,4 @@ instance showUserCredentials :: Show UserCredentials where
 
 instance eqUserCredentials :: Eq UserCredentials where
   eq = gEq
-
-jsonOptions :: Options
-jsonOptions = defaultOptions { unwrapNewtypes = true }
-
--- | keep in mind to check with isNull in the caller if there is an object or not
-instance isForeignUserCredentials :: IsForeign UserCredentials where
-  read = readGeneric jsonOptions
 
