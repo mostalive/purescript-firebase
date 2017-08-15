@@ -16,7 +16,7 @@ module Web.Firebase
 )
 where
 
-import Prelude (class Show, class Eq, class Ord, Unit, (<$>), (<<<), compare, map, ($))
+import Prelude (class Show, class Eq, class Ord, Unit, (<$>), (<<<), compare, map)
 import Control.Monad.Eff (Eff())
 import Data.Foreign (Foreign())
 import Data.Function.Uncurried (Fn1(), Fn2(), Fn3(), Fn4(), runFn1, runFn2, runFn3, runFn4)
