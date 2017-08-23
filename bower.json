@@ -47,5 +47,8 @@
     "purescript-lists": "1.0.0",
     "purescript-invariant": "1.0.0",
     "purescript-identity": "1.0.0"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^3.0.0"
   }
 }

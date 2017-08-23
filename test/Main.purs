@@ -1,31 +1,29 @@
 module Test.Main where
 
-import Prelude (Unit, ($), bind, (>>=))
-
-import Control.Monad.Aff (Aff())
-import Control.Monad.Aff.AVar (AVAR())
-import Control.Monad.Eff (Eff())
+import Control.Monad.Aff (Aff, launchAff)
+import Control.Monad.Aff.AVar (AVAR)
+import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (CONSOLE)
-import Control.Monad.Eff.Exception (EXCEPTION())
-import Control.Monad.Trans (lift)
+import Control.Monad.Eff.Exception (EXCEPTION)
+import Control.Monad.State.Trans (StateT(..))
+import Control.Monad.Trans.Class (lift)
+import Data.Identity (Identity(..))
 import Node.Process (PROCESS)
-import Web.Firebase.Types (FirebaseEff())
+import Prelude (Unit, bind, ($), discard, (>>=))
+import Test.Authentication (authenticationSpec)
+import Test.Authorization (authorizationSpec)
+import Test.DataSnapshotSpec (dataSnapshotSpec)
+import Test.RefSpec (refSpec)
+import Test.Spec (Group, Spec, describe, it)
+import Test.Spec.Assertions (shouldEqual)
+import Test.Spec.Reporter.Console (consoleReporter)
+import Test.Spec.Runner (RunnerEffects, run)
 import Web.Firebase as FB
 import Web.Firebase.Aff.Read (onceValue)
-import Web.Firebase.UnsafeRef (refFor)
+import Web.Firebase.Types (FirebaseEff)
 import Web.Firebase.Types as FBT
-import Test.Spec.Runner (run)
-import Test.Spec.Reporter.Console (consoleReporter)
-import Test.Spec (Spec())
-
-import Test.Authorization (authorizationSpec)
-import Test.Authentication (authenticationSpec)
-import Test.ReadSpec (readSpec)
-import Test.RefSpec (refSpec)
-import Test.DataSnapshotSpec (dataSnapshotSpec)
-import Test.WriteGenericSpec (writeGenericSpec)
-import Test.AuthDataSpec (authDataSpec)
+import Web.Firebase.UnsafeRef (refFor, unsafeRef)
 
 eSnapshot :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
 eSnapshot = snapshotFor "entries"
@@ -38,6 +36,9 @@ snapshotFor location  = rootRef >>= \r -> (liftEff $ FB.child location r) >>= on
 rootRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 rootRef = refFor "https://purescript-spike.firebaseio.com/"
 
+root :: String
+root =  "https://purescript-spike.firebaseio.com/"
+
 -- | Reference to /entries that can be written to and read from
 -- It is clearest if each test suite uses its own child path
 -- so that after a test run data written can be easily inspected
@@ -47,23 +48,24 @@ entriesRef = refFor "https://purescript-spike.firebaseio.com/entries"
 
 forbiddenRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 forbiddenRef = refFor "https://purescript-spike.firebaseio.com/forbidden"
+-- Console, timer, avar, process
 
-main ::  forall eff. Eff ( console :: CONSOLE, err :: EXCEPTION, process :: PROCESS, avar :: AVAR, firebase :: FirebaseEff | eff) Unit
-main = run [consoleReporter] allSpecs
+type FbSpecEffects e = (err :: EXCEPTION, firebase :: FirebaseEff | e)
+type FbSpecRunnerEffects e = RunnerEffects (FbSpecEffects e)
 
-allSpecs :: forall eff. Spec (  console :: CONSOLE, err :: EXCEPTION, process :: PROCESS, avar :: AVAR, firebase :: FirebaseEff | eff) Unit
-allSpecs = do
-  ((lift forbiddenRef) >>= authorizationSpec)
-  ((lift rootRef) >>= authenticationSpec)
-  ((lift rootRef) >>= refSpec)
-  ((lift entriesRef) >>= readSpec)
-  ((lift eSnapshot) >>= dataSnapshotSpec)
-  writeGenericSpec
-  authDataSpec
-  -- add link to twitterwall home screen 'login with twitter' styled as a twitter button.
-  -- save userid under /users,
-  -- only writeable to authenticated users
-  -- add roles under /roles, only writeable by conf1r3
-  -- add admin role to conf1r3
-  -- and then roles only writeable by those with admin role, readable by authenticated users
+main ::  forall eff. Eff (FbSpecRunnerEffects eff) Unit
+main = do
+  run [consoleReporter] allSpecs
+
+--allSpecs :: forall eff. StateT (Array (Group (Aff (FbSpecEffects eff) Unit))) Identity Unit
+allSpecs :: forall t31.
+  Spec ( firebase :: FBT.FirebaseEff
+                 | t31
+       ) Unit
+allSpecs  = do
+  authorizationSpec
+  authenticationSpec
+  refSpec root
+  dataSnapshotSpec
+
 

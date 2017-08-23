@@ -1,47 +1,53 @@
 module Test.RefSpec (refSpec) where
 
-import Prelude (Unit, bind, ($), (>>=))
-
-import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Eff.Class (liftEff)
-import Control.Monad.Eff.Exception (EXCEPTION())
 import Data.Maybe (Maybe(Just, Nothing))
-import Web.Firebase.Types as FBT
+import Prelude (Unit, bind, discard, ($), (>>=))
+import Test.Spec (describe, it, Spec)
+import Test.Spec.Assertions (shouldEqual)
+import Test.Spec.Assertions.Aff (expectError)
 import Web.Firebase (child, key, toString)
 import Web.Firebase.Aff as FAff
-import Test.Spec                  (describe, it, Spec())
-import Test.Spec.Assertions       (shouldEqual)
-import Test.Spec.Assertions.Aff (expectError)
+import Web.Firebase.Types as FBT
+import Web.Firebase.UnsafeRef (refFor)
 
-refSpec :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff, err :: EXCEPTION, console :: CONSOLE | eff ) Unit
-refSpec rootRef = do
+refSpec :: forall eff. String -> Spec (firebase :: FBT.FirebaseEff | eff ) Unit
+refSpec root = do
     describe "a Database reference" do
       describe "key with Eff" do
        it "on root returns Nothing" do
-         actual <- liftEff $ key rootRef
+         r <- refFor root
+         actual <- liftEff $ key r
          actual `shouldEqual` Nothing -- see implementation of DataSnapshot key.js
        it "on child of root returns child" do
-         actual <- liftEff $ (child "achild" rootRef) >>= key
+         r <- refFor root
+         actual <- liftEff $ (child "achild" r) >>= key
          actual `shouldEqual` (Just "achild")
       describe "getting url with Eff" do
        it "on root returns url" do
-         actual <- liftEff $ toString rootRef
+         r <- refFor root
+         actual <- liftEff $ toString r
          actual `shouldEqual` "https://purescript-spike.firebaseio.com/"
        it "on child of root returns root url + child" do
-         actual <- liftEff $ (child "achild" rootRef) >>= toString
+         r <- refFor root
+         actual <- liftEff $ (child "achild" r) >>= toString
          actual `shouldEqual` "https://purescript-spike.firebaseio.com/achild"
       describe "with Aff" do
         describe "Getting a key" do
          it "on root throws an error" do
-           expectError $ FAff.key rootRef
+           r <- refFor root
+           expectError $ FAff.key r
          it "on child of root returns child" do
-           actual <- (FAff.child "affchild" rootRef) >>= FAff.key
+           r <- refFor root
+           actual <- (FAff.child "affchild" r) >>= FAff.key
            actual `shouldEqual` "affchild"
         describe "getting the url" do
           it "on root returns url" do
-            actual <- FAff.toString rootRef
+            r <- refFor root
+            actual <- FAff.toString r
             actual `shouldEqual` "https://purescript-spike.firebaseio.com/"
           it "on child of root returns root url + child" do
-            actual <- (FAff.child "achild" rootRef) >>= FAff.toString
+            r <- refFor root
+            actual <- (FAff.child "achild" r) >>= FAff.toString
             actual `shouldEqual` "https://purescript-spike.firebaseio.com/achild"
 
