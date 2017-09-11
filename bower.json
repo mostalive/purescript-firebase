@@ -1,5 +1,6 @@
 {
   "name": "purescript-firebase",
+  "license": "MIT",
   "version": "2.0.0",
   "moduleType": [
     "node"
@@ -8,8 +9,13 @@
     "**/.*",
     "node_modules",
     "bower_components",
-    "output"
+    "output",
+    "test"
   ],
+  "repository": {
+     "type": "git",
+     "url": "git://github.com/mostalive/purescript-firebase.git"
+  },
   "dependencies": {
     "purescript-console": "3.0.0",
     "purescript-spec": "1.0.0",
