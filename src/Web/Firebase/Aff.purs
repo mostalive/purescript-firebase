@@ -20,7 +20,7 @@ module Web.Firebase.Aff
 )
 where
 
-import Prelude (Unit, pure, bind, ($), (<<<))
+import Prelude (Unit, pure, ($), (<<<))
 
 import Data.Foreign (Foreign, toForeign)
 import Data.Nullable (toNullable)
@@ -42,7 +42,6 @@ throw = throwError <<< error
 foreign import fb2error :: FBT.FirebaseErr -> Error
 foreign import firebaseErrToString :: FBT.FirebaseErr -> String
 
-
 -- | Gets a Firebase reference for the location at the specified relative path.
 -- https://www.firebase.com/docs/web/api/firebase/child.html
 
@@ -61,7 +60,7 @@ key :: forall eff.
        FBT.Firebase ->
        Aff (firebase :: FBT.FirebaseEff | eff) FBT.Key
 key fb = do
-  mKey <- liftEff $ FB.key fb
+  let mKey = FB.key fb
   case mKey of
        Nothing -> throw "Key was null. Did you ask key of root reference?"
        Just k -> pure k

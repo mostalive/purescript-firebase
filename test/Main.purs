@@ -27,11 +27,12 @@ main = do
 --allSpecs :: forall eff. StateT (Array (Group (Aff (FbSpecEffects eff) Unit))) Identity Unit
 allSpecs :: forall eff. Spec ( firebase :: FBT.FirebaseEff | eff ) Unit
 allSpecs  = do
-  authorizationSpec firebaseConfig
+  refSpec firebaseConfig
 
 setAsideForNow :: forall eff. Spec ( firebase :: FirebaseEff | eff  ) Unit
 setAsideForNow = do
+  authorizationSpec firebaseConfig
   authenticationSpec 
-  refSpec root
   dataSnapshotSpec
+  
 

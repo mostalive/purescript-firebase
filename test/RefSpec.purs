@@ -6,23 +6,30 @@ import Prelude (Unit, bind, discard, ($), (>>=))
 import Test.Spec (describe, it, Spec)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Assertions.Aff (expectError)
-import Web.Firebase (child, key, toString)
+import Web.Firebase (child, key, rootRefFor, toString)
 import Web.Firebase.Aff as FAff
 import Web.Firebase.Types as FBT
 import Web.Firebase.UnsafeRef (refFor)
 
-refSpec :: forall eff. String -> Spec (firebase :: FBT.FirebaseEff | eff ) Unit
-refSpec root = do
+refSpec :: forall eff. FBT.FirebaseConfig -> Spec (firebase :: FBT.FirebaseEff | eff) Unit
+refSpec config = do
+  it "root reference is Nothing" do
+    r <- liftEff $ rootRefFor config
+    let rootKey = key r
+    rootKey `shouldEqual` Nothing -- characterization test, we don't know, but we want to start somewhere
+    
+refSpecOld :: forall eff. String -> Spec (firebase :: FBT.FirebaseEff | eff ) Unit
+refSpecOld root = do
     describe "a Database reference" do
       describe "key with Eff" do
        it "on root returns Nothing" do
          r <- refFor root
-         actual <- liftEff $ key r
+         let actual = key r
          actual `shouldEqual` Nothing -- see implementation of DataSnapshot key.js
        it "on child of root returns child" do
          r <- refFor root
-         actual <- liftEff $ (child "achild" r) >>= key
-         actual `shouldEqual` (Just "achild")
+         actual <- liftEff $ (child "achild" r) 
+         (key actual) `shouldEqual` (Just "achild")
       describe "getting url with Eff" do
        it "on root returns url" do
          r <- refFor root

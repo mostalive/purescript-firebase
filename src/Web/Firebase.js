@@ -8,11 +8,20 @@ exports.newFirebaseImpl = function (uri) {
     };
 };
 
-exports.initalizeAppImpl = function (firebaseConfig) {
+exports.initializeAppImpl = function (firebaseConfig) {
     return function () {
         return Firebase.initializeApp(firebaseConfig);
     };
 };
+
+// a quick way to get a root reference for a database from a firebase config
+// trainwreck to have something close to the 2.2 firebase api for our tests and old code
+exports.rootRefForImpl = function (firebaseConfig) {
+    return function () {
+        return Firebase.initializeApp(firebaseConfig).database().ref();
+    };
+};
+
 
 exports.databaseImpl = function (firebaseApp) {
     return function () {
@@ -27,9 +36,7 @@ exports.childImpl = function (childPath, firebase) {
 };
 
 exports._key = function(firebaseRef) {
-  return function() {
-    return firebaseRef.key();
-  };
+    return firebaseRef.key;
 };
 
 exports.onImpl = function (eventType, onComplete, onCancel, fb) {

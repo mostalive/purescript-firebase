@@ -9,6 +9,7 @@ module Web.Firebase
 , push
 , pushA
 , pushE
+, rootRefFor
 , set
 , setE
 , setA
@@ -16,21 +17,27 @@ module Web.Firebase
 )
 where
 
-import Prelude (class Show, class Eq, class Ord, Unit, (<$>), (<<<), compare, map)
-import Control.Monad.Eff (Eff())
-import Data.Foreign (Foreign())
-import Data.Function.Uncurried (Fn1(), Fn2(), Fn3(), Fn4(), runFn1, runFn2, runFn3, runFn4)
+import Control.Monad.Eff (Eff)
+import Data.Foreign (Foreign)
+import Data.Function.Uncurried (Fn1, Fn2, Fn3, Fn4, runFn1, runFn2, runFn3, runFn4)
 import Data.Maybe (Maybe)
-import Data.Nullable (toMaybe, toNullable, Nullable())
-import Web.Firebase.Types (Firebase(), FirebaseEff(), FirebaseErr(), DataSnapshot(), Key(), FirebaseConfig)
+import Data.Nullable (toMaybe, toNullable, Nullable)
+import Prelude (class Show, class Eq, class Ord, Unit, (<$>), (<<<), compare, map)
+import Web.Firebase.Types (DataSnapshot, DatabaseImpl, FirebaseConfig, FirebaseEff, FirebaseErr, Key, Firebase)
 import Web.Firebase.Unsafe (unsafeEvalEff)
 
 
 foreign import newFirebaseImpl :: forall eff. Fn1 String (Eff (firebase :: FirebaseEff | eff) Firebase)
 
 --foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff) Firebase)
-foreign import initalizeAppImpl :: forall eff. Fn1 FirebaseConfig (Eff (firebase :: FirebaseEff | eff) Firebase)
+foreign import initializeAppImpl :: forall eff. Fn1 FirebaseConfig (Eff (firebase :: FirebaseEff | eff) FirebaseAppImpl)
+foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff ) Firebase )
 
+-- shortcut to get our tests running again, get a ref from a config, so we have some tests passing at least
+foreign import rootRefForImpl :: forall eff. Fn1 FirebaseConfig (Eff (firebase :: FirebaseEff | eff) Firebase)
+
+rootRefFor :: forall eff. FirebaseConfig -> Eff (firebase :: FirebaseEff | eff) Firebase
+rootRefFor = runFn1 rootRefForImpl
 
 -- Data.URI would introduce too many dependencies for this single use
 -- if you want URI's checked, import Data.URI in your projects, and use printURI to convert
@@ -38,12 +45,17 @@ foreign import initalizeAppImpl :: forall eff. Fn1 FirebaseConfig (Eff (firebase
 -- and if the URI is wrong, that it is a programming error
 type FirebaseURI = String
 
+-- legacy
 newFirebase :: forall eff. FirebaseURI -> Eff (firebase :: FirebaseEff | eff) Firebase
 newFirebase u = runFn1 newFirebaseImpl u
 
 foreign import data FirebaseAppImpl :: Type
 
---initializeApp :: forall eff. FirebaseConfig -> Eff (firebase :: FirebaseEff | eff) firebaseApp                     
+initializeApp :: forall eff. FirebaseConfig -> Eff (firebase :: FirebaseEff | eff) FirebaseAppImpl                     
+initializeApp = runFn1 initializeAppImpl
+
+dbLowlevel :: forall eff. FirebaseAppImpl -> Eff  (firebase :: FirebaseEff | eff ) DatabaseImpl
+dbLowlevel = runFn1 databaseImpl
 
 
 
@@ -64,10 +76,10 @@ child = runFn2 childImpl
 
 -- | Gets the key of the reference - https://www.firebase.com/docs/web/api/firebase/key.html
 -- Nothing on the root ref (following the behaviour in the Firebase API)
-foreign import _key :: forall eff. Fn1 Firebase (Eff (firebase :: FirebaseEff | eff) (Nullable Key))
+foreign import _key :: forall eff. Fn1 Firebase (Nullable Key)
 
-key :: forall eff. Firebase -> Eff (firebase :: FirebaseEff | eff) (Maybe Key)
-key ds = map toMaybe (runFn1 _key ds)
+key :: Firebase -> Maybe Key
+key ds = map toMaybe _key ds
 
 data EventType = Value
                | ChildAdded

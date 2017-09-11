@@ -1,11 +1,12 @@
 module Web.Firebase.Types (
-     Database
+     DatabaseImpl
    , DataSnapshot
    , Firebase
    , FirebaseConfig
    , FirebaseEff
    , FirebaseErr
-   , Key)
+   , Key
+   , mkFirebaseConfig)
 where
 
 -- in process of moving the to string conversion function here, as it belongs with the typeclass
@@ -15,9 +16,10 @@ import Prelude (class Show, class Eq, (==))
 foreign import data FirebaseEff :: Effect 
 
 -- backwards compatility, Firebase is now more than a database, but we have some old code to fix
-type Firebase = Database 
+-- and in new code we want to use the stubbable typeclass                    
+type Firebase = DatabaseImpl
 
-foreign import data Database :: Type
+foreign import data DatabaseImpl :: Type
 foreign import data FirebaseErr :: Type
 
 foreign import firebaseErrToString :: FirebaseErr -> String
@@ -30,6 +32,9 @@ instance eqFirebaseErr :: Eq FirebaseErr where
 
 newtype FirebaseConfig = FirebaseConfig FirebaseConfigRecord
 
+mkFirebaseConfig :: FirebaseConfigRecord -> FirebaseConfig
+mkFirebaseConfig r = FirebaseConfig r
+
 type FirebaseConfigRecord = {
     apiKey :: String
     , authDomain :: String
@@ -40,11 +45,6 @@ type FirebaseConfigRecord = {
 }
 
 foreign import data FirebaseAppImpl :: Type
-
--- so that we can start stubbing firebase in existing code
-class App impl where
-   database :: impl -> Database 
-
 
 
 {-
