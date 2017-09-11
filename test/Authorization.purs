@@ -18,22 +18,7 @@ import Web.Firebase.UnsafeRef (refFor)
 forbiddenR :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 forbiddenR = refFor "https://purescript-spike.firebaseio.com/forbidden"
 
- --authorizationSpec :: forall eff. FBT.Firebase -> StateT (Array (Group(Aff (firebase :: FBT.FirebaseEff | eff) Unit ))) Identity Unit
-authorizationSpec :: forall t11.
-   StateT
-     (Array
-        (Group
-           (Aff
-              ( firebase :: FBT.FirebaseEff
-              | t11
-              )
-              Unit
-           )
-        )
-     )
-     Identity
-     Unit
-authorizationSpec = do
+authorizationSpec firebaseConfig = do
     describe "Authorization" do
       let blork = "no effects"
       describe "Writing" do

@@ -8,6 +8,18 @@ exports.newFirebaseImpl = function (uri) {
     };
 };
 
+exports.initalizeAppImpl = function (firebaseConfig) {
+    return function () {
+        return Firebase.initializeApp(firebaseConfig);
+    };
+};
+
+exports.databaseImpl = function (firebaseApp) {
+    return function () {
+        return firebaseApp.database();
+    };
+};
+
 exports.childImpl = function (childPath, firebase) {
     return function () {
         return firebase.child(childPath);

@@ -12,6 +12,7 @@ import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (RunnerEffects, run)
 import Web.Firebase.Types (FirebaseEff)
 import Web.Firebase.Types as FBT
+import FirebaseTestConfig(firebaseConfig)
 
 root :: String
 root =  "https://purescript-spike.firebaseio.com/"
@@ -24,13 +25,13 @@ main = do
   run [consoleReporter] allSpecs
 
 --allSpecs :: forall eff. StateT (Array (Group (Aff (FbSpecEffects eff) Unit))) Identity Unit
-allSpecs :: forall t31.
-  Spec ( firebase :: FBT.FirebaseEff
-                 | t31
-       ) Unit
+allSpecs :: forall eff. Spec ( firebase :: FBT.FirebaseEff | eff ) Unit
 allSpecs  = do
-  authorizationSpec
-  authenticationSpec
+  authorizationSpec firebaseConfig
+
+setAsideForNow :: forall eff. Spec ( firebase :: FirebaseEff | eff  ) Unit
+setAsideForNow = do
+  authenticationSpec 
   refSpec root
   dataSnapshotSpec
 

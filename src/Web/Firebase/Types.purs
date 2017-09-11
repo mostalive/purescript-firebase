@@ -1,6 +1,8 @@
 module Web.Firebase.Types (
-     DataSnapshot
+     Database
+   , DataSnapshot
    , Firebase
+   , FirebaseConfig
    , FirebaseEff
    , FirebaseErr
    , Key)
@@ -12,7 +14,10 @@ import Prelude (class Show, class Eq, (==))
 
 foreign import data FirebaseEff :: Effect 
 
-foreign import data Firebase :: Type
+-- backwards compatility, Firebase is now more than a database, but we have some old code to fix
+type Firebase = Database 
+
+foreign import data Database :: Type
 foreign import data FirebaseErr :: Type
 
 foreign import firebaseErrToString :: FirebaseErr -> String
@@ -22,6 +27,23 @@ instance showFirebaseErr :: Show FirebaseErr where
 
 instance eqFirebaseErr :: Eq FirebaseErr where
   eq e1 e2 = (firebaseErrToString e1) == (firebaseErrToString e2)
+
+newtype FirebaseConfig = FirebaseConfig FirebaseConfigRecord
+
+type FirebaseConfigRecord = {
+    apiKey :: String
+    , authDomain :: String
+    , databaseURL :: String
+    , projectId :: String
+    , storageBucket :: String
+    , messagingSenderId :: String
+}
+
+foreign import data FirebaseAppImpl :: Type
+
+-- so that we can start stubbing firebase in existing code
+class App impl where
+   database :: impl -> Database 
 
 
 

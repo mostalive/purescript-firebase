@@ -1,6 +1,11 @@
-Purescript-firebase to do
+#+TODO: TODO(t) WAIT(w@/!) STARTED(s!) | DONE(d!) CANCELED(c@)
 
-* TODO upgrade to latest firebase version
+* STARTED upgrade to latest firebase version
+  - State "STARTED"    from "TODO"       [2017-09-11 Mon 14:19]
+[] find out how to initialize firebase https://firebase.google.com/docs/web/setup#project_setup
+[] move, if necessary, firebase test project to https://firebase.google.com/support/guides/firebase-web
+
+[] fix failing tests
 * DONE run tests with bower 
   [] or figure out how to run tests with psc-package?
 ** DONE compile with pulp
@@ -13,3 +18,7 @@ Purescript-firebase to do
   CLOCK: [2016-01-05 Tue 10:39]--[2016-01-05 Tue 16:19] =>  5:40
 ** DONE write integration test with Node
 
+
+
+
+   

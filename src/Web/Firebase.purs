@@ -22,11 +22,15 @@ import Data.Foreign (Foreign())
 import Data.Function.Uncurried (Fn1(), Fn2(), Fn3(), Fn4(), runFn1, runFn2, runFn3, runFn4)
 import Data.Maybe (Maybe)
 import Data.Nullable (toMaybe, toNullable, Nullable())
-import Web.Firebase.Types (Firebase(), FirebaseEff(), FirebaseErr(), DataSnapshot(), Key())
+import Web.Firebase.Types (Firebase(), FirebaseEff(), FirebaseErr(), DataSnapshot(), Key(), FirebaseConfig)
 import Web.Firebase.Unsafe (unsafeEvalEff)
 
 
 foreign import newFirebaseImpl :: forall eff. Fn1 String (Eff (firebase :: FirebaseEff | eff) Firebase)
+
+--foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff) Firebase)
+foreign import initalizeAppImpl :: forall eff. Fn1 FirebaseConfig (Eff (firebase :: FirebaseEff | eff) Firebase)
+
 
 -- Data.URI would introduce too many dependencies for this single use
 -- if you want URI's checked, import Data.URI in your projects, and use printURI to convert
@@ -36,6 +40,15 @@ type FirebaseURI = String
 
 newFirebase :: forall eff. FirebaseURI -> Eff (firebase :: FirebaseEff | eff) Firebase
 newFirebase u = runFn1 newFirebaseImpl u
+
+foreign import data FirebaseAppImpl :: Type
+
+--initializeApp :: forall eff. FirebaseConfig -> Eff (firebase :: FirebaseEff | eff) firebaseApp                     
+
+
+
+-- instance firebaseApp :: App FirebaseAppImpl where
+--  database impl =  
 
 -- | Gets a Firebase reference for the location at the specified relative path.
 -- https://www.firebase.com/docs/web/api/firebase/child.html
