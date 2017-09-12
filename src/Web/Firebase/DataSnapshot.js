@@ -27,6 +27,5 @@ exports._numChildren = function(ds) {
 };
 
 exports._key = function(ds) {
-  return ds.key();
+  return ds.key;
 };
-

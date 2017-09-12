@@ -39,7 +39,4 @@ allSpecs  auth ref = do
   refSpec ref
   authorizationSpec ref
   authenticationSpec auth
-
-setAsideForNow :: forall eff. Spec ( firebase :: FirebaseEff | eff  ) Unit
-setAsideForNow = do
-  dataSnapshotSpec
+  dataSnapshotSpec ref
