@@ -33,9 +33,9 @@ runTests ref = do run [consoleReporter] (allSpecs ref)
 allSpecs :: forall eff. FBT.Firebase -> Spec ( firebase :: FBT.FirebaseEff | eff ) Unit
 allSpecs  ref = do
   refSpec ref
+  authorizationSpec ref
 
 setAsideForNow :: forall eff. Spec ( firebase :: FirebaseEff | eff  ) Unit
 setAsideForNow = do
-  authorizationSpec firebaseConfig
   authenticationSpec
   dataSnapshotSpec
