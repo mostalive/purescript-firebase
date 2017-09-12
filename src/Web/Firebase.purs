@@ -1,6 +1,9 @@
 module Web.Firebase
 ( EventType(..)
+, auth
 , child
+, database
+, initializeApp
 , key
 , newFirebase
 , offSimple
@@ -23,20 +26,23 @@ import Data.Function.Uncurried (Fn1, Fn2, Fn3, Fn4, runFn1, runFn2, runFn3, runF
 import Data.Maybe (Maybe)
 import Data.Nullable (toMaybe, toNullable, Nullable)
 import Prelude (class Show, class Eq, class Ord, Unit, (<$>), (<<<), compare, map)
-import Web.Firebase.Types (DataSnapshot, DatabaseImpl, FirebaseConfig, FirebaseEff, FirebaseErr, Key, Firebase)
+import Web.Firebase.Authentication.Types (Auth)
+import Web.Firebase.Types (App, DataSnapshot, DatabaseImpl, FirebaseAppImpl, FirebaseConfig, FirebaseEff, FirebaseErr, Key, Firebase)
 import Web.Firebase.Unsafe (unsafeEvalEff)
 
+-- https://firebase.google.com/docs/reference/js/firebase.auth.Auth
+auth :: forall eff. FirebaseAppImpl -> Eff (firebase :: FirebaseEff | eff) Auth
+auth = runFn1 authImpl
 
 foreign import newFirebaseImpl :: forall eff. Fn1 String (Eff (firebase :: FirebaseEff | eff) Firebase)
-
 --foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff) Firebase)
 foreign import initializeAppImpl :: forall eff. Fn1 FirebaseConfig (Eff (firebase :: FirebaseEff | eff) FirebaseAppImpl)
 foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff ) Firebase )
 
--- shortcut to get our tests running again, get a ref from a config, so we have some tests passing at least
-foreign import rootRefForImpl :: forall eff. Fn1 FirebaseConfig (Eff (firebase :: FirebaseEff | eff) Firebase)
+foreign import authImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff) Auth)
+foreign import rootRefForImpl :: forall eff. Fn1 DatabaseImpl (Eff (firebase :: FirebaseEff | eff) Firebase)
 
-rootRefFor :: forall eff. FirebaseConfig -> Eff (firebase :: FirebaseEff | eff) Firebase
+rootRefFor :: forall eff. DatabaseImpl -> Eff (firebase :: FirebaseEff | eff) Firebase
 rootRefFor = runFn1 rootRefForImpl
 
 -- Data.URI would introduce too many dependencies for this single use
@@ -49,18 +55,15 @@ type FirebaseURI = String
 newFirebase :: forall eff. FirebaseURI -> Eff (firebase :: FirebaseEff | eff) Firebase
 newFirebase u = runFn1 newFirebaseImpl u
 
-foreign import data FirebaseAppImpl :: Type
-
-initializeApp :: forall eff. FirebaseConfig -> Eff (firebase :: FirebaseEff | eff) FirebaseAppImpl                     
+initializeApp :: forall eff. FirebaseConfig -> Eff (firebase :: FirebaseEff | eff) App
 initializeApp = runFn1 initializeAppImpl
 
-dbLowlevel :: forall eff. FirebaseAppImpl -> Eff  (firebase :: FirebaseEff | eff ) DatabaseImpl
-dbLowlevel = runFn1 databaseImpl
-
+database :: forall eff. FirebaseAppImpl -> Eff  (firebase :: FirebaseEff | eff ) DatabaseImpl
+database = runFn1 databaseImpl
 
 
 -- instance firebaseApp :: App FirebaseAppImpl where
---  database impl =  
+--  database impl =
 
 -- | Gets a Firebase reference for the location at the specified relative path.
 -- https://www.firebase.com/docs/web/api/firebase/child.html
@@ -102,12 +105,12 @@ instance eqEventType :: Eq EventType where
 -- provided so we can make a set of EventTypes
 instance ordEventType :: Ord EventType where
   compare ev1 ev2 = compare (numValue ev1) (numValue ev2)
-		where
-			numValue Value = 0
-			numValue ChildAdded = 1
-			numValue ChildChanged = 2
-			numValue ChildRemoved = 3
-			numValue ChildMoved = 4
+                where
+                        numValue Value = 0
+                        numValue ChildAdded = 1
+                        numValue ChildChanged = 2
+                        numValue ChildRemoved = 3
+                        numValue ChildMoved = 4
 
 
 

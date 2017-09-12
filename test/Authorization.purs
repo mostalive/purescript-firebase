@@ -2,18 +2,15 @@ module Test.Authorization where
 
 import Control.Monad.Aff (Aff, attempt)
 import Control.Monad.Eff.Exception (message)
-import Control.Monad.State.Trans (StateT)
 import Data.Either (either)
 import Data.Foreign (toForeign)
-import Data.Identity (Identity)
 import Prelude (Unit, bind, discard, ($))
-import Test.Spec (Spec, Group, describe, it)
+import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Assertions.Aff (expectError)
 import Web.Firebase (EventType(ChildMoved, ChildChanged, ChildRemoved, ChildAdded))
 import Web.Firebase.Aff as FAff
 import Web.Firebase.Types as FBT
-import Web.Firebase.UnsafeRef (refFor)
 
 forbiddenR :: forall eff. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
 forbiddenR = FAff.child "forbidden"

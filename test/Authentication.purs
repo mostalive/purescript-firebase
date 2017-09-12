@@ -5,22 +5,18 @@ import Control.Monad.Eff.Class (liftEff)
 import Prelude (Unit, bind, discard, ($))
 import Test.Spec (describe, it, Spec)
 import Test.Spec.Assertions.Aff (expectError)
+import Web.Firebase.Aff (child)
 import Web.Firebase.Authentication.Aff as AuthAff
 import Web.Firebase.Authentication.Eff (unAuth)
+import Web.Firebase.Types (Firebase)
 import Web.Firebase.Types as FBT
-import Web.Firebase.UnsafeRef (refFor)
+import Web.Firebase.Authentication.Types (Auth)
 
-authenticationSpec :: forall eff. Spec (firebase :: FBT.FirebaseEff | eff ) Unit
-authenticationSpec = do
+authenticationSpec :: forall eff. Auth -> Spec (firebase :: FBT.FirebaseEff | eff ) Unit
+authenticationSpec auth = do
     describe "Authentication" do
       it "unauthenticates when not authenticated" do
-        r <- forbiddenRef
-        liftEff $ unAuth r
-
+        liftEff $ unAuth auth
       describe "with Aff" do
         it "on fake authentication throws an error" do
-          r <- forbiddenRef
-          expectError $ AuthAff.authWithCustomToken "faketoken" r
-
-forbiddenRef :: forall eff. Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
-forbiddenRef = refFor "https://purescript-spike.firebaseio.com/forbidden"
+          expectError $ AuthAff.authWithCustomToken "faketoken" auth

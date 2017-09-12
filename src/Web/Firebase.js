@@ -14,11 +14,17 @@ exports.initializeAppImpl = function (firebaseConfig) {
     };
 };
 
+exports.authImpl = function (firebaseApp) {
+        return function () {
+            return firebaseApp.auth(firebaseApp);
+        };
+    };
+
 // a quick way to get a root reference for a database from a firebase config
 // trainwreck to have something close to the 2.2 firebase api for our tests and old code
-exports.rootRefForImpl = function (firebaseConfig) {
+exports.rootRefForImpl = function (database) {
     return function () {
-        return Firebase.initializeApp(firebaseConfig).database().ref();
+        return database.ref();
     };
 };
 

@@ -9,6 +9,7 @@ module Web.Firebase.Authentication.Eff (
 
 import Prelude (Unit(), pure, unit)
 import Web.Firebase.Types (Firebase(), FirebaseEff(), FirebaseErr)
+import Web.Firebase.Authentication.Types (Auth)
 import Control.Monad.Eff (Eff())
 import Data.Foreign (Foreign())
 
@@ -68,7 +69,7 @@ foreign import _authWithCustomToken :: forall eff. Fn4
                         String
                         (Foreign -> Eff (firebase :: FirebaseEff | eff ) Unit)
                         (FirebaseErr -> Eff (firebase :: FirebaseEff | eff ) Unit)
-                        Firebase
+                        Auth
                         (Eff (firebase :: FirebaseEff | eff) Unit)
 
 type AuthToken = String
@@ -78,13 +79,13 @@ authWithCustomToken :: forall eff.
                        AuthToken ->
                        (Foreign -> Eff (firebase :: FirebaseEff | eff ) Unit) ->
                        (FirebaseErr -> Eff (firebase :: FirebaseEff | eff ) Unit) ->
-                       Firebase ->
+                       Auth ->
                        Eff (firebase :: FirebaseEff | eff) Unit
 authWithCustomToken = runFn4 _authWithCustomToken
 
 -- | sign out of the application
 --
-foreign import _unAuth :: forall eff. Fn1 Firebase (Eff (firebase :: FirebaseEff | eff) Unit)
+foreign import _unAuth :: forall eff. Fn1 Auth (Eff (firebase :: FirebaseEff | eff) Unit)
 
-unAuth :: forall eff. Firebase -> Eff (firebase :: FirebaseEff | eff ) Unit
+unAuth :: forall eff. Auth -> Eff (firebase :: FirebaseEff | eff ) Unit
 unAuth = runFn1 _unAuth

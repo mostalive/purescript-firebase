@@ -26,7 +26,7 @@ exports._authWithOAuthRedirect = function (provider, errorCallback, ref) {
   };
   return function() {
     return ref.authWithOAuthRedirect(provider, errorCbEffect);
-  }
+  };
 };
 
 // shape is slightly different from firebase function,
@@ -43,13 +43,13 @@ exports._authWithCustomToken = function (token, successCallback, errorCallback, 
   };
   return function() {
     return ref.authWithCustomToken(token, errorCbEffect);
-  }
+  };
 };
 
-// inconsistency in firebase api: onAuth is camelcased, but unauth is not.
-// we ignore the inconsistency in our public API
-exports._unAuth = function (firebase) {
+// https://firebase.google.com/docs/reference/js/firebase.auth.Auth
+// signOut returns a promise containing void, not sure we capture that correctly here
+exports._unAuth = function (firebaseAuth) {
   return function() {
-    return firebase.unauth();
+    return firebaseAuth.signOut();
   };
 };
