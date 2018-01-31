@@ -45,10 +45,10 @@ foreign import rootRefForImpl :: forall eff. Fn1 DatabaseImpl (Eff (firebase :: 
 rootRefFor :: forall eff. DatabaseImpl -> Eff (firebase :: FirebaseEff | eff) Firebase
 rootRefFor = runFn1 rootRefForImpl
 
--- Data.URI would introduce too many dependencies for this single use
--- if you want URI's checked, import Data.URI in your projects, and use printURI to convert
--- We assume an application sets up a newFirebase just once,
--- and if the URI is wrong, that it is a programming error
+-- | Data.URI would introduce too many dependencies for this single use
+-- | if you want URI's checked, import Data.URI in your projects, and use printURI to convert
+-- | We assume an application sets up a newFirebase just once,
+-- | and if the URI is wrong, that it is a programming error
 type FirebaseURI = String
 
 -- legacy

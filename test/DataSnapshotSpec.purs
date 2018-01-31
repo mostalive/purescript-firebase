@@ -12,14 +12,12 @@ import Web.Firebase.Aff (onceValue)
 import Web.Firebase.DataSnapshot as D
 import Web.Firebase.Types (Firebase, Key)
 import Web.Firebase.Types as FBT
-import Web.Firebase.UnsafeRef (refFor)
 
 
 dataSnapshotSpec ::  forall eff. FBT.Firebase -> Spec ( firebase :: FBT.FirebaseEff | eff) Unit
 dataSnapshotSpec ref =
+    -- literal API
     describe "DataSnapshot" do
-      -- literal API
-      -- the difference between snapshots and refs is somewhat confusing
       it "can tell us the number of children" do
         snapshot <- snapshotFor ref "entries"
         let numChildren = D.numChildren snapshot
