@@ -28,7 +28,6 @@ exports.rootRefForImpl = function (database) {
     };
 };
 
-
 exports.databaseImpl = function (firebaseApp) {
     return function () {
         return firebaseApp.database();

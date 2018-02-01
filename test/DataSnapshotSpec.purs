@@ -13,7 +13,6 @@ import Web.Firebase.DataSnapshot as D
 import Web.Firebase.Types (Firebase, Key)
 import Web.Firebase.Types as FBT
 
-
 dataSnapshotSpec ::  forall eff. FBT.Firebase -> Spec ( firebase :: FBT.FirebaseEff | eff) Unit
 dataSnapshotSpec ref =
     -- literal API

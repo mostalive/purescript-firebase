@@ -16,3 +16,29 @@ exports.firebaseErrToString = function(fberr) {
    message += "\n | details | \n" | fberr.details;
  return message;
 };
+
+// implemented separately because of new Aff -  https://github.com/slamdata/purescript-aff
+exports._on = function (eventType, ref) { // accepts a request
+  return function(onError, onSuccess) { // and callbacks
+    var req = ref.on(eventType, onSuccess, onError );
+
+    // returns a canceler, which is just another Aff efect
+    return function (cancelError, cancelerError, cancelerSuccess) {
+      ref.off();
+      cancelerSuccess();
+    };
+  };
+
+};
+
+exports._once = function(interest) {
+
+};
+
+exports._push = function(saveable) {};
+
+exports._remove = function(location) {
+
+};
+
+exports._set = function (saveable) {};

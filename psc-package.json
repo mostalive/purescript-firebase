@@ -8,7 +8,7 @@
        "nullable",
        "transformers",
        "aff",
-       "foreign-generic"
-
+       "foreign-generic",
+       "spec"
     ]
 }
