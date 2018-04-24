@@ -36,7 +36,7 @@ runTests auth ref = do run [consoleReporter] (allSpecs auth ref)
 --allSpecs :: forall eff. StateT (Array (Group (Aff (FbSpecEffects eff) Unit))) Identity Unit
 allSpecs :: forall eff. Auth -> FBT.Firebase -> Spec ( firebase :: FBT.FirebaseEff | eff ) Unit
 allSpecs  auth ref = do
-  -- refSpec ref
-  -- authorizationSpec ref
-  -- authenticationSpec auth
+  refSpec ref
+  authorizationSpec ref
+  authenticationSpec auth
   dataSnapshotSpec ref

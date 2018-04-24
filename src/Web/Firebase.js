@@ -5,9 +5,9 @@ var Firebase = require('firebase');
 
 exports.initializeAppImpl = function (firebaseConfig) {
   return function () {
-    console.log("initializing firebase");
+    // console.log("initializing firebase");
     const config = Firebase.initializeApp(firebaseConfig);
-    console.log(config);
+    // console.log(config);
     return config;
   };
 };
@@ -15,7 +15,7 @@ exports.initializeAppImpl = function (firebaseConfig) {
 exports.authImpl = function (firebaseApp) {
         return function () {
           const auth =  firebaseApp.auth(firebaseApp);
-          console.log(auth);
+          // console.log(auth);
           return auth;
         };
     };
@@ -25,7 +25,7 @@ exports.authImpl = function (firebaseApp) {
 exports.rootRefForImpl = function (database) {
     return function () {
       const ref =  database.ref();
-      console.log(ref);
+      // console.log(ref);
       return ref;
     };
 };
@@ -33,7 +33,7 @@ exports.rootRefForImpl = function (database) {
 exports.databaseImpl = function (firebaseApp) {
     return function () {
       const db = firebaseApp.database();
-      console.log(db);
+      // console.log(db);
       return db;
     };
 };
@@ -62,7 +62,7 @@ exports.onImpl = function (eventType, onComplete, onCancel, fb) {
 };
 
 exports.onWithoutCancelCallbackImpl = function (eventType, callback, fb) {
-    console.log("without error callback, should be possible according to documentation");
+    // console.log("without error callback, should be possible according to documentation");
     return function () {
         return fb.on(eventType, callback);
     };
@@ -78,7 +78,7 @@ exports.onceImpl = function(eventType, callback, errorCallback, fb) {
     var logDecorator = function(error) {
       errorCallback(error)();
     };
-  console.log("onceImpl called: " + eventType);
+  // console.log("onceImpl called: " + eventType);
     return function () {
       fb.once(eventType, callback, logDecorator);
     };
@@ -93,8 +93,8 @@ exports.setImpl = function (value, onComplete, fb) {
 // onComplete passes null for error when success, and a FirebaseErr on error
 exports.setEImpl = function (value, onComplete, fb) {
     var runEffect  = function (error) {
-      console.log("setEImpl");
-      console.log(error);
+      // console.log("setEImpl");
+      // console.log(error);
       onComplete(error)();
     };
     return function () {

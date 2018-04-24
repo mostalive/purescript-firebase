@@ -49,6 +49,7 @@ foreign import firebaseErrToString :: FBT.FirebaseErr -> String
 -- | Gets a Firebase reference for the location at the specified relative path.
 -- https://www.firebase.com/docs/web/api/firebase/child.html
 
+-- Refactor to Location
 child :: forall eff.
        FBT.Key ->
        FBT.Firebase ->

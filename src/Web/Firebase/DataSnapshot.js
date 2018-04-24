@@ -23,14 +23,14 @@ exports._child = function(ds, named) {
 };
 
 exports._numChildren = function(ds) {
-  console.log("numchildren called");
-  console.log(ds);
+  // console.log("numchildren called");
+  // console.log(ds);
  return ds.numChildren();
 };
 
 exports._key = function(ds) {
-  console.log("key called");
+  // console.log("key called");
   const key = ds.key;
-  console.log(key);
+  // console.log(key);
   return key;
 };
