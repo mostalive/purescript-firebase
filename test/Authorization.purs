@@ -20,15 +20,16 @@ authorizationSpec :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseE
 authorizationSpec ref = do
   describe "Authorization" do
     describe "Writing" do
+      let rr = forbiddenR ref
       it "with Aff push on forbidden location throws an error" do
         forbiddenRef <- forbiddenR ref
         let newValue = {success: "push Aff"}
         expectError $ FAff.push $ mkSaveable (toForeign newValue) forbiddenRef
     describe "once() on forbidden location" do
       it "with Aff throws an error" do
-          forbiddenRef <- forbiddenR ref
-          e <- attempt $ FAff.onceValue forbiddenRef  -- catch error thrown and assert
-          either (\err -> (message err) `shouldEqual` "permission_denied at /forbidden: Client doesn't have permission to access the desired data.\n | firebase code: | \n PERMISSION_DENIED") (\_ -> "expected an error to be thrown" `shouldEqual` "but was not") e
+        forbiddenRef <- forbiddenR ref
+        e <- attempt $ FAff.onceValue forbiddenRef  -- catch error thrown and assert
+        either (\err -> (message err) `shouldEqual` "permission_denied at /forbidden: Client doesn't have permission to access the desired data.\n | firebase code: | \n PERMISSION_DENIED") (\_ -> "expected an error to be thrown" `shouldEqual` "but was not") e
     describe "on() at forbidden location" do
       it "ChildAdded with Aff throws an error" do
         forbiddenRef <- forbiddenR ref
