@@ -125,7 +125,7 @@ push = fromEffFnAff <<< _push
 foreign import _set :: forall eff. Saveable -> EffFnAff (firebase :: FBT.FirebaseEff | eff) Unit
 
 set :: forall e. Saveable -> Aff (firebase :: FBT.FirebaseEff | e) Unit
-set = fromEffFnAff <<< _set
+set (Saveable s) = makeAff' (\onError onSuccess -> FB.setA s.foreign onSuccess (convertError onError) s.location)
 
 -- | Extra functions not part of firebase api, grown out of our use
 offLocation :: forall e. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) Unit
