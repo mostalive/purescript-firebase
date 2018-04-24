@@ -5,7 +5,6 @@ module Web.Firebase
 , database
 , initializeApp
 , key
-, newFirebase
 , offSimple
 , on
 , once
@@ -34,7 +33,6 @@ import Web.Firebase.Unsafe (unsafeEvalEff)
 auth :: forall eff. FirebaseAppImpl -> Eff (firebase :: FirebaseEff | eff) Auth
 auth = runFn1 authImpl
 
-foreign import newFirebaseImpl :: forall eff. Fn1 String (Eff (firebase :: FirebaseEff | eff) Firebase)
 --foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff) Firebase)
 foreign import initializeAppImpl :: forall eff. Fn1 FirebaseConfig (Eff (firebase :: FirebaseEff | eff) FirebaseAppImpl)
 foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff ) Firebase )
@@ -50,10 +48,6 @@ rootRefFor = runFn1 rootRefForImpl
 -- | We assume an application sets up a newFirebase just once,
 -- | and if the URI is wrong, that it is a programming error
 type FirebaseURI = String
-
--- legacy
-newFirebase :: forall eff. FirebaseURI -> Eff (firebase :: FirebaseEff | eff) Firebase
-newFirebase u = runFn1 newFirebaseImpl u
 
 initializeApp :: forall eff. FirebaseConfig -> Eff (firebase :: FirebaseEff | eff) App
 initializeApp = runFn1 initializeAppImpl

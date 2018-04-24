@@ -2,21 +2,21 @@
 var Firebase = require('firebase');
 // module Web.Firebase
 
-exports.newFirebaseImpl = function (uri) {
-    return function () {
-        return new Firebase(uri);
-    };
-};
 
 exports.initializeAppImpl = function (firebaseConfig) {
-    return function () {
-        return Firebase.initializeApp(firebaseConfig);
-    };
+  return function () {
+    console.log("initializing firebase");
+    const config = Firebase.initializeApp(firebaseConfig);
+    console.log(config);
+    return config;
+  };
 };
 
 exports.authImpl = function (firebaseApp) {
         return function () {
-            return firebaseApp.auth(firebaseApp);
+          const auth =  firebaseApp.auth(firebaseApp);
+          console.log(auth);
+          return auth;
         };
     };
 
@@ -24,13 +24,17 @@ exports.authImpl = function (firebaseApp) {
 // trainwreck to have something close to the 2.2 firebase api for our tests and old code
 exports.rootRefForImpl = function (database) {
     return function () {
-        return database.ref();
+      const ref =  database.ref();
+      console.log(ref);
+      return ref;
     };
 };
 
 exports.databaseImpl = function (firebaseApp) {
     return function () {
-        return firebaseApp.database();
+      const db = firebaseApp.database();
+      console.log(db);
+      return db;
     };
 };
 
@@ -74,6 +78,7 @@ exports.onceImpl = function(eventType, callback, errorCallback, fb) {
     var logDecorator = function(error) {
       errorCallback(error)();
     };
+  console.log("onceImpl called: " + eventType);
     return function () {
       fb.once(eventType, callback, logDecorator);
     };

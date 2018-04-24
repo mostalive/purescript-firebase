@@ -24,6 +24,7 @@ module Web.Firebase.Aff
 )
 where
 
+import Compat.MakeAff (makeAff')
 import Control.Monad.Aff (Aff)
 import Control.Monad.Aff.Compat (EffFnAff, fromEffFnAff)
 import Control.Monad.Eff (Eff)
@@ -106,7 +107,7 @@ convertError errorCallback firebaseError = errorCallback (fb2error firebaseError
 foreign import _once :: forall eff. EventAtLocation -> EffFnAff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
 
 once :: forall eff. EventAtLocation -> Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
-once = fromEffFnAff <<< _once
+once (EventAtLocation {event, path})= makeAff' (\eb cb -> FB.once event cb (convertError eb) path)
 
 newtype Saveable = Saveable {foreign :: Foreign, location :: FBT.DatabaseImpl }
 

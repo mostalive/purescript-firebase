@@ -17,34 +17,35 @@ dataSnapshotSpec ::  forall eff. FBT.Firebase -> Spec ( firebase :: FBT.Firebase
 dataSnapshotSpec ref =
     -- literal API
     describe "DataSnapshot" do
-      it "can tell us the number of children" do
-        snapshot <- snapshotFor ref "entries"
-        let numChildren = D.numChildren snapshot
-        expect (numChildren >= 1)
+      -- it "can tell us the number of children" do
+      --   snapshot <- snapshotFor ref "entries"
+      --   let numChildren = D.numChildren snapshot
+      --   expect (numChildren >= 1)
 
-      it "can tell us a child does not exist" do
-        snapshot <- snapshotFor ref "entries"
-        (D.hasChild snapshot "doesnotexist")  `shouldEqual` false
-      it "can tell us the location at the snapshot exists" do
-        snapshot <- snapshotFor ref "entries"
-        expect $ (D.exists snapshot)
+      -- it "can tell us a child does not exist" do
+      --   snapshot <- snapshotFor ref "entries"
+      --   (D.hasChild snapshot "doesnotexist")  `shouldEqual` false
+      -- it "can tell us the location at the snapshot exists" do
+      --   snapshot <- snapshotFor ref "entries"
+      --   expect $ (D.exists snapshot)
 
-      it "can tell us it has children" do
-        snapshot <- snapshotFor ref "entries"
-        expect $ D.hasChildren snapshot
+      -- it "can tell us it has children" do
+      --   snapshot <- snapshotFor ref "entries"
+      --   expect $ D.hasChildren snapshot
 
       it "says the key of /entries is entries" do
         snapshot <- snapshotFor ref "entries"
-        let key = D.key snapshot
-        key `shouldEqual` (Just "entries")
+        -- let key = D.key snapshot
+        fail ""
+        -- key `shouldEqual` (Just "entries")
 
-      it "it can not tell us the location at the snapshot does not exist" do
-        snapshot <- snapshotFor ref "entries"
-        let noChild = (D.child snapshot "doesnotexist")
-        (D.exists noChild) `shouldEqual` false
+      -- it "it can not tell us the location at the snapshot does not exist" do
+      --   snapshot <- snapshotFor ref "entries"
+      --   let noChild = (D.child snapshot "doesnotexist")
+      --   (D.exists noChild) `shouldEqual` false
 
 snapshotFor :: forall eff. Firebase -> Key -> Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
-snapshotFor ref location  = (liftEff $ FB.child location ref) >>= onceValue
+snapshotFor ref location  = onceValue ref
 
 expect :: forall r. Boolean -> Aff r Unit
 expect condition = unless condition $ fail "false ≠ true"
