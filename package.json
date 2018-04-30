@@ -8,8 +8,8 @@
     "test": "test"
   },
   "scripts": {
-    "build": "pulp build",
-    "test": "pulp test",
+    "build": "pulp --psc-package build",
+    "test": "pulp --psc-package test",
     "autotest": "pulp --psc-package -w test",
     "bolt": "firebase-bolt < test/rules.bolt > test/rules.json"
   },
