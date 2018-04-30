@@ -32,7 +32,7 @@ import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Exception (Error, error)
 import Control.Monad.Error.Class (throwError)
 import Data.Foreign (Foreign, toForeign)
-import Data.Maybe (Maybe(Just, Nothing))
+import Data.Maybe (Maybe(..))
 import Data.Nullable (toNullable)
 import Prelude (Unit, pure, ($), (<<<))
 import Web.Firebase as FB
@@ -120,7 +120,7 @@ foreign import _push :: forall eff. Saveable -> EffFnAff (firebase :: FBT.Fireba
 -- | write a value under a new generated key to the database
 -- returns the firebase reference generated
 push :: forall e. Saveable -> Aff (firebase :: FBT.FirebaseEff | e) FBT.Firebase
-push = fromEffFnAff <<< _push
+push (Saveable s) = makeAff' $ \onError onSuccess -> FB.pushA s.foreign onSuccess (convertError onError) s.location
 
 foreign import _set :: forall eff. Saveable -> EffFnAff (firebase :: FBT.FirebaseEff | eff) Unit
 

@@ -18,18 +18,26 @@ forbiddenR = FAff.child "forbidden"
 
 authorizationSpec :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff | eff) Unit
 authorizationSpec ref = do
+  describe "Authorization with Aff and authourized user does not throw an error" do
+      it "push" do
+        forbiddenRef <- forbiddenR ref
+        let newValue = {success: "push Aff"}
+        _ <-  FAff.push $ mkSaveable (toForeign newValue) forbiddenRef -- newRef unused
+        true `shouldEqual` false
+
+runLater :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff | eff) Unit
+runLater ref =
   describe "Authorization with Aff at forbidden location throws an error" do
     describe "Writing" do
       it "push" do
         forbiddenRef <- forbiddenR ref
         let newValue = {success: "push Aff"}
         expectError $ FAff.push $ mkSaveable (toForeign newValue) forbiddenRef
-    describe "once" do
-      it "with Aff throws an error" do
+    it "once" do
         forbiddenRef <- forbiddenR ref
         (attempt $ FAff.onceValue forbiddenRef) >>= expectPermissionDeniedError
     describe "on" do
-      it "ChildAdded with Aff throws an error" do
+      it "ChildAdded" do
         expectPermissionDeniedErrorOn ChildAdded
       it "ChildRemoved" do
         expectPermissionDeniedErrorOn ChildRemoved
