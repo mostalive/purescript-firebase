@@ -10,7 +10,7 @@
   "scripts": {
     "build": "pulp build",
     "test": "pulp test",
-    "autotest": "pulp -w test",
+    "autotest": "pulp --psc-package -w test",
     "bolt": "firebase-bolt < test/rules.bolt > test/rules.json"
   },
   "repository": {
