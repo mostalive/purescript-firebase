@@ -9,6 +9,7 @@
        "transformers",
        "aff",
        "foreign-generic",
+       "node-fs",
        "spec"
     ]
 }

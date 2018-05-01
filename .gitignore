@@ -13,3 +13,5 @@ firebase.json
 docs
 .psc-package
 *~
+FIREBASE_TOKEN
+purescript-spike*.json

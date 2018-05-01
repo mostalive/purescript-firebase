@@ -1,12 +1,23 @@
 #+TODO: TODO(t) WAIT(w@/!) STARTED(s!) | DONE(d!) CANCELED(c@)
 
+* STARTED positive authorization tests
+** STARTED create key for regular user who can't access forbidden
+[*] initialize firebase-admin sdk as a separate app
+https://firebase.google.com/docs/admin/setup
+[*] try to use login:ci key for same
+looks like it is not possible: ci token does not have an id or a private key
+[*] service account / admin   should be able to write to forbidden
+[] make login key for second user 'custom token'
+https://firebase.google.com/docs/auth/admin/create-custom-tokens#create_custom_tokens_using_the_firebase_admin_sdks
+[] log second user in ? -> second or third app
+[] pass admin app to authorization test
 * STARTED upgrade to latest firebase version
   - State "STARTED"    from "TODO"       [2017-09-11 Mon 14:19]
-[] find out how to initialize firebase https://firebase.google.com/docs/web/setup#project_setup
+[*] find out how to initialize firebase https://firebase.google.com/docs/web/setup#project_setup
 [] move, if necessary, firebase test project to https://firebase.google.com/support/guides/firebase-web
 
-[] fix failing tests
-* DONE run tests with bower 
+[*] fix failing tests
+* DONE run tests with bower
   [] or figure out how to run tests with psc-package?
 ** DONE compile with pulp
 * DONE exit node als on success in purescript-spec
@@ -17,8 +28,3 @@
   CLOCK: [2016-01-07 Thu 09:26]--[2016-01-07 Thu 13:26] =>  4:00
   CLOCK: [2016-01-05 Tue 10:39]--[2016-01-05 Tue 16:19] =>  5:40
 ** DONE write integration test with Node
-
-
-
-
-   
