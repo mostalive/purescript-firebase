@@ -25,3 +25,13 @@ exports.concat0FromEffnAffImpl = function(onError,onSuccess) {
       cancelerSuccess();
     };
 };
+
+exports.concat1FromEffnAffImpl = function(one) {
+  return function(onError,onSuccess) {
+    setTimeout(onSuccess,100,one);
+    return function(cancelError, cancelerError, cancelerSuccess) {
+      console.log('canceler invoked');
+      cancelerSuccess();
+    };
+  };
+};
