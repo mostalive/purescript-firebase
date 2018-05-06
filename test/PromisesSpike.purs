@@ -22,6 +22,8 @@ promisesSpikeSpec = describe "FFI examples" do
       concat0FromEffnAff >>= expectZero
     it "one argument" do
       concat1FromEffnAff "one" >>= expectOne
+    it "two arguments" do
+      concat2FromEffnAff "one" "two" >>= expectOneTwo
   where
     expectZero actual = actual `shouldEqual` "zero"
     expectOne actual = actual `shouldEqual` "one"
@@ -48,8 +50,12 @@ concat0FromEffnAff = fromEffFnAff concat0FromEffnAffImpl
 foreign import concat1FromEffnAffImpl :: forall eff. String -> EffFnAff (eff) String
 
 concat1FromEffnAff :: forall eff. String -> Aff eff String
-concat1FromEffnAff one = fromEffFnAff $ concat1FromEffnAffImpl one -- there was something about inlining foreigns in FFI doc
+concat1FromEffnAff one = fromEffFnAff $ concat1FromEffnAffImpl one -- there was something about explicit use of parameters in FFI doc
 
+foreign import concat2FromEffnAffImpl :: forall eff. String -> String -> EffFnAff (eff) String
+
+concat2FromEffnAff :: forall eff. String -> String -> Aff eff String
+concat2FromEffnAff one two = fromEffFnAff $ concat2FromEffnAffImpl one two
 
 foreign import promiseConcat0Impl :: forall eff. EffFnAff (eff) String
 

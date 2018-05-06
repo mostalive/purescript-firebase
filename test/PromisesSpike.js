@@ -35,3 +35,15 @@ exports.concat1FromEffnAffImpl = function(one) {
     };
   };
 };
+
+exports.concat2FromEffnAffImpl = function(one) {
+  return function(two) {
+    return function(onError,onSuccess) {
+      setTimeout(onSuccess,100,one+two);
+      return function(cancelError, cancelerError, cancelerSuccess) {
+        console.log('canceler invoked');
+        cancelerSuccess();
+      };
+    };
+  };
+};
