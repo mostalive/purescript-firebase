@@ -14,6 +14,6 @@ exports.concat2LiftImpl = function(one) {
 
 exports.promiseConcat0Impl = function() {
   return function(onSuccess,onError) {
-    onSuccess("zero"); // Yay! Everything went well!
+    return onSuccess("zero"); // Yay! Everything went well!
   };
 };

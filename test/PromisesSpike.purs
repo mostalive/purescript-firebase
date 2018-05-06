@@ -4,36 +4,36 @@ import Control.Monad.Aff (Aff)
 import Control.Monad.Aff.Compat (EffFnAff(..), fromEffFnAff)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
-import Prelude (bind, discard, pure, ($), (<<<))
+import Prelude (bind, discard, pure, ($), (<<<), (>>=))
 import Test.Spec (describe, it)
 import Test.Spec.Assertions (shouldEqual)
 
 
 promisesSpikeSpec = describe "FFI examples" do
   describe "liftEff" do
+    it "zero arguments" do
+      concat0Lift >>= expectZero
+    it "one argument" do
+      concat1Lift "one" >>= expectOne
+    it "two arguments" do
+      concat2Lift "one" "two" >>= expectOneTwo
+  where
+    expectZero actual = actual `shouldEqual` "zero"
+    expectOne actual = actual `shouldEqual` "one"
+    expectOneTwo actual = actual `shouldEqual` "onetwo"
+
+
+runLater = describe  "with promise" do
   -- code from a true story of taming promise chains with purescript by art yerkes on medium
     it "zero arguments" do
-      zero <- concat0Lift
+      zero <- promiseConcat0
       zero `shouldEqual` "zero"
     it "one argument" do
-      one <- concat1Lift "one"
+      one <- promiseConcat1 "one"
       one `shouldEqual` "one"
-    it "two arguments" do
-      one <- concat2Lift "one" "two"
-      one `shouldEqual` "onetwo"
-
-runLater =
-  describe "with multiple arguments that return a promise" do
-  -- code from a true story of taming promise chains with purescript by art yerkes on medium
-  it "calls a function of zero arguments" do
-     zero <- promiseConcat0
-     zero `shouldEqual` "zero"
-  it "wraps one argument a promise" do
-     one <- promiseConcat1 "one"
-     one `shouldEqual` "one"
-  it "wraps two argments in a promise" do
-     concatenated <- promiseConcat2 "promised" "miracle"
-     concatenated `shouldEqual` "promisedmiracle"
+    it "two argments" do
+      concatenated <- promiseConcat2 "promised" "miracle"
+      concatenated `shouldEqual` "promisedmiracle"
 
 foreign import promiseConcat0Impl :: forall eff. EffFnAff (eff) String
 
