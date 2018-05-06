@@ -14,6 +14,14 @@ exports.concat2LiftImpl = function(one) {
 
 exports.promiseConcat0Impl = function() {
   return function(onSuccess,onError) {
-    return onSuccess("zero"); // Yay! Everything went well!
+    return onSuccess("zero");
   };
+};
+
+exports.concat0FromEffnAffImpl = function(onError,onSuccess) {
+    setTimeout(onSuccess,100,'zero');
+    return function(cancelError, cancelerError, cancelerSuccess) {
+      console.log('canceler invoked');
+      cancelerSuccess();
+    };
 };

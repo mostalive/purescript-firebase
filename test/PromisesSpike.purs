@@ -17,6 +17,9 @@ promisesSpikeSpec = describe "FFI examples" do
       concat1Lift "one" >>= expectOne
     it "two arguments" do
       concat2Lift "one" "two" >>= expectOneTwo
+  describe "fromEffnAff" do
+    it "zero arguments" do
+      concat0FromEffnAff >>= expectZero
   where
     expectZero actual = actual `shouldEqual` "zero"
     expectOne actual = actual `shouldEqual` "one"
@@ -34,6 +37,11 @@ runLater = describe  "with promise" do
     it "two argments" do
       concatenated <- promiseConcat2 "promised" "miracle"
       concatenated `shouldEqual` "promisedmiracle"
+
+foreign import concat0FromEffnAffImpl :: forall eff. EffFnAff (eff) String
+
+concat0FromEffnAff :: forall eff. Aff eff String
+concat0FromEffnAff = fromEffFnAff concat0FromEffnAffImpl
 
 foreign import promiseConcat0Impl :: forall eff. EffFnAff (eff) String
 
