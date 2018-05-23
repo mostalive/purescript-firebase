@@ -20,15 +20,16 @@ exports.authImpl = function (firebaseApp) {
         };
     };
 
+exports.app = function(database) { return database.app;};
+
 // a quick way to get a root reference for a database from a firebase config
-// trainwreck to have something close to the 2.2 firebase api for our tests and old code
-exports.rootRefForImpl = function (database) {
-    return function () {
-      const ref =  database.ref();
-      // console.log(ref);
-      return ref;
-    };
-};
+exports.rootRefForImpl = function (database) { return database.ref(); };
+
+exports.refImpl = function (path, database) { return database.ref(path); };
+
+exports.goOfflineImpl = function (database) {database.goOffline();};
+
+exports.goOnlineImpl = function (database) {database.goOnline();};
 
 exports.databaseImpl = function (firebaseApp) {
     return function () {

@@ -20,29 +20,45 @@ module Web.Firebase
 where
 
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Uncurried (EffFn1, runEffFn1)
+import Control.Monad.Eff.Uncurried (EffFn1, runEffFn1, EffFn2, runEffFn2)
 import Data.Foreign (Foreign)
 import Data.Function.Uncurried (Fn1, Fn2, Fn3, Fn4, runFn1, runFn2, runFn3, runFn4)
 import Data.Maybe (Maybe)
 import Data.Nullable (toMaybe, toNullable, Nullable)
 import Prelude (class Show, class Eq, class Ord, Unit, (<$>), (<<<), compare, map)
 import Web.Firebase.Authentication.Types (Auth)
-import Web.Firebase.Types (App, DataSnapshot, Database, FirebaseAppImpl, FirebaseConfig, FirebaseEff, FirebaseErr, Key, Firebase)
+import Web.Firebase.Types (App, DataSnapshot, Database, FirebaseAppImpl, FirebaseConfig, FirebaseEff, FirebaseErr, Key, Reference)
 import Web.Firebase.Unsafe (unsafeEvalEff)
 
 -- https://firebase.google.com/docs/reference/js/firebase.auth.Auth
 auth :: forall eff. FirebaseAppImpl -> Eff (firebase :: FirebaseEff | eff) Auth
 auth = runFn1 authImpl
 
---foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff) Firebase)
+--foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff) Reference)
 foreign import initializeAppImpl :: forall eff. Fn1 FirebaseConfig (Eff (firebase :: FirebaseEff | eff) FirebaseAppImpl)
-foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff ) Firebase )
+foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff ) Reference )
 
 foreign import authImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff) Auth)
-foreign import rootRefForImpl :: forall eff. Fn1 Database (Eff (firebase :: FirebaseEff | eff) Firebase)
 
-rootRefFor :: forall eff. Database -> Eff (firebase :: FirebaseEff | eff) Firebase
-rootRefFor = runFn1 rootRefForImpl
+foreign import app :: Database -> App
+
+-- | Database goes second, so calls can be easily chained
+foreign import refImpl :: forall eff. EffFn2 (firebase :: FirebaseEff | eff) String Database Reference
+ref :: forall eff. String -> Database -> Eff (firebase :: FirebaseEff | eff) Reference
+ref = runEffFn2 refImpl
+
+-- | equivalent to ref() without parameters
+foreign import rootRefForImpl :: forall eff. EffFn1 (firebase :: FirebaseEff | eff) Database Reference
+rootRefFor :: forall eff. Database -> Eff (firebase :: FirebaseEff | eff) Reference
+rootRefFor = runEffFn1 rootRefForImpl
+
+foreign import goOfflineImpl :: forall eff. EffFn1 (firebase :: FirebaseEff | eff) Database Unit
+goOffline :: forall eff. Database -> Eff (firebase :: FirebaseEff | eff) Unit
+goOffline = runEffFn1 goOfflineImpl
+
+foreign import goOnlineImpl :: forall eff. EffFn1 (firebase :: FirebaseEff | eff) Database Unit
+goOnline :: forall eff. Database -> Eff (firebase :: FirebaseEff | eff) Unit
+goOnline = runEffFn1 goOnlineImpl
 
 -- | Data.URI would introduce too many dependencies for this single use
 -- | if you want URI's checked, import Data.URI in your projects, and use printURI to convert
@@ -56,27 +72,25 @@ initializeApp = runFn1 initializeAppImpl
 database :: forall eff. FirebaseAppImpl -> Eff  (firebase :: FirebaseEff | eff ) Database
 database = runFn1 databaseImpl
 
-
 -- instance firebaseApp :: App FirebaseAppImpl where
 --  database impl =
 
 -- | Gets a Firebase reference for the location at the specified relative path.
 -- https://www.firebase.com/docs/web/api/firebase/child.html
--- Firebase documentation does not specify what happens when the child does not exist
 -- Probably nothing happens when the path does not exist, since references don't involve IO, they are just data about paths in the DB that
 -- may or may not exist.
 -- Existence can be checked by getting the value, and DataSnapshot.exists - https://www.firebase.com/docs/web/api/datasnapshot/exists.html
 
-foreign import childImpl :: forall eff. Fn2 String Firebase (Eff (firebase :: FirebaseEff | eff) Firebase)
+foreign import childImpl :: forall eff. Fn2 String Reference (Eff (firebase :: FirebaseEff | eff) Reference)
 
-child :: forall eff. String -> Firebase -> Eff (firebase :: FirebaseEff | eff) Firebase
+child :: forall eff. String -> Reference -> Eff (firebase :: FirebaseEff | eff) Reference
 child = runFn2 childImpl
 
 -- | Gets the key of the reference - https://www.firebase.com/docs/web/api/firebase/key.html
--- Nothing on the root ref (following the behaviour in the Firebase API)
-foreign import _key :: forall eff. Fn1 Firebase (Nullable Key)
+-- Nothing on the root ref (following the behaviour in the Reference API)
+foreign import _key :: forall eff. Fn1 Reference (Nullable Key)
 
-key :: Firebase -> Maybe Key
+key :: Reference -> Maybe Key
 key ds = map toMaybe _key ds
 
 data EventType = Value
@@ -127,14 +141,14 @@ foreign import onImpl :: forall eff. Fn4
                    String
                    (DataSnapshot -> Eff (firebase :: FirebaseEff | eff) Unit)
                    (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit)
-                   Firebase
+                   Reference
                    (Eff (firebase :: FirebaseEff | eff) Unit)
 
 on :: forall eff.
       EventType ->
       (DataSnapshot -> Eff (firebase :: FirebaseEff | eff) Unit) ->
       (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit) ->
-      Firebase ->
+      Reference ->
       Eff (firebase :: FirebaseEff | eff) Unit
 on etype ds canceler fb = runFn4 onImpl (showEventType etype) ds canceler fb
 
@@ -147,7 +161,7 @@ on etype ds canceler fb = runFn4 onImpl (showEventType etype) ds canceler fb
 foreign import onWithoutCancelCallbackImpl :: forall eff. Fn3
                    String
                    (DataSnapshot -> Eff (firebase :: FirebaseEff | eff) Unit)
-                   Firebase
+                   Reference
                    (Eff (firebase :: FirebaseEff | eff) Unit)
 
 -- | unsubscribes from a location
@@ -155,11 +169,11 @@ foreign import onWithoutCancelCallbackImpl :: forall eff. Fn3
 -- and add the other parameters later.
 -- https://www.firebase.com/docs/web/api/query/off.html
 foreign import _offSimple :: forall eff. Fn1
-                Firebase
+                Reference
                 (Eff (firebase :: FirebaseEff | eff) Unit)
 
 
-offSimple :: forall eff. Firebase -> Eff (firebase :: FirebaseEff | eff) Unit
+offSimple :: forall eff. Reference -> Eff (firebase :: FirebaseEff | eff) Unit
 offSimple ref = runFn1 _offSimple ref
 
 -- implementation of off with more parameters goes here. we can then rewrite offSimple in terms of off.
@@ -171,14 +185,14 @@ foreign import onceImpl :: forall eff. Fn4
         String
         (DataSnapshot -> Eff (firebase :: FirebaseEff | eff) Unit)
         (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit)
-        Firebase
+        Reference
         (Eff (firebase :: FirebaseEff | eff) Unit)
 
 once :: forall eff.
         EventType ->
         (DataSnapshot -> Eff (firebase :: FirebaseEff | eff) Unit) ->
         (FirebaseErr -> Eff (firebase :: FirebaseEff | eff) Unit) ->
-        Firebase ->
+        Reference ->
         Eff (firebase :: FirebaseEff | eff) Unit
 once etype ds cb fb = runFn4 onceImpl (showEventType etype) (unsafeEvalEff <<< ds) (cb) fb
 
@@ -190,13 +204,13 @@ once etype ds cb fb = runFn4 onceImpl (showEventType etype) (unsafeEvalEff <<< d
 foreign import setImpl :: forall eff. Fn3
                    Foreign
                    (Nullable (Nullable (FirebaseErr -> Eff eff Unit)))
-                   Firebase
+                   Reference
                    (Eff (firebase :: FirebaseEff | eff) Unit)
 
 set :: forall eff.
        Foreign ->
        Maybe (Maybe (FirebaseErr -> Eff eff Unit)) ->
-       Firebase ->
+       Reference ->
        Eff (firebase :: FirebaseEff | eff) Unit
 set value cb fb = runFn3 setImpl value (toNullable (toNullable <$> cb)) fb
 
@@ -205,13 +219,13 @@ set value cb fb = runFn3 setImpl value (toNullable (toNullable <$> cb)) fb
 foreign import setEImpl :: forall eff. Fn3
                    Foreign
                    ((Nullable FirebaseErr) -> Eff eff Unit)
-                   Firebase
+                   Reference
                    (Eff (firebase :: FirebaseEff | eff) Unit)
 
 setE :: forall eff.
        Foreign ->
        ((Maybe FirebaseErr) -> Eff eff Unit) ->
-       Firebase ->
+       Reference ->
        Eff (firebase :: FirebaseEff | eff) Unit
 setE value cb fb = runFn3 setEImpl value (callBackReceivesNull cb) fb
 
@@ -221,14 +235,14 @@ foreign import _setA :: forall eff eff1 eff2. Fn4
                    Foreign
                    (Unit -> Eff eff1 Unit)
                    (FirebaseErr -> Eff eff2 Unit)
-                   Firebase
+                   Reference
                    (Eff (firebase :: FirebaseEff | eff) Unit)
 
 setA :: forall eff eff1 eff2.
         Foreign ->
         (Unit -> Eff eff1 Unit) ->
         (FirebaseErr -> Eff eff2 Unit) ->
-        Firebase ->
+        Reference ->
         Eff (firebase :: FirebaseEff | eff) Unit
 setA = runFn4 _setA
 
@@ -237,14 +251,14 @@ setA = runFn4 _setA
 foreign import pushImpl :: forall eff. Fn3
                    Foreign
                    (Nullable (Nullable (FirebaseErr -> Eff eff Unit)))
-                   Firebase
-                   (Eff (firebase :: FirebaseEff | eff) Firebase)
+                   Reference
+                   (Eff (firebase :: FirebaseEff | eff) Reference)
 
 push :: forall eff.
         Foreign ->
         Maybe (Maybe (FirebaseErr -> Eff eff Unit)) ->
-        Firebase ->
-        Eff (firebase :: FirebaseEff | eff) Firebase
+        Reference ->
+        Eff (firebase :: FirebaseEff | eff) Reference
 push value cb fb = runFn3 pushImpl value (toNullable (toNullable <$> cb)) fb
 
 
@@ -253,14 +267,14 @@ push value cb fb = runFn3 pushImpl value (toNullable (toNullable <$> cb)) fb
 foreign import pushEImpl :: forall eff. Fn3
                    Foreign
                    ((Nullable FirebaseErr) -> Eff eff Unit)
-                   Firebase
-                   (Eff (firebase :: FirebaseEff | eff) Firebase)
+                   Reference
+                   (Eff (firebase :: FirebaseEff | eff) Reference)
 
 pushE :: forall eff.
         Foreign ->
         ((Maybe FirebaseErr) -> Eff eff Unit) ->
-        Firebase ->
-        Eff (firebase :: FirebaseEff | eff) Firebase
+        Reference ->
+        Eff (firebase :: FirebaseEff | eff) Reference
 pushE value cb fb = runFn3 pushEImpl value (callBackReceivesNull cb) fb
 
 
@@ -268,16 +282,16 @@ pushE value cb fb = runFn3 pushEImpl value (callBackReceivesNull cb) fb
 -- explicit parameter is easier and communicates better than messing with Maybes and nullables.
 foreign import _pushA :: forall eff eff1 eff2. Fn4
                    Foreign
-                   (Firebase -> Eff eff1 Unit)
+                   (Reference -> Eff eff1 Unit)
                    (FirebaseErr -> Eff eff2 Unit)
-                   Firebase
+                   Reference
                    (Eff (firebase :: FirebaseEff | eff) Unit)
 
 pushA :: forall eff eff1 eff2.
         Foreign ->
-        (Firebase -> Eff eff1 Unit) ->
+        (Reference -> Eff eff1 Unit) ->
         (FirebaseErr -> Eff eff2 Unit) ->
-        Firebase ->
+        Reference ->
         Eff (firebase :: FirebaseEff | eff) Unit
 pushA = runFn4 _pushA
 
@@ -287,7 +301,7 @@ callBackReceivesNull cb = nab
   where nab nullValue = cb (toMaybe nullValue)
 
 -- | Get the absolute URL for this location -  https://firebase.google.com/docs/reference/js/firebase.database.Reference#toString
-foreign import _toString :: forall eff. EffFn1 (firebase :: FirebaseEff | eff) Firebase String
+foreign import _toString :: forall eff. EffFn1 (firebase :: FirebaseEff | eff) Reference String
 
-toString :: forall eff. Firebase -> Eff (firebase :: FirebaseEff | eff) String
+toString :: forall eff. Reference -> Eff (firebase :: FirebaseEff | eff) String
 toString ref = runEffFn1 _toString ref
