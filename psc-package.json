@@ -7,6 +7,7 @@
        "foreign",
        "nullable",
        "transformers",
+       "eff",
        "aff",
        "aff-promise",
        "foreign-generic",

@@ -20,13 +20,14 @@ module Web.Firebase
 where
 
 import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Uncurried (EffFn1, runEffFn1)
 import Data.Foreign (Foreign)
 import Data.Function.Uncurried (Fn1, Fn2, Fn3, Fn4, runFn1, runFn2, runFn3, runFn4)
 import Data.Maybe (Maybe)
 import Data.Nullable (toMaybe, toNullable, Nullable)
 import Prelude (class Show, class Eq, class Ord, Unit, (<$>), (<<<), compare, map)
 import Web.Firebase.Authentication.Types (Auth)
-import Web.Firebase.Types (App, DataSnapshot, DatabaseImpl, FirebaseAppImpl, FirebaseConfig, FirebaseEff, FirebaseErr, Key, Firebase)
+import Web.Firebase.Types (App, DataSnapshot, Database, FirebaseAppImpl, FirebaseConfig, FirebaseEff, FirebaseErr, Key, Firebase)
 import Web.Firebase.Unsafe (unsafeEvalEff)
 
 -- https://firebase.google.com/docs/reference/js/firebase.auth.Auth
@@ -38,9 +39,9 @@ foreign import initializeAppImpl :: forall eff. Fn1 FirebaseConfig (Eff (firebas
 foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff ) Firebase )
 
 foreign import authImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff) Auth)
-foreign import rootRefForImpl :: forall eff. Fn1 DatabaseImpl (Eff (firebase :: FirebaseEff | eff) Firebase)
+foreign import rootRefForImpl :: forall eff. Fn1 Database (Eff (firebase :: FirebaseEff | eff) Firebase)
 
-rootRefFor :: forall eff. DatabaseImpl -> Eff (firebase :: FirebaseEff | eff) Firebase
+rootRefFor :: forall eff. Database -> Eff (firebase :: FirebaseEff | eff) Firebase
 rootRefFor = runFn1 rootRefForImpl
 
 -- | Data.URI would introduce too many dependencies for this single use
@@ -52,7 +53,7 @@ type FirebaseURI = String
 initializeApp :: forall eff. FirebaseConfig -> Eff (firebase :: FirebaseEff | eff) App
 initializeApp = runFn1 initializeAppImpl
 
-database :: forall eff. FirebaseAppImpl -> Eff  (firebase :: FirebaseEff | eff ) DatabaseImpl
+database :: forall eff. FirebaseAppImpl -> Eff  (firebase :: FirebaseEff | eff ) Database
 database = runFn1 databaseImpl
 
 
@@ -286,7 +287,7 @@ callBackReceivesNull cb = nab
   where nab nullValue = cb (toMaybe nullValue)
 
 -- | Get the absolute URL for this location -  https://firebase.google.com/docs/reference/js/firebase.database.Reference#toString
-foreign import _toString :: forall eff. Fn1 Firebase (Eff (firebase :: FirebaseEff | eff) String)
+foreign import _toString :: forall eff. EffFn1 (firebase :: FirebaseEff | eff) Firebase String
 
 toString :: forall eff. Firebase -> Eff (firebase :: FirebaseEff | eff) String
-toString ds = runFn1 _toString ds
+toString ref = runEffFn1 _toString ref

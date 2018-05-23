@@ -162,8 +162,4 @@ exports._pushA = function (value, onSuccess, onError, fb) {
     };
 };
 
-exports._toString = function(firebaseRef) {
-  return function() {
-    return firebaseRef.toString();
-  };
-};
+exports._toString = function(reference) { return reference.toString(); };
