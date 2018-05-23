@@ -4,12 +4,33 @@ import Control.Monad.Aff (Aff)
 import Control.Monad.Aff.Compat (EffFnAff(..), fromEffFnAff)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
+import Control.Monad.Error.Class (try)
 import Prelude (bind, discard, pure, ($), (<<<), (>>=))
 import Test.Spec (describe, it)
-import Test.Spec.Assertions (shouldEqual)
+import Test.Spec.Assertions (fail, shouldEqual)
+import Test.Spec.Assertions.Aff (expectError)
 
 
-promisesSpikeSpec = describe "FFI examples" do
+promisesSpikeSpec =
+  describe  "with promise" do
+  -- code from a true story of taming promise chains with purescript by art yerkes on medium
+    it "one argument" do
+      promiseConcat1 "one" >>= expectOne
+    it "zero arguments" do
+      promiseConcat0 >>= expectZero
+    it "two arguments" do
+      promiseConcat2 "one" "two" >>= expectOneTwo
+  where
+    expectZero actual = actual `shouldEqual` "zero"
+    expectOne actual = actual `shouldEqual` "one"
+    expectOneTwo actual = actual `shouldEqual` "onetwo"
+
+runLater = describe "FFI examples" do
+  describe "pure functions" do
+    it "not curried - partial 'two' throws 'partial is not a function'" do
+      let partial = notCurriedImpl "one"
+      -- (partial "two")
+      fail "don't know how to write a test to catch 'partial is not a function'"
   describe "liftEff" do
     it "zero arguments" do
       concat0Lift >>= expectZero
@@ -29,18 +50,7 @@ promisesSpikeSpec = describe "FFI examples" do
     expectOne actual = actual `shouldEqual` "one"
     expectOneTwo actual = actual `shouldEqual` "onetwo"
 
-
-runLater = describe  "with promise" do
-  -- code from a true story of taming promise chains with purescript by art yerkes on medium
-    it "zero arguments" do
-      zero <- promiseConcat0
-      zero `shouldEqual` "zero"
-    it "one argument" do
-      one <- promiseConcat1 "one"
-      one `shouldEqual` "one"
-    it "two argments" do
-      concatenated <- promiseConcat2 "promised" "miracle"
-      concatenated `shouldEqual` "promisedmiracle"
+foreign import notCurriedImpl :: String -> String -> String
 
 foreign import concat0FromEffnAffImpl :: forall eff. EffFnAff (eff) String
 
@@ -54,6 +64,7 @@ concat1FromEffnAff one = fromEffFnAff $ concat1FromEffnAffImpl one -- there was 
 
 foreign import concat2FromEffnAffImpl :: forall eff. String -> String -> EffFnAff (eff) String
 
+-- 'solution'
 concat2FromEffnAff :: forall eff. String -> String -> Aff eff String
 concat2FromEffnAff one two = fromEffFnAff $ concat2FromEffnAffImpl one two
 
@@ -61,6 +72,16 @@ foreign import promiseConcat0Impl :: forall eff. EffFnAff (eff) String
 
 promiseConcat0 :: forall eff. Aff eff String
 promiseConcat0 = fromEffFnAff promiseConcat0Impl
+
+foreign import promiseConcat1Impl :: forall eff. String -> EffFnAff (eff) String
+
+promiseConcat1 :: forall eff. String -> Aff eff String
+promiseConcat1 = fromEffFnAff <<< promiseConcat1Impl
+
+foreign import promiseConcat2Impl :: forall eff. String -> String -> EffFnAff (eff) String
+
+promiseConcat2 :: forall eff. String -> String -> Aff eff String
+promiseConcat2 a b = fromEffFnAff $ promiseConcat2Impl a b
 
 foreign import concat0LiftImpl :: forall eff. Eff (eff) String
 
@@ -76,6 +97,3 @@ foreign import concat2LiftImpl :: forall eff. String -> String -> Eff (eff) Stri
 
 concat2Lift :: forall eff. String -> String -> Aff eff String
 concat2Lift one two = liftEff $ concat2LiftImpl one two
-
-promiseConcat1 l = pure ""
-promiseConcat2 l r = pure ""

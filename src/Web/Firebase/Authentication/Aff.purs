@@ -3,14 +3,14 @@ module Web.Firebase.Authentication.Aff (Authenticator, authWithCustomToken) wher
 
 import Control.Monad.Aff (Aff, makeAff, nonCanceler)
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Exception (Error)
+import Control.Monad.Eff.Class (liftEff)
+import Control.Monad.Eff.Exception (EXCEPTION, Error)
 import Data.Either (Either(..))
-import Data.Foreign (Foreign)
-import Prelude (Unit, ($>), (<<<))
-import Web.Firebase.Aff (convertError)
+import Prelude (Unit, ($), ($>), (<<<))
+import Web.Firebase.AdminSDK (CustomToken)
 import Web.Firebase.Authentication.Eff as AE
 import Web.Firebase.Authentication.Types (Auth)
-import Web.Firebase.Types (DatabaseImpl)
+import Web.Firebase.Types (DatabaseImpl, App)
 import Web.Firebase.Types as FBT
 
 type AuthToken = Auth
@@ -19,11 +19,12 @@ type AuthToken = Auth
 makeAff' :: forall t2 t3 t5. ((Error -> Eff t3 Unit) -> (t2 -> Eff t3 Unit) -> Eff t3 t5) -> Aff t3 t2
 makeAff' oldAff = makeAff \k -> oldAff (k <<< Left) (k <<< Right) $> nonCanceler
 
+-- | throws exception when using custom token fails
 authWithCustomToken :: forall eff.
-                       String ->
-                       Auth ->
-                       Aff (firebase :: FBT.FirebaseEff | eff) Foreign
-authWithCustomToken token ref = makeAff' (\errorCb successCb -> AE.authWithCustomToken token successCb (convertError errorCb) ref)
+                       CustomToken ->
+                       App ->
+                       Aff (firebase :: FBT.FirebaseEff, exception :: EXCEPTION | eff) Unit
+authWithCustomToken token firebase = liftEff $ AE.authWithCustomToken token firebase
 
 newtype Authenticator = Authenticator {token :: AuthToken, db :: DatabaseImpl}
 mkAuthenticator :: AuthToken -> DatabaseImpl -> Authenticator

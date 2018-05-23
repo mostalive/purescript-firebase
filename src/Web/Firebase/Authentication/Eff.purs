@@ -7,13 +7,14 @@ module Web.Firebase.Authentication.Eff (
   , unAuth
 ) where
 
-import Prelude (Unit(), pure, unit)
-import Web.Firebase.Types (Firebase(), FirebaseEff(), FirebaseErr)
+import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Exception (EXCEPTION)
+import Data.Foreign (Foreign)
+import Data.Function.Uncurried (Fn1, Fn2, Fn3, Fn4, runFn1, runFn2, runFn3, runFn4)
+import Prelude (Unit, pure, unit)
+import Web.Firebase.AdminSDK (CustomToken)
 import Web.Firebase.Authentication.Types (Auth)
-import Control.Monad.Eff (Eff())
-import Data.Foreign (Foreign())
-
-import Data.Function.Uncurried (Fn4, Fn3, Fn2, Fn1, runFn4, runFn3, runFn2, runFn1)
+import Web.Firebase.Types (Firebase, FirebaseEff, FirebaseErr, App)
 
 foreign import _onAuth :: forall eff. Fn2 (Foreign -> Eff ( firebase :: FirebaseEff | eff) Unit) Firebase (Eff (firebase :: FirebaseEff | eff) Unit)
 
@@ -60,29 +61,13 @@ authWithOAuthRedirectSilent :: forall eff.
                          (Eff (firebase :: FirebaseEff | eff) Unit)
 authWithOAuthRedirectSilent provider = authWithOAuthRedirect provider noOpCallBack
 
--- | authenticate a 'client' (most often a server or test laptop) with a custom token (JWT)
--- https://www.firebase.com/docs/web/guide/login/custom.html
--- Instead of an on error and on failure paramater that may or may not be null,
--- we pass an error and success callback, so that making an Aff function is easier
--- and we don't have to worry about null / maybe on the purescript side
-foreign import _authWithCustomToken :: forall eff. Fn4
-                        String
-                        (Foreign -> Eff (firebase :: FirebaseEff | eff ) Unit)
-                        (FirebaseErr -> Eff (firebase :: FirebaseEff | eff ) Unit)
-                        Auth
-                        (Eff (firebase :: FirebaseEff | eff) Unit)
+foreign import authWithCustomTokenImpl :: forall eff. Fn2 CustomToken App (Eff (firebase :: FirebaseEff, exception :: EXCEPTION | eff ) Unit)
 
 type AuthToken = String
 type AuthData = Foreign -- we are not parsing this just yet, TBD
 
-authWithCustomToken :: forall eff.
-                       AuthToken ->
-                       (Foreign -> Eff (firebase :: FirebaseEff | eff ) Unit) ->
-                       (FirebaseErr -> Eff (firebase :: FirebaseEff | eff ) Unit) ->
-                       Auth ->
-                       Eff (firebase :: FirebaseEff | eff) Unit
-authWithCustomToken = runFn4 _authWithCustomToken
-
+authWithCustomToken :: forall eff. CustomToken -> App -> (Eff (firebase :: FirebaseEff, exception :: EXCEPTION | eff ) Unit)
+authWithCustomToken = runFn2 authWithCustomTokenImpl
 -- | sign out of the application
 --
 foreign import _unAuth :: forall eff. Fn1 Auth (Eff (firebase :: FirebaseEff | eff) Unit)

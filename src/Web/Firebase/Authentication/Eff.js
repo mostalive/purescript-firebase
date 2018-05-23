@@ -32,6 +32,7 @@ exports._authWithOAuthRedirect = function (provider, errorCallback, ref) {
 // shape is slightly different from firebase function,
 // we chose to have a success and error callback everywhere, so that writing Aff calls is straightforward
 // and the API is consistent. Firebase has some with success / error callbacks, and some, like this with null (for success) or an additional parameter
+// old API
 exports._authWithCustomToken = function (token, successCallback, errorCallback, ref) {
   var errorCbEffect = function(error, authData) {
     if (error) {
@@ -44,6 +45,14 @@ exports._authWithCustomToken = function (token, successCallback, errorCallback, 
   return function() {
     return ref.authWithCustomToken(token, errorCbEffect);
   };
+};
+
+exports.authWithCustomTokenImpl = function (token, firebase) {
+  firebase.auth().signInWithCustomToken(token).then(function() {
+    console.log("successful login with auth with custom token");
+  }).catch(function(error) {
+    throw ("Authentication with custom token failed, reason:" + error);
+  });
 };
 
 // https://firebase.google.com/docs/reference/js/firebase.auth.Auth
