@@ -30,7 +30,7 @@ import Web.Firebase.Types (Firebase, FirebaseEff, App)
 
 
 type FbSpecEffects e =
-  (fs :: FS
+  ( fs :: FS
   , err :: EXCEPTION
   , exception :: EXCEPTION
   , firebase :: FirebaseEff
@@ -38,7 +38,9 @@ type FbSpecEffects e =
 type FbSpecRunnerEffects e = RunnerEffects (FbSpecEffects e)
 
 main ::  forall eff. Eff (FbSpecRunnerEffects eff) Unit
-main = do run [consoleReporter] (allSpecs firebaseTestRef )
+main = do
+  root <- firebaseTestRef
+  run [consoleReporter] (allSpecs root )
 
 --allSpecs :: forall eff. StateT (Array (Group (Aff (FbSpecEffects eff) Unit))) Identity Unit
 allSpecs :: forall eff. Firebase -> Spec ( FbSpecRunnerEffects eff ) Unit

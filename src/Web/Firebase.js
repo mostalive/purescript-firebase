@@ -38,9 +38,9 @@ exports.databaseImpl = function (firebaseApp) {
     };
 };
 
-exports.childImpl = function (childPath, firebase) {
+exports.childImpl = function (childPath, root) {
     return function () {
-        return firebase.child(childPath);
+      return root.ref(childPath);
     };
 };
 
