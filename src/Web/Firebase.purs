@@ -40,8 +40,8 @@ foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase ::
 
 foreign import authImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff) Auth)
 
+-- *DATABASE*
 foreign import app :: Database -> App
-
 -- | Database goes second, so calls can be easily chained
 foreign import refImpl :: forall eff. EffFn2 (firebase :: FirebaseEff | eff) String Database Reference
 ref :: forall eff. String -> Database -> Eff (firebase :: FirebaseEff | eff) Reference
@@ -59,6 +59,7 @@ goOffline = runEffFn1 goOfflineImpl
 foreign import goOnlineImpl :: forall eff. EffFn1 (firebase :: FirebaseEff | eff) Database Unit
 goOnline :: forall eff. Database -> Eff (firebase :: FirebaseEff | eff) Unit
 goOnline = runEffFn1 goOnlineImpl
+-- *END DATABASE*
 
 -- | Data.URI would introduce too many dependencies for this single use
 -- | if you want URI's checked, import Data.URI in your projects, and use printURI to convert

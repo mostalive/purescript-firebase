@@ -20,6 +20,7 @@ exports.authImpl = function (firebaseApp) {
         };
     };
 
+// * DATABASE
 exports.app = function(database) { return database.app;};
 
 // a quick way to get a root reference for a database from a firebase config
@@ -38,7 +39,9 @@ exports.databaseImpl = function (firebaseApp) {
       return db;
     };
 };
+// end database
 
+// rename to ref?
 exports.childImpl = function (childPath, root) {
     return function () {
       return root.ref(childPath);
