@@ -1,14 +1,9 @@
-module FirebaseTestConfig (firebaseConfig) where
+module FirebaseTestConfig (firebaseTestRef) where
 
--- generated from https://console.firebase.google.com/u/0/project/purescript-spike/overview
-import Web.Firebase.Types (FirebaseConfig, mkFirebaseConfig)
+import Web.Firebase.Types (Firebase, mkFirebaseConfig)
+-- on js side: read serviceaccount from testserviceaccount.json, read that into a const,
+--
 
-firebaseConfig ::  FirebaseConfig
-firebaseConfig = mkFirebaseConfig {
-    apiKey: "AIzaSyAyPNxC9QM8TsF_EfyyPVcPSpI5W8ARoa8",
-    authDomain: "purescript-spike.firebaseapp.com",
-    databaseURL: "https://purescript-spike.firebaseio.com",
-    projectId: "purescript-spike",
-    storageBucket: "purescript-spike.appspot.com",
-    messagingSenderId: "770384530890"}
--- somewhere else: firebase.initializeApp(config);
+-- | Firebase test ref, we isolate the config on the js side,
+-- | so all tests use the same root ref
+foreign import firebaseTestRef :: Firebase

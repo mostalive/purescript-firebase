@@ -1,12 +1,13 @@
 module Test.Main where
 
+import Web.Firebase.Types as FBT
 import Control.Monad.Aff (launchAff)
 import Control.Monad.Aff.Console (log)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Exception (EXCEPTION)
 import Data.Show (show)
-import FirebaseTestConfig (firebaseConfig)
+import FirebaseTestConfig (firebaseTestRef)
 import Node.Encoding (Encoding(..))
 import Node.FS (FS)
 import Node.FS.Sync (readTextFile)
@@ -25,11 +26,8 @@ import Web.Firebase.AdminSDK (AdminSDK, adminSDK, createCustomToken, mkCredentia
 import Web.Firebase.AdminSDK (CustomToken)
 import Web.Firebase.Authentication.Aff (authWithCustomToken)
 import Web.Firebase.Authentication.Types (Auth)
-import Web.Firebase.Types (FirebaseEff, App)
-import Web.Firebase.Types as FBT
+import Web.Firebase.Types (Firebase, FirebaseEff, App)
 
-root :: String
-root =  "https://purescript-spike.firebaseio.com/"
 
 type FbSpecEffects e =
   (fs :: FS
@@ -40,14 +38,14 @@ type FbSpecEffects e =
 type FbSpecRunnerEffects e = RunnerEffects (FbSpecEffects e)
 
 main ::  forall eff. Eff (FbSpecRunnerEffects eff) Unit
-main = do run [consoleReporter] (allSpecs  )
+main = do run [consoleReporter] (allSpecs firebaseTestRef )
 
 --allSpecs :: forall eff. StateT (Array (Group (Aff (FbSpecEffects eff) Unit))) Identity Unit
-allSpecs :: forall eff. Spec ( FbSpecRunnerEffects eff ) Unit
-allSpecs  = do
-  -- refSpec ref
+allSpecs :: forall eff. Firebase -> Spec ( FbSpecRunnerEffects eff ) Unit
+allSpecs ref = do
+  refSpec ref
   -- authorizationSpec ref
-  --  authenticationSpec app auth token
+  -- authenticationSpec app auth token
   promisesSpikeSpec
   -- dataSnapshotSpec ref
 

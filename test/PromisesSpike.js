@@ -18,6 +18,14 @@ exports.concat2LiftImpl = function(one) {
   ;};
 };
 
+
+exports.promiseConcat0Impl = function(onError,onSuccess) {
+    // for example
+    q.delay(100).then(function() {
+      return "zero";
+    }).fail(onError).then(onSuccess);
+};
+
 exports.promiseConcat1Impl = function(msg) {
   return function(err,response) {
     // for example
@@ -25,13 +33,6 @@ exports.promiseConcat1Impl = function(msg) {
       return msg;
     }).fail(err).then(response);
   };
-};
-
-exports.promiseConcat0Impl = function(onError,onSuccess) {
-    // for example
-    q.delay(100).then(function() {
-      return "zero";
-    }).fail(onError).then(onSuccess);
 };
 
 exports.promiseConcat2Impl = function(msg) {

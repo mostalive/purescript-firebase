@@ -11,21 +11,15 @@ import Test.Spec.Assertions (fail, shouldEqual)
 import Test.Spec.Assertions.Aff (expectError)
 
 
-promisesSpikeSpec =
+promisesSpikeSpec = describe "FFI examples" do
   describe  "with promise" do
   -- code from a true story of taming promise chains with purescript by art yerkes on medium
-    it "one argument" do
-      promiseConcat1 "one" >>= expectOne
     it "zero arguments" do
       promiseConcat0 >>= expectZero
+    it "one argument" do
+      promiseConcat1 "one" >>= expectOne
     it "two arguments" do
       promiseConcat2 "one" "two" >>= expectOneTwo
-  where
-    expectZero actual = actual `shouldEqual` "zero"
-    expectOne actual = actual `shouldEqual` "one"
-    expectOneTwo actual = actual `shouldEqual` "onetwo"
-
-runLater = describe "FFI examples" do
   describe "pure functions" do
     it "not curried - partial 'two' throws 'partial is not a function'" do
       let partial = notCurriedImpl "one"
