@@ -1,4 +1,4 @@
-exports.firebaseTestRef = function() {
+exports.firebaseTestDatabase = function() {
   const firebase = require('firebase');
   console.log('requiring firebase');
   var config = {

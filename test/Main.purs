@@ -7,7 +7,7 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Exception (EXCEPTION)
 import Data.Show (show)
-import FirebaseTestConfig (firebaseTestRef)
+import FirebaseTestConfig (firebaseTestDatabase)
 import Node.Encoding (Encoding(..))
 import Node.FS (FS)
 import Node.FS.Sync (readTextFile)
@@ -39,7 +39,7 @@ type FbSpecRunnerEffects e = RunnerEffects (FbSpecEffects e)
 
 main ::  forall eff. Eff (FbSpecRunnerEffects eff) Unit
 main = do
-  root <- firebaseTestRef
+  root <- firebaseTestDatabase
   run [consoleReporter] (allSpecs root )
 
 --allSpecs :: forall eff. StateT (Array (Group (Aff (FbSpecEffects eff) Unit))) Identity Unit

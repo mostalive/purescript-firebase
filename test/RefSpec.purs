@@ -22,7 +22,7 @@ refSpec ref = do
        (key actual) `shouldEqual` (Just "achild")
      describe "toString" do
        it "on root represents full database URl" do
-         actual <- liftEff $ toString ref
+         actual <- liftEff $ (child "/" ref) >>= toString
          actual `shouldEqual` "https://purescript-spike.firebaseio.com/"
        it "on child represents full database URl plus child" do
          actual <- liftEff $ (child "achild" ref) >>= toString
@@ -36,7 +36,7 @@ refSpec ref = do
          actual `shouldEqual` "affchild"
      describe "toString" do
        it "on root returns url" do
-         actual <- FAff.toString ref
+         actual <- FAff.child "/" ref >>= FAff.toString
          actual `shouldEqual` "https://purescript-spike.firebaseio.com/"
        it "on child of root returns root url + child" do
          let child = "achild"
