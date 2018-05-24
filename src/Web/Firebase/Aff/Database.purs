@@ -1,5 +1,9 @@
-module Web.Firebase.Aff.Database where
-
+module Web.Firebase.Aff.Database
+  (ref
+  , rootRefFor
+  , goOffline
+  , goOnline)
+  where
 
 import Control.Monad.Eff.Class (class MonadEff, liftEff)
 import Prelude (Unit, ($), (<<<))
