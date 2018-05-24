@@ -11,8 +11,6 @@ module Web.Firebase
 , push
 , pushA
 , pushE
-, ref
-, rootRefFor
 , set
 , setE
 , setA
@@ -23,7 +21,7 @@ where
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Uncurried (EffFn1, runEffFn1, EffFn2, runEffFn2)
 import Data.Foreign (Foreign)
-import Data.Function.Uncurried (Fn1, Fn2, Fn3, Fn4, runFn1, runFn2, runFn3, runFn4)
+import Data.Function.Uncurried (Fn1, Fn3, Fn4, runFn1, runFn3, runFn4)
 import Data.Maybe (Maybe)
 import Data.Nullable (toMaybe, toNullable, Nullable)
 import Prelude (class Show, class Eq, class Ord, Unit, (<$>), (<<<), compare, map)
@@ -37,28 +35,6 @@ auth = runFn1 authImpl
 
 --foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff) Reference)
 foreign import authImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff) Auth)
-
--- *DATABASE*
-foreign import app :: Database -> App
--- | Database goes second, so calls can be easily chained
-foreign import refImpl :: forall eff. EffFn2 (firebase :: FirebaseEff | eff) String Database Reference
-ref :: forall eff. String -> Database -> Eff (firebase :: FirebaseEff | eff) Reference
-ref = runEffFn2 refImpl
-
--- | equivalent to ref() without parameters
-foreign import rootRefForImpl :: forall eff. EffFn1 (firebase :: FirebaseEff | eff) Database Reference
-rootRefFor :: forall eff. Database -> Eff (firebase :: FirebaseEff | eff) Reference
-rootRefFor = runEffFn1 rootRefForImpl
-
-foreign import goOfflineImpl :: forall eff. EffFn1 (firebase :: FirebaseEff | eff) Database Unit
-goOffline :: forall eff. Database -> Eff (firebase :: FirebaseEff | eff) Unit
-goOffline = runEffFn1 goOfflineImpl
-
-foreign import goOnlineImpl :: forall eff. EffFn1 (firebase :: FirebaseEff | eff) Database Unit
-goOnline :: forall eff. Database -> Eff (firebase :: FirebaseEff | eff) Unit
-goOnline = runEffFn1 goOnlineImpl
--- *END DATABASE*
-
 
 -- | Data.URI would introduce too many dependencies for this single use
 -- | if you want URI's checked, import Data.URI in your projects, and use printURI to convert

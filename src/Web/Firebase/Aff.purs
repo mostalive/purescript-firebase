@@ -16,7 +16,6 @@ module Web.Firebase.Aff
 , once
 , onceValue
 , push
-, ref
 , set
 , fb2error
 , firebaseErrToString
@@ -53,13 +52,7 @@ child :: forall eff.
        FBT.Key ->
        FBT.Reference ->
        Aff (firebase :: FBT.FirebaseEff | eff) FBT.Reference
-child aKey ref = liftEff $ FB.child aKey ref
-
-ref :: forall eff.
-       FBT.Key ->
-       FBT.Database ->
-       Aff (firebase :: FBT.FirebaseEff | eff) FBT.Reference
-ref aKey ref = liftEff $ FB.ref aKey ref
+child aKey aRef = liftEff $ FB.child aKey aRef
 
 -- | Returns the key of the current firebase reference
 -- throws a MonadError if there was no key (i.e. when you ask for the key of the root reference, according to
