@@ -22,7 +22,7 @@ import Test.Spec.Assertions (fail)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (RunnerEffects, run)
 import Web.Firebase (auth, initializeApp, database)
-import Web.Firebase.Eff.Database (rootRefFor)
+import Web.Firebase.Eff.Database (app, rootRefFor)
 import Web.Firebase.AdminSDK (AdminSDK, adminSDK, createCustomToken, mkCredentialCert, mkDatabaseName, mkUserId, everythingInJs, initializeApp) as Admin
 import Web.Firebase.AdminSDK (CustomToken)
 import Web.Firebase.Authentication.Aff (authWithCustomToken)
@@ -47,11 +47,12 @@ main = do
 --allSpecs :: forall eff. StateT (Array (Group (Aff (FbSpecEffects eff) Unit))) Identity Unit
 allSpecs :: forall eff. Database -> Reference -> Spec ( FbSpecRunnerEffects eff ) Unit
 allSpecs db ref = do
+  let theApp = app db
   refSpec db ref
-  -- authorizationSpec ref
-  -- authenticationSpec app auth token
+  authorizationSpec ref
+  authenticationSpec
   promisesSpikeSpec
-  -- dataSnapshotSpec ref
+  dataSnapshotSpec ref
 
 
 readAdminFile =

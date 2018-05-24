@@ -15,16 +15,14 @@ module Web.Firebase.AdminSDK
   ) where
 
 import Control.Monad.Aff (Aff)
+import Control.Monad.Aff.Compat (EffFnAff, fromEffFnAff)
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Class (liftEff)
-import Control.Promise (Promise, toAff)
 import Data.Function.Uncurried (Fn3, runFn3)
 import Data.Show (class Show)
-import Prelude (($), (>>=))
+import Prelude (($))
 import Web.Firebase.Types (FirebaseEff, App)
 
-foreign import data AdminSDK :: Type -- Object used to initialize AdminSDK and perform operations like authentication on
-
+foreign import data AdminSDK :: Type
 foreign import requireAdminSDKImpl :: AdminSDK
 
 adminSDK :: AdminSDK
@@ -55,24 +53,24 @@ initializeApp = runFn3 initializeAppImpl
 foreign import createCustomTokenImpl :: forall eff.
   UserId ->
   App ->
-  (Eff (firebase :: FirebaseEff | eff ) (Promise CustomToken))
+  EffFnAff (firebase :: FirebaseEff | eff ) CustomToken
 
 createCustomToken :: forall eff.
   UserId ->
   App ->
   (Aff (firebase :: FirebaseEff | eff ) CustomToken)
 createCustomToken uid admin =
-  liftEff (createCustomTokenImpl uid admin) >>= toAff
+  fromEffFnAff $ createCustomTokenImpl uid admin
 
 foreign import everythingInJsImpl :: forall eff.
-   CredentialCert ->
-  (Eff (firebase :: FirebaseEff | eff ) (Promise {app :: App, token :: CustomToken}))
+  String ->
+  EffFnAff (firebase :: FirebaseEff | eff ) CustomToken
 
 everythingInJs :: forall eff.
-  CredentialCert ->
-  (Aff (firebase :: FirebaseEff | eff ) {app :: App, token :: CustomToken})
-everythingInJs cert =
-  liftEff (everythingInJsImpl cert) >>= toAff
+  String ->
+  Aff (firebase :: FirebaseEff | eff ) CustomToken
+everythingInJs jsonFileName =
+  fromEffFnAff (everythingInJsImpl jsonFileName)
 
 mkCredentialCert :: String -> CredentialCert
 mkCredentialCert = CredentialCert

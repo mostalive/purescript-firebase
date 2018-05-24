@@ -1,5 +1,6 @@
 module Web.Firebase.Eff.Database
- ( goOffline,
+ ( app,
+   goOffline,
    goOnline,
    ref,
    rootRefFor
