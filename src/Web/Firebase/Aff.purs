@@ -16,6 +16,7 @@ module Web.Firebase.Aff
 , once
 , onceValue
 , push
+, ref
 , set
 , fb2error
 , firebaseErrToString
@@ -47,14 +48,18 @@ foreign import fb2error :: FBT.FirebaseErr -> Error
 foreign import firebaseErrToString :: FBT.FirebaseErr -> String
 
 -- | Gets a Firebase reference for the location at the specified relative path.
--- https://www.firebase.com/docs/web/api/firebase/child.html
 
--- Refactor to Location
 child :: forall eff.
        FBT.Key ->
-       FBT.Firebase ->
-       Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
+       FBT.Reference ->
+       Aff (firebase :: FBT.FirebaseEff | eff) FBT.Reference
 child aKey ref = liftEff $ FB.child aKey ref
+
+ref :: forall eff.
+       FBT.Key ->
+       FBT.Database ->
+       Aff (firebase :: FBT.FirebaseEff | eff) FBT.Reference
+ref aKey ref = liftEff $ FB.ref aKey ref
 
 -- | Returns the key of the current firebase reference
 -- throws a MonadError if there was no key (i.e. when you ask for the key of the root reference, according to
@@ -80,9 +85,9 @@ foreign import _on :: forall eff. EventAtLocation -> EffFnAff (firebase :: FBT.F
 
 -- | these parameters move together all the time - Data Clump
 -- | also makes ffi callbacks easier to write
-newtype EventAtLocation = EventAtLocation {event :: FB.EventType, path :: FBT.DatabaseImpl}
+newtype EventAtLocation = EventAtLocation {event :: FB.EventType, path :: FBT.Reference}
 
-mkEventAtLocation :: FB.EventType -> FBT.DatabaseImpl -> EventAtLocation
+mkEventAtLocation :: FB.EventType -> FBT.Reference -> EventAtLocation
 mkEventAtLocation event path = EventAtLocation {event, path}
 
 on :: forall eff. EventAtLocation -> Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
@@ -110,9 +115,9 @@ foreign import _once :: forall eff. EventAtLocation -> EffFnAff (firebase :: FBT
 once :: forall eff. EventAtLocation -> Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
 once (EventAtLocation {event, path})= makeAff' (\eb cb -> FB.once event cb (convertError eb) path)
 
-newtype Saveable = Saveable {foreign :: Foreign, location :: FBT.DatabaseImpl }
+newtype Saveable = Saveable {foreign :: Foreign, location :: FBT.Reference }
 
-mkSaveable :: Foreign -> FBT.DatabaseImpl -> Saveable
+mkSaveable :: Foreign -> FBT.Reference -> Saveable
 mkSaveable forn location = Saveable {foreign: forn, location}
 
 foreign import _push :: forall eff. Saveable -> EffFnAff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
@@ -141,8 +146,8 @@ toString = liftEff <<< FB.toString
 
 -- | remove data below ref
 -- | todo : update with remove function that is now in API
-foreign import _remove :: forall eff. FBT.DatabaseImpl -> EffFnAff (firebase :: FBT.FirebaseEff | eff) Unit
+foreign import _remove :: forall eff. FBT.Reference -> EffFnAff (firebase :: FBT.FirebaseEff | eff) Unit
 
-remove :: forall e. FBT.DatabaseImpl -> Aff (firebase :: FBT.FirebaseEff | e) Unit
+remove :: forall e. FBT.Reference -> Aff (firebase :: FBT.FirebaseEff | e) Unit
 remove ref = set $ mkSaveable foreignNull ref
              where foreignNull = toForeign $ toNullable $ Nothing

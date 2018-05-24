@@ -22,16 +22,14 @@ foreign import data FirebaseEff :: Effect
 
 -- backwards compatility, Firebase is now more than a database, but we have some old code to fix
 -- and in new code we want to use the stubbable typeclass
-type Firebase = Database
+type Firebase = Reference
 type DatabaseImpl = Database -- legacy
-type Reference = Database -- refactor step, will be its own foreign import
 type App = FirebaseAppImpl
 
 foreign import data FirebaseAppImpl :: Type
-
 foreign import data Database :: Type
-
 foreign import data DataSnapshot :: Type
+foreign import data Reference :: Type
 
 type Key = String
 

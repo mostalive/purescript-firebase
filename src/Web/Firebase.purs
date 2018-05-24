@@ -11,6 +11,7 @@ module Web.Firebase
 , push
 , pushA
 , pushE
+, ref
 , rootRefFor
 , set
 , setE
@@ -35,9 +36,6 @@ auth :: forall eff. FirebaseAppImpl -> Eff (firebase :: FirebaseEff | eff) Auth
 auth = runFn1 authImpl
 
 --foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff) Reference)
-foreign import initializeAppImpl :: forall eff. Fn1 FirebaseConfig (Eff (firebase :: FirebaseEff | eff) FirebaseAppImpl)
-foreign import databaseImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff ) Reference )
-
 foreign import authImpl :: forall eff. Fn1 FirebaseAppImpl (Eff (firebase :: FirebaseEff | eff) Auth)
 
 -- *DATABASE*
@@ -61,17 +59,20 @@ goOnline :: forall eff. Database -> Eff (firebase :: FirebaseEff | eff) Unit
 goOnline = runEffFn1 goOnlineImpl
 -- *END DATABASE*
 
+
 -- | Data.URI would introduce too many dependencies for this single use
 -- | if you want URI's checked, import Data.URI in your projects, and use printURI to convert
 -- | We assume an application sets up a newFirebase just once,
 -- | and if the URI is wrong, that it is a programming error
 type FirebaseURI = String
 
+foreign import initializeAppImpl :: forall eff. Fn1 FirebaseConfig (Eff (firebase :: FirebaseEff | eff) FirebaseAppImpl)
 initializeApp :: forall eff. FirebaseConfig -> Eff (firebase :: FirebaseEff | eff) App
 initializeApp = runFn1 initializeAppImpl
 
+foreign import databaseImpl :: forall eff. EffFn1 (firebase :: FirebaseEff | eff ) App Database
 database :: forall eff. FirebaseAppImpl -> Eff  (firebase :: FirebaseEff | eff ) Database
-database = runFn1 databaseImpl
+database = runEffFn1 databaseImpl
 
 -- instance firebaseApp :: App FirebaseAppImpl where
 --  database impl =
@@ -82,10 +83,10 @@ database = runFn1 databaseImpl
 -- may or may not exist.
 -- Existence can be checked by getting the value, and DataSnapshot.exists - https://www.firebase.com/docs/web/api/datasnapshot/exists.html
 
-foreign import childImpl :: forall eff. Fn2 String Reference (Eff (firebase :: FirebaseEff | eff) Reference)
+foreign import childImpl :: forall eff. EffFn2 (firebase :: FirebaseEff | eff) String Reference Reference
 
 child :: forall eff. String -> Reference -> Eff (firebase :: FirebaseEff | eff) Reference
-child = runFn2 childImpl
+child = runEffFn2 childImpl
 
 -- | Gets the key of the reference - https://www.firebase.com/docs/web/api/firebase/key.html
 -- Nothing on the root ref (following the behaviour in the Reference API)

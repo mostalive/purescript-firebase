@@ -11,7 +11,7 @@ import FirebaseTestConfig (firebaseTestDatabase)
 import Node.Encoding (Encoding(..))
 import Node.FS (FS)
 import Node.FS.Sync (readTextFile)
-import Prelude (Unit, bind, discard, ($), (<$>))
+import Prelude ((>>=), Unit, bind, discard, ($), (<$>))
 import Test.Authentication (authenticationSpec)
 import Test.Authorization (authorizationSpec)
 import Test.DataSnapshotSpec (dataSnapshotSpec)
@@ -26,7 +26,7 @@ import Web.Firebase.AdminSDK (AdminSDK, adminSDK, createCustomToken, mkCredentia
 import Web.Firebase.AdminSDK (CustomToken)
 import Web.Firebase.Authentication.Aff (authWithCustomToken)
 import Web.Firebase.Authentication.Types (Auth)
-import Web.Firebase.Types (Firebase, FirebaseEff, App)
+import Web.Firebase.Types (Database, Reference, FirebaseEff, App)
 
 
 type FbSpecEffects e =
@@ -39,13 +39,14 @@ type FbSpecRunnerEffects e = RunnerEffects (FbSpecEffects e)
 
 main ::  forall eff. Eff (FbSpecRunnerEffects eff) Unit
 main = do
-  root <- firebaseTestDatabase
-  run [consoleReporter] (allSpecs root )
+  db <- firebaseTestDatabase
+  root <- rootRefFor db
+  run [consoleReporter] $ allSpecs db root
 
 --allSpecs :: forall eff. StateT (Array (Group (Aff (FbSpecEffects eff) Unit))) Identity Unit
-allSpecs :: forall eff. Firebase -> Spec ( FbSpecRunnerEffects eff ) Unit
-allSpecs ref = do
-  refSpec ref
+allSpecs :: forall eff. Database -> Reference -> Spec ( FbSpecRunnerEffects eff ) Unit
+allSpecs db ref = do
+  refSpec db ref
   -- authorizationSpec ref
   -- authenticationSpec app auth token
   promisesSpikeSpec

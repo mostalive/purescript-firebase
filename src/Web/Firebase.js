@@ -32,21 +32,13 @@ exports.goOfflineImpl = function (database) {database.goOffline();};
 
 exports.goOnlineImpl = function (database) {database.goOnline();};
 
-exports.databaseImpl = function (firebaseApp) {
-    return function () {
-      const db = firebaseApp.database();
-      // console.log(db);
-      return db;
-    };
-};
 // end database
 
+// *APP
+exports.databaseImpl = function (firebaseApp) { return firebaseApp.database(); };
+
 // rename to ref?
-exports.childImpl = function (childPath, root) {
-    return function () {
-      return root.ref(childPath);
-    };
-};
+exports.childImpl = function (childPath, aRef) {return aRef.child(childPath);};
 
 exports._key = function(firebaseRef) {
     return firebaseRef.key;
