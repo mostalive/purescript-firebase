@@ -1,6 +1,6 @@
 {
     "name": "firebase",
-    "set": "psc-0.11.5",
+    "set": "psc-0.12.0",
     "source": "https://github.com/purescript/package-sets.git",
     "depends": [
        "prelude",
@@ -8,7 +8,9 @@
        "nullable",
        "transformers",
        "aff",
-       "foreign-generic"
+       "effect",
+       "foreign",
+       "generics-rep"
 
     ]
 }

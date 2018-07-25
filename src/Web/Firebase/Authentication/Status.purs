@@ -3,7 +3,9 @@ UserCredentials(..)
 ) where
 
 import Prelude (class Eq, class Show)
-import Data.Generic (class Generic, gEq, gShow)
+import Data.Generic.Rep (class Generic)
+import Data.Generic.Rep.Eq(genericEq)
+import Data.Generic.Rep.Show(genericShow)
 import Data.Maybe (Maybe)
 
 import Web.Firebase.Authentication.Google (GoogleProfile)
@@ -21,11 +23,10 @@ newtype UserCredentials = UserCredentials {
 
 -- ProviderUserProfile = TwitterProfile TwitterProfileRecord | GoogleProfile GoogleProfileRecord | etc
 
-derive instance genericUserCredentials :: Generic UserCredentials
+derive instance genericUserCredentials :: Generic UserCredentials _
 
 instance showUserCredentials :: Show UserCredentials where
-  show = gShow
+  show = genericShow
 
 instance eqUserCredentials :: Eq UserCredentials where
-  eq = gEq
-
+  eq = genericEq

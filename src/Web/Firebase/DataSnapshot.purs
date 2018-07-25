@@ -10,7 +10,7 @@ val)
 where
 
 import Web.Firebase.Types (DataSnapshot(), Key())
-import Data.Foreign (Foreign()) -- does not work with 0.7.6
+import Foreign (Foreign()) -- does not work with 0.7.6
 import Data.Nullable (toMaybe, Nullable())
 import Data.Maybe (Maybe)
 import Data.Function.Uncurried (Fn1(), runFn1, Fn2(), runFn2)
@@ -65,4 +65,3 @@ foreign import _key :: Fn1 DataSnapshot (Nullable Key)
 
 key :: DataSnapshot -> Maybe Key
 key ds = toMaybe (runFn1 _key ds)
-
