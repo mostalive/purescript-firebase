@@ -65,4 +65,3 @@ foreign import _key :: Fn1 DataSnapshot (Nullable Key)
 
 key :: DataSnapshot -> Maybe Key
 key ds = toMaybe (runFn1 _key ds)
-

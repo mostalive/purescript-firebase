@@ -2,13 +2,19 @@
 
 // module Web.Firebase.Authentication.Eff
 
+var firebase = require("firebase/app");
+require("firebase/auth");
 
-exports._onAuth = function (callback, firebase) {
+exports._onAuth = function (callback, ref) {
+  console.log("javascript auth handler registration");
   var cbEffect = function(data) {
     return callback(data)(); // ensure effect gets used
   };
   return function() {
-    return firebase.onAuth(cbEffect);
+    // https://firebase.google.com/support/guides/firebase-web
+    // TODO hacky mod for firebase upgrade
+    var auth = firebase.auth();
+    return auth.onAuthStateChanged(cbEffect);
   };
 };
 

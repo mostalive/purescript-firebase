@@ -1,5 +1,5 @@
 'use strict';
-var Firebase = require('firebase');
+// var Firebase = require('firebase');
 // module Web.Firebase
 
 exports.newFirebaseImpl = function (uri) {
@@ -8,9 +8,16 @@ exports.newFirebaseImpl = function (uri) {
     };
 };
 
-exports.childImpl = function (childPath, firebase) {
-    return function () {
-        return firebase.child(childPath);
+exports.childImpl = function (childPath, aRef) {
+  return function () {
+    console.log("childImpl, path is': " + childPath);
+    console.log("aRef is': " + aRef.toString());
+
+    // childRef = windowindow.firebase.database().ref("roles/Oi6rJVtl6UMIfFI8CnCTSy0n7X33")
+    var childRef = aRef.child(childPath);
+    console.log("Crash?");
+    console.log("childImpl, firebase ref is:" + childRef.toString());
+    return childRef;
     };
 };
 
@@ -22,14 +29,20 @@ exports._key = function(firebaseRef) {
 
 exports.onImpl = function (eventType, onComplete, onCancel, fb) {
   var successEffect  = function (snapshot) { // extract to withEffect1(fn, value)
+    console.log("On " + eventType + " triggered. Snapshot was:");
+    console.log(snapshot);
     onComplete(snapshot)();
   };
   var errorEffect  = function (error) {
+    console.log("error subscribing on: " + eventType + " reference was: " + fb.toString());
     onCancel(error)();
   };
 
+  console.log("Might JS subscribe On event type: " + eventType + ".");
   return function () {
-        return fb.on(eventType, successEffect, errorEffect);
+    console.log("JS subscribing On " + eventType);
+    console.log("Ref to subscribe On: " + fb.toString());
+    fb.on(eventType, successEffect, errorEffect);
   };
 };
 

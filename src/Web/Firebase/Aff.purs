@@ -30,7 +30,7 @@ import Control.Monad.Aff (Aff(), makeAff)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Exception (Error(), error)
 import Control.Monad.Error.Class (throwError)
-
+import Debug.Trace (spy)
 import Web.Firebase as FB
 import Web.Firebase.Types as FBT
 
@@ -50,7 +50,7 @@ child :: forall eff.
        FBT.Key ->
        FBT.Firebase ->
        Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
-child aKey ref = liftEff $ FB.child aKey ref
+child aKey ref = liftEff $ FB.child (spy aKey) ref
 
 -- | Returns the key of the current firebase reference
 -- throws a MonadError if there was no key (i.e. when you ask for the key of the root reference, according to
@@ -81,7 +81,7 @@ on etype fb = makeAff (\eb cb -> FB.on etype cb (convertError eb) fb)
 -- convert firebase error to purescript Error in javascript
 -- see .js file for firebase Error documentation
 convertError :: forall eff. (Error -> Eff (firebase :: FBT.FirebaseEff | eff) Unit) ->
-	 FBT.FirebaseErr ->
+         FBT.FirebaseErr ->
          Eff (firebase :: FBT.FirebaseEff | eff) Unit
 convertError errorCallback firebaseError = errorCallback (fb2error firebaseError)
 
@@ -90,7 +90,7 @@ convertError errorCallback firebaseError = errorCallback (fb2error firebaseError
 
 once :: forall e. FB.EventType -> FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | e) FBT.DataSnapshot
 once eventType root = makeAff (\errorCb successCb ->
-		                FB.once eventType successCb (convertError errorCb) root)
+                                FB.once eventType successCb (convertError errorCb) root)
 
 -- | write a value under a new generated key to the database
 -- returns the firebase reference generated

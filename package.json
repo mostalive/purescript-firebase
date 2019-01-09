@@ -1,6 +1,6 @@
 {
   "name": "purescript-firebase",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "![build status](https://travis-ci.org/mostalive/purescript-firebase.svg?branch=master)",
   "main": "index.js",
   "directories": {
@@ -24,11 +24,10 @@
   },
   "homepage": "https://github.com/mostalive/purescript-firebase#readme",
   "dependencies": {
-    "firebase": "^2.4.1"
+    "firebase": "^5.5.8"
   },
   "devDependencies": {
     "bower": "^1.7.9",
-    "firebase-server": "^0.7.0",
     "pulp": "^9.0.1",
     "purescript": "^0.9.3"
   }

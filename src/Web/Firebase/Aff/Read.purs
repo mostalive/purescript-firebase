@@ -69,5 +69,3 @@ readSnapshot snapshot = do
 readSnapshotWithDefault :: forall a eff. (IsForeign a) => a -> FBT.DataSnapshot -> Aff (firebase :: FBT.FirebaseEff | eff) a
 readSnapshotWithDefault default snapshot = do
   if (exists snapshot) then (readSnapshot snapshot) else (pure default)
-
-
