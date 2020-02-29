@@ -7,7 +7,9 @@ GoogleProfile(..)
 
 import Prelude (class Eq, class Show)
 import Data.Maybe (Maybe)
-import Data.Generic (class Generic, gEq, gShow)
+import Data.Generic.Rep (class Generic)
+import Data.Generic.Rep.Show
+import Data.Generic.Rep.Eq
 
 newtype GoogleProfile = GoogleProfile {
     displayName :: String
@@ -20,11 +22,10 @@ newtype GoogleProfile = GoogleProfile {
 
 data AuthenticationStatus = LoggedOut | LoggedIn GoogleProfile -- | LoggedIn GoogleProfile ProviderUserProfile
 
-derive instance genericGoogleProfile :: Generic GoogleProfile
+derive instance genericGoogleProfile :: Generic GoogleProfile _
 
 instance showGoogleProfile :: Show GoogleProfile where
-  show = gShow
+  show = genericShow
 
 instance eqGoogleProfile :: Eq GoogleProfile where
-  eq = gEq
-
+  eq = genericEq
