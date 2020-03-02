@@ -15,9 +15,6 @@ import Web.Firebase (auth, initializeApp, database, rootRefFor)
 import Web.Firebase.Authentication.Types (Auth)
 import Web.Firebase.Types as FBT
 
-root :: String
-root =  "https://purescript-spike.firebaseio.com/"
-
 main ::  Effect Unit
 main = do
   app <- initializeApp firebaseConfig

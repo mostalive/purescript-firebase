@@ -4,6 +4,9 @@ node_js:
    - "11.10.1"
 env:
   - PATH=$HOME/purescript:$PATH
+
+before_install:
+  - curl -sL https://firebase.tools | bash
 install:
   - wget -O $HOME/purescript.tar.gz https://github.com/purescript/purescript/releases/download/v0.12.2/linux64.tar.gz
   - tar -xvf $HOME/purescript.tar.gz -C $HOME/
@@ -13,8 +16,10 @@ install:
   - bower install
 script:
   - travis_wait pulp build
-  - travis_wait pulp test
+  - travis_wait firebase emulators:exec --only database ./travis-build.sh
 
 cache:
+  npm: true
   directories:
-    - output
+  - $HOME/.cache/firebase
+  - output
