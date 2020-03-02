@@ -26,7 +26,7 @@ import Foreign (Foreign, unsafeToForeign)
 import Data.Nullable (toNullable)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(Just,Nothing))
-import Effect
+import Effect (Effect)
 import Effect.Aff (Aff, makeAff, nonCanceler)
 import Effect.Class (liftEffect)
 import Effect.Exception (Error, error)

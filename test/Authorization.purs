@@ -1,28 +1,27 @@
 module Test.Authorization where
 
-import Control.Monad.Aff (Aff, attempt)
-import Control.Monad.Eff.Exception (message)
 import Data.Either (either)
-import Data.Foreign (toForeign)
+import Effect.Aff (Aff, attempt)
+import Effect.Exception (message)
+import Foreign (unsafeToForeign)
 import Prelude (Unit, bind, discard, ($))
 import Test.Spec (Spec, describe, it)
-import Test.Spec.Assertions (shouldEqual)
-import Test.Spec.Assertions.Aff (expectError)
+import Test.Spec.Assertions (expectError, shouldEqual)
 import Web.Firebase (EventType(ChildMoved, ChildChanged, ChildRemoved, ChildAdded))
 import Web.Firebase.Aff as FAff
 import Web.Firebase.Types as FBT
 
-forbiddenR :: forall eff. FBT.Firebase -> Aff (firebase :: FBT.FirebaseEff | eff) FBT.Firebase
+forbiddenR :: FBT.Firebase -> Aff FBT.Firebase
 forbiddenR = FAff.child "forbidden"
 
-authorizationSpec :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff | eff) Unit
+authorizationSpec :: FBT.Firebase -> Spec Unit
 authorizationSpec ref = do
     describe "Authorization" do
       describe "Writing" do
         it "with Aff push on forbidden location throws an error" do
           forbiddenRef <- forbiddenR ref
           let newValue = {success: "push Aff"}
-          expectError $ FAff.push (toForeign newValue) forbiddenRef
+          expectError $ FAff.push (unsafeToForeign newValue) forbiddenRef
       describe "once() on forbidden location" do
         it "with Aff throws an error" do
            forbiddenRef <- forbiddenR ref
@@ -44,5 +43,5 @@ authorizationSpec ref = do
       it "set() with Aff at forbidden location throws an error" do
         forbiddenRef <- forbiddenR ref
         let newValue = {success: "set Aff"}
-        e <- attempt $ FAff.set (toForeign newValue) forbiddenRef
+        e <- attempt $ FAff.set (unsafeToForeign newValue) forbiddenRef
         either (\err -> (message err) `shouldEqual` "PERMISSION_DENIED: Permission denied\n | firebase code: | \n PERMISSION_DENIED") (\_ -> "expected an error to be thrown" `shouldEqual` "but was not") e

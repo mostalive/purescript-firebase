@@ -1,9 +1,9 @@
 module Test.DataSnapshotSpec (dataSnapshotSpec) where
 
 import Control.Monad (unless)
-import Control.Monad.Aff (Aff)
-import Control.Monad.Eff.Class (liftEff)
 import Data.Maybe (Maybe(Just))
+import Effect.Aff (Aff)
+import Effect.Class (liftEffect)
 import Prelude (Unit, bind, discard, ($), (>>=), (>=))
 import Test.Spec (describe, it, Spec)
 import Test.Spec.Assertions (fail, shouldEqual)
@@ -14,7 +14,7 @@ import Web.Firebase.Types (Firebase, Key)
 import Web.Firebase.Types as FBT
 
 
-dataSnapshotSpec ::  forall eff. FBT.Firebase -> Spec ( firebase :: FBT.FirebaseEff | eff) Unit
+dataSnapshotSpec ::  FBT.Firebase -> Spec Unit
 dataSnapshotSpec ref =
     -- literal API
     describe "DataSnapshot" do
@@ -44,8 +44,8 @@ dataSnapshotSpec ref =
         let noChild = (D.child snapshot "doesnotexist")
         (D.exists noChild) `shouldEqual` false
 
-snapshotFor :: forall eff. Firebase -> Key -> Aff (firebase :: FBT.FirebaseEff | eff) FBT.DataSnapshot
-snapshotFor ref location  = (liftEff $ FB.child location ref) >>= onceValue
+snapshotFor :: Firebase -> Key -> Aff FBT.DataSnapshot
+snapshotFor ref location  = (liftEffect $ FB.child location ref) >>= onceValue
 
-expect :: forall r. Boolean -> Aff r Unit
+expect :: Boolean -> Aff Unit
 expect condition = unless condition $ fail "false ≠ true"

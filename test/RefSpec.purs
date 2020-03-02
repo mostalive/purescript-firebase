@@ -1,16 +1,17 @@
 module Test.RefSpec (refSpec) where
 
-import Control.Monad.Eff.Class (liftEff)
+import Control.Monad (class Monad)
 import Data.Maybe (Maybe(Just, Nothing))
+import Effect.Aff (Aff)
+import Effect.Class (liftEffect)
 import Prelude (Unit, bind, discard, ($), (>>=), (<>))
-import Test.Spec (describe, it, Spec)
-import Test.Spec.Assertions (shouldEqual)
-import Test.Spec.Assertions.Aff (expectError)
+import Test.Spec (SpecT, describe, it)
+import Test.Spec.Assertions (shouldEqual, expectError)
 import Web.Firebase (child, key, toString)
 import Web.Firebase.Aff as FAff
-import Web.Firebase.Types as FBT
+import Web.Firebase.Types (DatabaseImpl)
 
-refSpec :: forall eff. FBT.Firebase -> Spec (firebase :: FBT.FirebaseEff | eff) Unit
+refSpec :: forall eff. Monad eff => DatabaseImpl -> SpecT Aff Unit eff Unit
 refSpec ref = do
  describe "A reference in" do
    describe "Eff" do
@@ -18,14 +19,14 @@ refSpec ref = do
        let rootKey = key ref
        rootKey `shouldEqual` Nothing
      it "key of root refences' child is child" do
-       actual <- liftEff $ (child "achild" ref)
+       actual <- liftEffect $ (child "achild" ref)
        (key actual) `shouldEqual` (Just "achild")
      describe "toString" do
        it "on root represents full database URl" do
-         actual <- liftEff $ toString ref
+         actual <- liftEffect $ toString ref
          actual `shouldEqual` "https://purescript-spike.firebaseio.com/"
        it "on child represents full database URl plus child" do
-         actual <- liftEff $ (child "achild" ref) >>= toString
+         actual <- liftEffect $ (child "achild" ref) >>= toString
          actual `shouldEqual` "https://purescript-spike.firebaseio.com/achild"
    describe "Aff" do
      describe "Getting a key" do
