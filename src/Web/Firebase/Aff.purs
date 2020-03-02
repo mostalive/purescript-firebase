@@ -20,7 +20,7 @@ module Web.Firebase.Aff
 )
 where
 
-import Prelude
+import Prelude (Unit, pure, ($), (*>), (<<<), (>>>))
 
 import Foreign (Foreign, unsafeToForeign)
 import Data.Nullable (toNullable)

@@ -7,7 +7,6 @@ import Foreign (Foreign)
 import Web.Firebase.Aff (convertError)
 import Web.Firebase.Authentication.Eff as AE
 import Web.Firebase.Authentication.Types (Auth)
-import Web.Firebase.Types as FBT
 
 authWithCustomToken ::
                        String ->

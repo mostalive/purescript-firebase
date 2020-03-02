@@ -2,12 +2,11 @@ module Web.Firebase.Authentication.Status (
 UserCredentials(..)
 ) where
 
-import Prelude (class Eq, class Show)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Show
-import Data.Generic.Rep.Eq
+import Data.Generic.Rep.Eq (genericEq)
+import Data.Generic.Rep.Show (genericShow)
 import Data.Maybe (Maybe)
-
+import Prelude (class Eq, class Show)
 import Web.Firebase.Authentication.Google (GoogleProfile)
 
 -- | convert authdata (from twitter and google to start with) to a purescript authdata record
@@ -30,4 +29,3 @@ instance showUserCredentials :: Show UserCredentials where
 
 instance eqUserCredentials :: Eq UserCredentials where
   eq = genericEq
-

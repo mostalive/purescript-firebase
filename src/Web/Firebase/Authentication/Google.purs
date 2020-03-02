@@ -8,8 +8,8 @@ GoogleProfile(..)
 import Prelude (class Eq, class Show)
 import Data.Maybe (Maybe)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Show
-import Data.Generic.Rep.Eq
+import Data.Generic.Rep.Show (genericShow)
+import Data.Generic.Rep.Eq (genericEq)
 
 newtype GoogleProfile = GoogleProfile {
     displayName :: String
