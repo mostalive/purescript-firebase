@@ -27,9 +27,9 @@
     "firebase": "4.9.0"
   },
   "devDependencies": {
-    "bower": "1.8.2",
+    "bower": ">=1.8.8",
     "firebase-server": "0.12.0",
     "pulp": "12.0.1",
-    "purescript": "0.11.7"
+    "purescript": "0.12.2"
   }
 }
