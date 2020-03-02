@@ -5,12 +5,12 @@ node_js:
 env:
   - PATH=$HOME/purescript:$PATH
 install:
-  - cp psc-package-dev.json psc-package.json
-  - npm install -g bower pulp psc-package
+  - npm install -g bower pulp
   - npm install
-  - psc-package build
+  - bower install
+  - npm build
 script:
-  - travis_wait pulp --psc-package test
+  - travis_wait pulp test
 
 cache:
   directories:
