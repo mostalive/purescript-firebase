@@ -13,48 +13,18 @@
     "test"
   ],
   "repository": {
-     "type": "git",
-     "url": "git://github.com/mostalive/purescript-firebase.git"
+    "type": "git",
+    "url": "git://github.com/mostalive/purescript-firebase.git"
   },
   "dependencies": {
-    "purescript-console": "3.0.0",
-    "purescript-spec": "1.0.0",
-    "purescript-foreign": "4.0.1",
-    "purescript-nullable": "3.0.0",
-    "purescript-transformers": "3.4.0",
-    "purescript-aff": "3.1",
-    "purescript-foreign-generic": "5.0.0"
+    "purescript-console": "4.4.0",
+    "purescript-spec": "^4.0.1",
+    "purescript-foreign": "^5.0.0",
+    "purescript-nullable": "^4.1.1",
+    "purescript-transformers": "^4.2.0",
+    "purescript-aff": "^5.1.2",
+    "purescript-foreign-generic": "^10.0.0",
+    "purescript-generics-rep": "^6.1.1"
   },
-  "resolutions": {
-    "purescript-console": "3.0.0",
-    "purescript-transformers": "3.4.0",
-    "purescript-either": "1.0.0",
-    "purescript-arrays": "1.0.0",
-    "purescript-functions": "1.0.0-rc.1",
-    "purescript-integers": "1.0.0",
-    "purescript-eff": "1.0.0",
-    "purescript-foldable-traversable": "1.0.0",
-    "purescript-strings": "1.0.0",
-    "purescript-globals": "1.0.0",
-    "purescript-exceptions": "1.0.0",
-    "purescript-maps": "1.0.0",
-    "purescript-prelude": "1.0.0",
-    "purescript-monoid": "1.0.0",
-    "purescript-distributive": "1.0.0",
-    "purescript-lazy": "1.0.0",
-    "purescript-maybe": "1.0.0-rc.1",
-    "purescript-unfoldable": "1.0.0",
-    "purescript-tailrec": "1.0.0",
-    "purescript-tuples": "1.0.0",
-    "purescript-st": "1.0.0",
-    "purescript-math": "1.0.0",
-    "purescript-bifunctors": "1.0.0",
-    "purescript-control": "1.0.0",
-    "purescript-lists": "1.0.0",
-    "purescript-invariant": "1.0.0",
-    "purescript-identity": "1.0.0"
-  },
-  "devDependencies": {
-    "purescript-psci-support": "^3.0.0"
-  }
+  "devDependencies": {}
 }

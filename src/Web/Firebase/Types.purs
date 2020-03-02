@@ -5,17 +5,14 @@ module Web.Firebase.Types (
    , Firebase
    , FirebaseAppImpl
    , FirebaseConfig
-   , FirebaseEff
    , FirebaseErr
    , Key
    , mkFirebaseConfig)
 where
 
 -- in process of moving the to string conversion function here, as it belongs with the typeclass
-import Control.Monad.Eff (kind Effect)
+import Effect
 import Prelude (class Show, class Eq, (==))
-
-foreign import data FirebaseEff :: Effect
 
 -- backwards compatility, Firebase is now more than a database, but we have some old code to fix
 -- and in new code we want to use the stubbable typeclass

@@ -1,15 +1,16 @@
 module Web.Firebase.Authentication.Aff (authWithCustomToken) where
 
-
-import Control.Monad.Aff (Aff, makeAff)
-import Data.Foreign (Foreign)
+import Prelude
+import Data.Either (Either(..))
+import Effect.Aff (Aff, makeAff, nonCanceler)
+import Foreign (Foreign)
 import Web.Firebase.Aff (convertError)
 import Web.Firebase.Authentication.Eff as AE
 import Web.Firebase.Authentication.Types (Auth)
 import Web.Firebase.Types as FBT
 
-authWithCustomToken :: forall eff.
+authWithCustomToken ::
                        String ->
                        Auth ->
-                       Aff (firebase :: FBT.FirebaseEff | eff) Foreign
-authWithCustomToken token ref = makeAff (\errorCb successCb -> AE.authWithCustomToken token successCb (convertError errorCb) ref)
+                       Aff Foreign
+authWithCustomToken token ref = makeAff (\cb  -> AE.authWithCustomToken token (Right >>> cb) (convertError (Left >>> cb)) ref *> pure nonCanceler)
