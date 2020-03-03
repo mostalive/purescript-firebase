@@ -11,7 +11,8 @@
     "build": "pulp build",
     "test": "pulp test",
     "autotest": "pulp -w test",
-    "bolt": "firebase-bolt < test/rules.bolt > test/rules.json"
+    "bolt": "firebase-bolt < test/rules.bolt > test/rules.json",
+    "postinstall": "npm rebuild --target=11.10.1 --target_arch=x64 --target_platform=linux --target_libc=glibc"
   },
   "repository": {
     "type": "git",
