@@ -3,9 +3,11 @@ module Web.Firebase.Testing (
   UserId,
   initializeAdminApp) where
 
+import Control.Promise (Promise)
+import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Aff.Compat (EffectFnAff, fromEffectFnAff)
-import Prelude ((<<<), ($))
+import Prelude (Unit, ($), (<<<))
 import Web.Firebase.Types (FirebaseAppImpl)
 
 newtype DatabaseName = DatabaseName String
@@ -43,3 +45,10 @@ foreign import _initializeAnonymousTestApp :: DatabaseName -> EffectFnAff Fireba
 -- | in order to keep callers clean.
 initializeAnonymousTestApp :: DatabaseName -> Aff FirebaseAppImpl
 initializeAnonymousTestApp = fromEffectFnAff <<< _initializeAnonymousTestApp
+
+type RulesFor = {
+  databaseName :: String,
+  rules :: String
+}
+
+foreign import _loadDatabaseRules :: RulesFor -> Effect (Promise Unit)

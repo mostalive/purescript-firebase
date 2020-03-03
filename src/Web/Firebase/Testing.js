@@ -36,3 +36,9 @@ exports._initializeAnonymousTestApp = function(databaseName) {
 
   return alwaysSucceed;
 };
+
+exports._loadDatabaseRules = function(rules) {
+  return function() {
+    return firebase.loadDatabaseRules(rules);
+  };
+};
