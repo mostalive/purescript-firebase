@@ -12,7 +12,7 @@ install:
   - tar -xvf $HOME/purescript.tar.gz -C $HOME/
   - chmod a+x $HOME/purescript
   - npm install -g bower pulp
-  - npm install
+  - npm install --build-from-source=grpc
   - bower install
 script:
   - travis_wait pulp build
