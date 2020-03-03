@@ -3,19 +3,13 @@
 [![Latest release](http://img.shields.io/bower/v/purescript-firebase.svg)](https://github.com/mostalive/purescript-firebase/releases)
 [![Build Status](https://travis-ci.org/mostalive/purescript-firebase.svg?branch=master)](https://travis-ci.org/mostalive/purescript-firebase)
 
-Purescript bindings for firebase.
+Purescript bindings for firebase realtime database.
 
 ## Status
 
-Early days, we're using it in a small production deployment and it seems to work well enough. Firebase 2.4 API partially implemented:
+[WeReview](https://wereviewhq.com) uses an older version of this in production. Currently upgrading tests so they run with an in-memory, local firebase. Therefore not all tests are included in the build at the moment. They will be added one by one as they are converted.  
 
-* pushing / setting data
-* subscribing on changing data
-* subscribing to authentication events (only tested on users with a google account)
-
-The tests in this project are a bit limited, the more interesting ones are in the production project for now (positive authorizaiton using a user account, subscribing to a stream of events with [signals](https://github.com/bodil/purescript-signal).
-
-Next steps are documented in the issue queue.
+Pull requests are welcome, for additions and fixes. If possible, with tests. If you can't figure it out, happy to discuss in an issue.
 
 ## Installing
 
@@ -29,7 +23,7 @@ bower install purescript-firebase
 pulp -w test
 ```
 
-should work. For instructions on how to build from scratch, see 'travis.yml'.
+should work. For instructions on how to build from scratch, see '.travis.yml'.
 
 ## Security
 
