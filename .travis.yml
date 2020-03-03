@@ -1,21 +1,14 @@
 language: node_js
 sudo: false
-node_js:
-   - "11.10.1"
+
+service: docker
 env:
   - PATH=$HOME/purescript:$PATH
 dist: bionic
+
 before_install:
-  - curl -sL https://firebase.tools | bash
-install:
-  - wget -O $HOME/purescript.tar.gz https://github.com/purescript/purescript/releases/download/v0.12.2/linux64.tar.gz
-  - tar -xvf $HOME/purescript.tar.gz -C $HOME/
-  - chmod a+x $HOME/purescript
-  - npm install -g bower pulp
-  - npm install --build-from-source=grpc
-  - bower install
+  - docker build -t qwaneu/purescript-firebase .
 script:
-  - travis_wait pulp build
   - travis_wait firebase emulators:exec --only database ./travis-build.sh
 
 cache:
