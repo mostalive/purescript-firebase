@@ -1,4 +1,4 @@
-language: node_js
+language: minimal
 sudo: false
 
 service: docker
@@ -6,13 +6,8 @@ env:
   - PATH=$HOME/purescript:$PATH
 dist: bionic
 
-before_install:
+install:
   - docker build -t qwaneu/purescript-firebase .
 script:
-  - travis_wait firebase emulators:exec --only database ./travis-build.sh
+  - ls 
 
-cache:
-  npm: true
-  directories:
-  - $HOME/.cache/firebase
-  - output
