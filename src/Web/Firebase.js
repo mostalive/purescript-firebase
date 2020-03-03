@@ -1,5 +1,7 @@
 'use strict';
-var Firebase = require('firebase');
+var Firebase = require('firebase/app');
+require ("firebase/auth");
+require ("firebase/database");
 // module Web.Firebase
 
 exports.newFirebaseImpl = function (uri) {
