@@ -27,6 +27,7 @@
     "jwt-simple": ">=0.5.3"
   },
   "devDependencies": {
+    "@firebase/testing": "0.16.13",
     "bower": ">=1.8.8",
     "firebase": "7.6.0",
     "firebase-bolt": "0.8.4",
