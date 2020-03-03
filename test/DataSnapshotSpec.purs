@@ -5,20 +5,20 @@ import Data.Maybe (Maybe(Just))
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Foreign (unsafeToForeign)
-import Prelude (Unit, bind, discard, pure, ($), (<>), (>=), (>>=))
+import Prelude (Unit, bind, discard, ($), (>>=))
 import Test.Spec (Spec, before, describe, it)
 import Test.Spec.Assertions (fail, shouldEqual)
 import Web.Firebase as FB
 import Web.Firebase.Aff (child, onceValue, set) as DBA
 import Web.Firebase.DataSnapshot as D
-import Web.Firebase.Testing (DatabaseName(..), adminApp)
-import Web.Firebase.Types (DataSnapshot, DatabaseImpl, Firebase, Key)
+import Web.Firebase.Testing (DatabaseName(..), initializeAdminApp)
+import Web.Firebase.Types (DataSnapshot, Firebase, Key)
 import Web.Firebase.Types as FBT
 
 
 dataSnapshotSpec ::  FBT.Firebase -> Spec Unit
 dataSnapshotSpec _ =
-  before addAnEntry  do
+  before createSnapshot  do
     describe "DataSnapshot" do
       it "can tell us the number of children" $ \snapshot -> do
         let numChildren = D.numChildren snapshot
@@ -40,9 +40,9 @@ dataSnapshotSpec _ =
         let noChild = (D.child snapshot "doesnotexist")
         (D.exists noChild) `shouldEqual` false
 
-addAnEntry :: Aff DataSnapshot
-addAnEntry = do
-  app <- adminApp (DatabaseName "DataSnapshotApp")
+createSnapshot :: Aff DataSnapshot
+createSnapshot = do
+  app <- initializeAdminApp (DatabaseName "DataSnapshotApp")
   db <- liftEffect $ FB.database app
   ref <- liftEffect $ FB.rootRefFor db
   pathRef <- DBA.child aPath ref

@@ -1,7 +1,7 @@
 module Test.Main where
 
 import Effect (Effect)
-import Effect.Aff (launchAff_)
+import Effect.Aff (Aff, launchAff_)
 import FirebaseTestConfig (firebaseConfig)
 import Prelude (Unit, bind, discard, ($))
 import Test.Authentication (authenticationSpec)
@@ -11,7 +11,7 @@ import Test.RefSpec (refSpec)
 import Test.Spec (Spec)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (runSpec)
-import Web.Firebase (auth, initializeApp, database, rootRefFor)
+import Web.Firebase (initializeApp, database, rootRefFor)
 import Web.Firebase.Authentication.Types (Auth)
 import Web.Firebase.Types as FBT
 
@@ -20,8 +20,11 @@ main = do
   app <- initializeApp firebaseConfig
   db <- database app
   ref <- rootRefFor db
-  a <- auth app
-  runTests a ref
+  -- a <- auth app
+  launchAff_ $ runSelected ref
+
+runSelected :: FBT.Firebase -> Aff Unit
+runSelected ref =  runSpec [consoleReporter] (dataSnapshotSpec ref)
 
 runTests ::  Auth -> FBT.Firebase  -> Effect Unit
 runTests auth ref = launchAff_ $ runSpec [consoleReporter] (allSpecs auth ref)

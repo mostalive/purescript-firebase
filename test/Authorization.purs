@@ -14,7 +14,7 @@ import Web.Firebase.Types as FBT
 
 
 authorizationSpec :: FBT.Firebase -> Spec Unit
-authorizationSpec root = before (setForbiddenEntry root) do
+authorizationSpec root = (before $ setForbiddenEntry root)  do
     describe "Authorization"    do
       describe "Writing" do
         it "with Aff push on forbidden location throws an error" $ \forbidden -> do

@@ -1,6 +1,6 @@
 module Web.Firebase.Testing (
   DatabaseName(..),
-  adminApp) where
+  initializeAdminApp) where
 
 import Effect.Aff (Aff)
 import Effect.Aff.Compat (EffectFnAff, fromEffectFnAff)
@@ -14,5 +14,5 @@ newtype DatabaseName = DatabaseName String
 
 foreign import _adminApp :: DatabaseName -> EffectFnAff FirebaseAppImpl
 
-adminApp :: DatabaseName -> Aff FirebaseAppImpl
-adminApp = fromEffectFnAff <<< _adminApp
+initializeAdminApp :: DatabaseName -> Aff FirebaseAppImpl
+initializeAdminApp = fromEffectFnAff <<< _adminApp
