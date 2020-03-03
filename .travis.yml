@@ -13,6 +13,7 @@ install:
   - chmod a+x $HOME/purescript
   - npm install -g bower pulp
   - npm install
+  - npm rebuild
   - bower install
 script:
   - travis_wait pulp build
