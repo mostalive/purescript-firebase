@@ -4,7 +4,7 @@ node_js:
    - "11.10.1"
 env:
   - PATH=$HOME/purescript:$PATH
-
+dist: bionic
 before_install:
   - curl -sL https://firebase.tools | bash
 install:
