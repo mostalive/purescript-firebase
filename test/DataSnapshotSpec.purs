@@ -17,7 +17,7 @@ import Web.Firebase.Types as FBT
 
 dataSnapshotSpec ::  FBT.Firebase -> Spec Unit
 dataSnapshotSpec ref =
-  before (addEntry ref) do
+  before (addAnEntry ref) do
     describe "DataSnapshot" do
       it "can tell us the number of children" do
         snapshot <- snapshotFor ref aPath
@@ -45,8 +45,8 @@ dataSnapshotSpec ref =
         let noChild = (D.child snapshot "doesnotexist")
         (D.exists noChild) `shouldEqual` false
 
-addEntry :: DatabaseImpl -> Aff Unit
-addEntry ref = do
+addAnEntry :: DatabaseImpl -> Aff Unit
+addAnEntry ref = do
   pathRef <- DBA.child (aPath <> "/firstchild") ref
   DBA.set (unsafeToForeign "something") pathRef
 
