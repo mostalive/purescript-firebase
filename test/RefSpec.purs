@@ -24,10 +24,10 @@ refSpec ref = do
      describe "toString" do
        it "on root represents full database URl" do
          actual <- liftEffect $ toString ref
-         actual `shouldEqual` "https://purescript-spike.firebaseio.com/"
+         actual `shouldEqual` dbUrl
        it "on child represents full database URl plus child" do
          actual <- liftEffect $ (child "achild" ref) >>= toString
-         actual `shouldEqual` "https://purescript-spike.firebaseio.com/achild"
+         actual `shouldEqual` (dbUrl <> "achild")
    describe "Aff" do
      describe "Getting a key" do
        it "on root throws an error" do
@@ -38,8 +38,11 @@ refSpec ref = do
      describe "toString" do
        it "on root returns url" do
          actual <- FAff.toString ref
-         actual `shouldEqual` "https://purescript-spike.firebaseio.com/"
+         actual `shouldEqual` dbUrl
        it "on child of root returns root url + child" do
          let child = "achild"
          actual <- (FAff.child child ref) >>= FAff.toString
-         actual `shouldEqual` ("https://purescript-spike.firebaseio.com/" <> child)
+         actual `shouldEqual` (dbUrl <> child)
+
+dbUrl :: String
+dbUrl = "http://localhost:9000/"
