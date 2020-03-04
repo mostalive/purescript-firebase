@@ -6,7 +6,7 @@ import Effect.Exception (message)
 import Foreign (unsafeToForeign)
 import Node.Encoding (Encoding(UTF8))
 import Node.FS.Aff (readTextFile)
-import Prelude (Unit, bind, discard, pure, ($), (=<<))
+import Prelude (Unit, bind, discard, ($), (=<<))
 import Test.Spec (Spec, before, describe, it)
 import Test.Spec.Assertions (expectError, shouldEqual, fail)
 import Web.Firebase (EventType(ChildMoved, ChildChanged, ChildRemoved, ChildAdded))
@@ -43,26 +43,22 @@ authorizationSpec _ = (before $ setForbiddenEntry')  do
                (\_ -> fail "expected an error to be thrown but was not")
                e
 
-setForbiddenEntry :: DatabaseImpl -> Aff DatabaseImpl
-setForbiddenEntry root = do
-  forbidden <- DBA.child "forbidden" root
-  pathRoot <- DBA.child "firstchild" forbidden
-  DBA.set (unsafeToForeign "something") pathRoot
-  pure forbidden
-
 setForbiddenEntry' :: Aff DatabaseImpl
 setForbiddenEntry' = do
   let dbName = (DatabaseName "AuthorizationApp")
-  app <- initializeAdminApp dbName
-  db <- DBA.database app
-  root <- DBA.rootRefFor db
-  fbRules <- readTextFile UTF8 "./test/rules.json"
-  let rules = {databaseName: dbName,
-               rules: fbRules }
-  forbidden <- DBA.child "forbidden" root
-  pathRoot <- DBA.child "firstchild" forbidden
-  DBA.set (unsafeToForeign "something") pathRoot
-  loadDatabaseRules rules
-  anonRoot <- DBA.rootRefFor =<< DBA.database =<< initializeAnonymousTestApp dbName
-  forbidden' <- DBA.child "forbidden" anonRoot
-  pure forbidden'
+  let forbiddenKey = "forbidden"
+  arrange dbName forbiddenKey
+  DBA.child forbiddenKey =<< appRoot =<< initializeAnonymousTestApp dbName
+  where
+    arrange dbName forbiddenKey = do
+      root <- appRoot =<< initializeAdminApp dbName
+      fbRules <- readTextFile UTF8 "./test/rules.json"
+      let rules = {databaseName: dbName,
+                   rules: fbRules }
+      forbidden <- DBA.child forbiddenKey root
+      pathRoot <- DBA.child "firstchild" forbidden
+      DBA.set (unsafeToForeign "something") pathRoot
+      loadDatabaseRules rules
+
+appRoot::FBT.FirebaseAppImpl -> Aff DatabaseImpl
+appRoot app = DBA.rootRefFor =<< DBA.database app
