@@ -29,6 +29,7 @@ runSelected ref =  runSpec [consoleReporter] selected
     selected = do
       dataSnapshotSpec ref
       refSpec ref
+      authorizationSpec ref
 
 runTests ::  Auth -> FBT.Firebase  -> Effect Unit
 runTests auth ref = launchAff_ $ runSpec [consoleReporter] (allSpecs auth ref)

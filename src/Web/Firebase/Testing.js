@@ -25,10 +25,10 @@ exports._initializeTestApp = function(authRecord) {
 
 exports._initializeAnonymousTestApp = function(databaseName) {
   return function (onError, onSuccess) {
-    var authRecord = firebase.initializeTestApp({
+    var authRecord = {
       databaseName: databaseName,
-      auth: { uid: null }
-    });
+      auth: { uid: "alice" }
+    };
 
     var app = firebase.initializeTestApp(authRecord);
     onSuccess(app);

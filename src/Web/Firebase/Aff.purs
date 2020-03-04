@@ -6,12 +6,14 @@ module Web.Firebase.Aff
 (
   child
 , convertError
+, database
 , key
 , offLocation
 , on
 , once
 , onceValue
 , push
+, rootRefFor
 , set
 , fb2error
 , firebaseErrToString
@@ -20,20 +22,19 @@ module Web.Firebase.Aff
 )
 where
 
-import Prelude (Unit, pure, ($), (*>), (<<<), (>>>))
-
-import Foreign (Foreign, unsafeToForeign)
-import Data.Nullable (toNullable)
+import Control.Monad.Error.Class (throwError)
 import Data.Either (Either(..))
-import Data.Maybe (Maybe(Just,Nothing))
+import Data.Maybe (Maybe(Just, Nothing))
+import Data.Nullable (toNullable)
 import Effect (Effect)
 import Effect.Aff (Aff, makeAff, nonCanceler)
-import Effect.Class (liftEffect)
+import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Exception (Error, error)
-import Control.Monad.Error.Class (throwError)
-
-import Web.Firebase as FB
-import Web.Firebase.Types as FBT
+import Foreign (Foreign, unsafeToForeign)
+import Prelude (Unit, pure, ($), (*>), (<<<), (>>>))
+import Web.Firebase (EventType(..), child, database, key, offSimple, on, once, pushA,
+                     rootRefFor, setA, toString) as FBE
+import Web.Firebase.Types (DatabaseImpl, DataSnapshot, FirebaseErr, Key, Firebase, FirebaseAppImpl) as FBT
 
 -- | Inspired by its Eff relative.
 -- Throw takes a message and throws a MonadError in Aff with that message
@@ -50,7 +51,7 @@ child ::
        FBT.Key ->
        FBT.Firebase ->
        Aff FBT.Firebase
-child aKey ref = liftEffect $ FB.child aKey ref
+child aKey ref = liftEffect $ FBE.child aKey ref
 
 -- | Returns the key of the current firebase reference
 -- throws a MonadError if there was no key (i.e. when you ask for the key of the root reference, according to
@@ -61,7 +62,7 @@ key ::
        FBT.Firebase ->
        Aff FBT.Key
 key fb = do
-  let mKey = FB.key fb
+  let mKey = FBE.key fb
   case mKey of
        Nothing -> throw "Key was null. Did you ask key of root reference?"
        Just k -> pure k
@@ -72,10 +73,10 @@ key fb = do
 -- We envision Web.Firebase.Signals to generate signals from callbacks that can be called multiple times
 
 -- TODO this works for value, but will ignore the prevChild argument for onChildAdded etc.
-on :: FB.EventType ->
+on :: FBE.EventType ->
       FBT.Firebase ->
       Aff FBT.DataSnapshot
-on etype fb = makeAff (\cb -> FB.on etype (Right >>> cb) (convertError (Left >>> cb)) fb *> pure nonCanceler)
+on etype fb = makeAff (\cb -> FBE.on etype (Right >>> cb) (convertError (Left >>> cb)) fb *> pure nonCanceler)
 
 -- convert firebase error to purescript Error in javascript
 -- see .js file for firebase Error documentation
@@ -87,29 +88,29 @@ convertError errorCallback firebaseError = errorCallback (fb2error firebaseError
 -- We also take the liberty to write more specific functions, e.g. once and on() in firebase have 4 event types. we get better error messages and code completion by making specific functions, e.g.
 -- onvalue and onchildadded instead of on(value) and on(childAdded)
 
-once :: FB.EventType -> FBT.Firebase -> Aff FBT.DataSnapshot
+once :: FBE.EventType -> FBT.Firebase -> Aff FBT.DataSnapshot
 once eventType root = makeAff (\cb ->
-		                FB.once eventType (Right >>> cb) (convertError (Left >>> cb)) root *> pure nonCanceler)
+  FBE.once eventType (Right >>> cb) (convertError (Left >>> cb)) root *> pure nonCanceler)
 
 -- | write a value under a new generated key to the database
 -- returns the firebase reference generated
 push :: Foreign -> FBT.Firebase -> Aff FBT.Firebase
-push value ref = makeAff (\cb -> FB.pushA value (Right >>> cb) (convertError (Left >>> cb)) ref *> pure nonCanceler)
+push value ref = makeAff (\cb -> FBE.pushA value (Right >>> cb) (convertError (Left >>> cb)) ref *> pure nonCanceler)
 
 set :: Foreign -> FBT.Firebase ->  Aff Unit
-set value ref = makeAff (\cb -> FB.setA value (Right >>> cb) (convertError (Left >>> cb)) ref *> pure nonCanceler)
+set value ref = makeAff (\cb -> FBE.setA value (Right >>> cb) (convertError (Left >>> cb)) ref *> pure nonCanceler)
 
 -- | Extra functions not part of firebase api, grown out of our use
 offLocation :: FBT.Firebase -> Aff Unit
-offLocation = liftEffect <<< FB.offSimple
+offLocation = liftEffect <<< FBE.offSimple
 
 onceValue :: FBT.Firebase -> Aff FBT.DataSnapshot
-onceValue root = once FB.Value root
+onceValue root = once FBE.Value root
 
 -- | Get the absolute URL for this location -  https://firebase.google.com/docs/reference/js/firebase.database.Reference#toString
 
 toString :: FBT.Firebase -> Aff String
-toString = liftEffect <<< FB.toString
+toString = liftEffect <<< FBE.toString
 
 -- | remove data below ref
 -- (firebase will also remove the path to ref probably)
@@ -118,3 +119,9 @@ toString = liftEffect <<< FB.toString
 remove :: FBT.Firebase -> Aff Unit
 remove ref = set foreignNull ref
              where foreignNull = unsafeToForeign $ toNullable $ Nothing
+
+database :: forall eff. MonadEffect eff => FBT.FirebaseAppImpl -> eff FBT.DatabaseImpl
+database = liftEffect <<< FBE.database
+
+rootRefFor :: forall eff. MonadEffect eff => FBT.DatabaseImpl -> eff FBT.DatabaseImpl
+rootRefFor = liftEffect <<< FBE.rootRefFor

@@ -4,17 +4,20 @@ import Data.Either (either)
 import Effect.Aff (Aff, attempt)
 import Effect.Exception (message)
 import Foreign (unsafeToForeign)
-import Prelude (Unit, bind, discard, pure, ($))
+import Node.Encoding (Encoding(UTF8))
+import Node.FS.Aff (readTextFile)
+import Prelude (Unit, bind, discard, pure, ($), (=<<))
 import Test.Spec (Spec, before, describe, it)
 import Test.Spec.Assertions (expectError, shouldEqual, fail)
 import Web.Firebase (EventType(ChildMoved, ChildChanged, ChildRemoved, ChildAdded))
-import Web.Firebase.Aff as DBA
+import Web.Firebase.Aff (child, database, on, onceValue, push, rootRefFor, set) as DBA
+import Web.Firebase.Testing (DatabaseName(..), initializeAdminApp, initializeAnonymousTestApp, loadDatabaseRules)
 import Web.Firebase.Types (DatabaseImpl)
 import Web.Firebase.Types as FBT
 
 
 authorizationSpec :: FBT.Firebase -> Spec Unit
-authorizationSpec root = (before $ setForbiddenEntry root)  do
+authorizationSpec _ = (before $ setForbiddenEntry')  do
     describe "Authorization"    do
       describe "Writing" do
         it "with Aff push on forbidden location throws an error" $ \forbidden -> do
@@ -46,3 +49,20 @@ setForbiddenEntry root = do
   pathRoot <- DBA.child "firstchild" forbidden
   DBA.set (unsafeToForeign "something") pathRoot
   pure forbidden
+
+setForbiddenEntry' :: Aff DatabaseImpl
+setForbiddenEntry' = do
+  let dbName = (DatabaseName "AuthorizationApp")
+  app <- initializeAdminApp dbName
+  db <- DBA.database app
+  root <- DBA.rootRefFor db
+  fbRules <- readTextFile UTF8 "./test/rules.json"
+  let rules = {databaseName: dbName,
+               rules: fbRules }
+  forbidden <- DBA.child "forbidden" root
+  pathRoot <- DBA.child "firstchild" forbidden
+  DBA.set (unsafeToForeign "something") pathRoot
+  loadDatabaseRules rules
+  anonRoot <- DBA.rootRefFor =<< DBA.database =<< initializeAnonymousTestApp dbName
+  forbidden' <- DBA.child "forbidden" anonRoot
+  pure forbidden'

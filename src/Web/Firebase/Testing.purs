@@ -1,7 +1,10 @@
 module Web.Firebase.Testing (
   DatabaseName(..),
   UserId,
-  initializeAdminApp) where
+  initializeAdminApp,
+  initializeTestApp,
+  initializeAnonymousTestApp,
+  loadDatabaseRules) where
 
 import Control.Promise (Promise, toAff) as Promise
 import Effect (Effect)

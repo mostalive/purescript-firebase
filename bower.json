@@ -27,6 +27,7 @@
     "purescript-generics-rep": "^6.1.1"
   },
   "devDependencies": {
-    "purescript-aff-promise": "^2.1.0"
+    "purescript-aff-promise": "^2.1.0",
+    "purescript-node-fs-aff": "^6.0.0"
   }
 }
